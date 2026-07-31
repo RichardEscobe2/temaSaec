@@ -1,0 +1,76 @@
+{{!
+    @template theme_saec/navbar
+
+    Global UPTex/SAEC header/navigation bar. Structure:
+      - Left: drawer toggle (opens/closes the theme_saec/nav-drawer sidebar
+        — visible at every breakpoint, desktop included, so every role can
+        collapse the rail) + UPTex brand/logo.
+      - Center: empty flexible space (reserved for a future search box).
+      - Right: language selector, native notification/messaging popovers
+        (output.navbar_plugin_output) and native user menu (core/user_menu),
+        or a login button when logged out.
+
+    Reused by every layout (frontpage.php and drawers.php both populate this
+    same context shape).
+
+    Example context (json):
+    {
+        "baseUrl": "https://example.org",
+        "logourl": "https://example.org/theme/saec/pix/logo1.png",
+        "sitename": "SAEC",
+        "langmenu": false,
+        "isloggedin": false,
+        "loginurl": "https://example.org/login/index.php",
+        "usermenu": false,
+        "showmainnav": false,
+        "output": {
+            "navbar_plugin_output": ""
+        }
+    }
+}}
+<nav class="saec-navbar navbar fixed-top navbar-light navbar-expand" aria-label="{{#str}}sitemenubar, admin{{/str}}">
+    <div class="container-fluid saec-navbar__row">
+        <div class="d-flex align-items-center">
+            {{#showmainnav}}
+                <button
+                    class="saec-navbar__drawer-toggle btn icon-no-margin d-flex align-items-center justify-content-center"
+                    data-toggler="drawers"
+                    data-action="toggle"
+                    data-target="theme_saec-drawers-mainnav"
+                    data-toggle="tooltip"
+                    data-placement="right"
+                    aria-controls="theme_saec-drawers-mainnav"
+                    aria-expanded="false"
+                    title="{{#str}} opensidebar, theme_saec {{/str}}"
+                >
+                    <span class="sr-only">{{#str}} opensidebar, theme_saec {{/str}}</span>
+                    {{#pix}} t/index_drawer, moodle {{/pix}}
+                </button>
+            {{/showmainnav}}
+
+            <a href="{{{ baseUrl }}}" class="saec-navbar__brand navbar-brand d-flex m-0 p-0 aabtn">
+                <img src="{{{ logourl }}}" class="saec-navbar__logo" alt="{{sitename}}">
+            </a>
+        </div>
+
+        <div class="saec-navbar__center" aria-hidden="true"></div>
+
+        <div class="saec-navbar__actions">
+            {{#langmenu}}
+                {{> theme_boost/language_menu }}
+            {{/langmenu}}
+
+            {{^isloggedin}}
+                <a href="{{{ loginurl }}}" class="saec-btn saec-btn--outline">{{#str}} loginbutton, theme_saec {{/str}}</a>
+            {{/isloggedin}}
+            {{#isloggedin}}
+                {{{ output.navbar_plugin_output }}}
+                <div class="d-flex align-items-stretch usermenu-container" data-region="usermenu">
+                    {{#usermenu}}
+                        {{> core/user_menu }}
+                    {{/usermenu}}
+                </div>
+            {{/isloggedin}}
+        </div>
+    </div>
+</nav>

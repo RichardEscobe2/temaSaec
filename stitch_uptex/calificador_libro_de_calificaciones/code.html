@@ -1,0 +1,446 @@
+<!DOCTYPE html><html class="light" lang="es"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Calificador - Libro de Calificaciones | UPTex Moodle</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=Hanken+Grotesk:wght@600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@100..900&amp;family=Inter:wght@100..900&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-container": "#d42c2b",
+                    "on-primary-fixed": "#00210c",
+                    "primary-container": "#0b8043",
+                    "surface-container": "#ebeef4",
+                    "on-secondary-fixed-variant": "#2c5000",
+                    "error": "#ba1a1a",
+                    "surface-container-highest": "#dfe3e8",
+                    "on-primary-fixed-variant": "#005228",
+                    "inverse-on-surface": "#eef1f7",
+                    "outline-variant": "#becabd",
+                    "on-surface": "#181c20",
+                    "outline": "#6f7a6f",
+                    "on-secondary-container": "#407100",
+                    "tertiary-fixed-dim": "#ffb4ac",
+                    "surface-tint": "#006d37",
+                    "inverse-primary": "#77db93",
+                    "surface-container-low": "#f1f4fa",
+                    "on-tertiary": "#ffffff",
+                    "secondary-container": "#b8f47a",
+                    "surface": "#f7f9ff",
+                    "surface-container-lowest": "#ffffff",
+                    "inverse-surface": "#2d3135",
+                    "on-tertiary-container": "#fff1ef",
+                    "on-tertiary-fixed": "#410002",
+                    "on-error": "#ffffff",
+                    "primary": "#006532",
+                    "secondary-fixed": "#b8f47a",
+                    "on-error-container": "#93000a",
+                    "primary-fixed": "#93f8ae",
+                    "on-primary": "#ffffff",
+                    "tertiary-fixed": "#ffdad6",
+                    "on-secondary-fixed": "#0e2000",
+                    "surface-container-high": "#e5e8ee",
+                    "surface-dim": "#d7dae0",
+                    "secondary": "#3c6a00",
+                    "on-primary-container": "#d1ffd8",
+                    "background": "#f7f9ff",
+                    "on-surface-variant": "#3f4940",
+                    "error-container": "#ffdad6",
+                    "secondary-fixed-dim": "#9dd761",
+                    "on-background": "#181c20",
+                    "surface-variant": "#dfe3e8",
+                    "on-tertiary-fixed-variant": "#93000d",
+                    "surface-bright": "#f7f9ff",
+                    "primary-fixed-dim": "#77db93",
+                    "tertiary": "#b00a16",
+                    "on-secondary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "margin-desktop": "48px",
+                    "gutter": "24px",
+                    "lg": "24px",
+                    "md": "16px",
+                    "margin-mobile": "16px",
+                    "sm": "8px",
+                    "xs": "4px",
+                    "xl": "32px",
+                    "base": "4px",
+                    "xxl": "48px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Hanken Grotesk"],
+                    "body-md": ["Inter"],
+                    "headline-lg": ["Hanken Grotesk"],
+                    "body-lg": ["Inter"],
+                    "button": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "label-md": ["Inter"],
+                    "headline-lg-mobile": ["Hanken Grotesk"],
+                    "display": ["Hanken Grotesk"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "button": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "display": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopNavBar Shell Mapping -->
+<header class="sticky top-0 z-50 flex justify-between items-center px-lg py-sm w-full bg-surface-container-lowest border-b border-outline-variant/20 h-16">
+<div class="flex items-center gap-md">
+<span class="font-display text-headline-md font-bold text-primary">UPTex Moodle</span>
+</div>
+<!-- Center is empty as per prompt -->
+<div></div>
+<div class="flex items-center gap-md">
+<button class="p-sm hover:bg-surface-container rounded-lg transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="flex items-center gap-sm pl-md border-l border-outline-variant/20">
+<div class="text-right hidden md:block">
+<p class="font-label-md text-on-surface">Dr. Ricardo Salinas</p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-wider">Profesor Titular</p>
+</div>
+<img class="w-10 h-10 rounded-full border border-outline-variant/30 object-cover" data-alt="Professional studio portrait of a university professor in his late 40s wearing a crisp white shirt and dark blazer. The lighting is bright and academic, set against a clean, minimalist university office background with soft bokeh. The style is modern and institutional, maintaining a high-contrast corporate aesthetic consistent with a professional Moodle environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJf4tJzb4oz_JmiJAP_rkGiecaqzmaarsUUWS8YAad4u-kUSv-jmv4P6fnRAbB-ZuunM92TtOImKo0j_f301gDPG5jkmcGhLKYRSI-a-AYK4G81U-fzZNRG5E7tK2v4nFMakehY9akiWwK_moqO3KP8PZO_uQ-HKrac2ZfgE8vXwLcj2cLPhUNn4KmdGivSiCeJoDcMO3N3frlDN0rzsLgzvJ0JzE9DTLJ3MfjcB4wKv2cmIWg9bIb2Q">
+</div>
+</div>
+</header>
+<div class="flex">
+<!-- SideNavBar Shell Mapping -->
+<aside class="hidden md:flex flex-col h-[calc(100vh-64px)] sticky top-16 border-r border-outline-variant/20 w-64 z-40 bg-surface-container">
+<div class="py-md flex-1 overflow-y-auto">
+<nav class="space-y-xs">
+<!-- Dashboard -->
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-full mx-md px-md py-sm flex items-center gap-md transition-all group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">dashboard</span>
+<span class="font-label-md">Dashboard</span>
+</a>
+<!-- Mis Cursos -->
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-full mx-md px-md py-sm flex items-center gap-md transition-all group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">school</span>
+<span class="font-label-md">Mis Cursos</span>
+</a>
+<!-- Calificador (ACTIVE) -->
+<a class="bg-primary-container text-on-primary-container rounded-full mx-md px-md py-sm flex items-center gap-md shadow-sm" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="font-label-md">Calificador</span>
+</a>
+<!-- Asistencia -->
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-full mx-md px-md py-sm flex items-center gap-md transition-all group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">calendar_today</span>
+<span class="font-label-md">Asistencia</span>
+</a>
+<!-- Estudiantes y Progreso -->
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-full mx-md px-md py-sm flex items-center gap-md transition-all group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">analytics</span>
+<span class="font-label-md">Estudiantes y Progreso</span>
+</a>
+</nav>
+</div>
+<div class="p-md border-t border-outline-variant/20">
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-full px-md py-sm flex items-center gap-md transition-all" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-md">Help Center</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-full px-md py-sm flex items-center gap-md transition-all mt-xs" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-md">Cerrar Sesión</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 min-w-0 bg-surface overflow-hidden">
+<div class="p-margin-mobile md:p-margin-desktop max-w-7xl mx-auto space-y-xl">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-lg">
+<div class="space-y-sm">
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Libro de Calificaciones (Moodle Gradebook)</h1>
+<div class="flex items-center gap-md">
+<div class="relative">
+<select class="appearance-none bg-surface-container-low border border-outline-variant/30 rounded-lg px-md py-sm pr-10 font-body-sm text-on-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none cursor-pointer min-w-[280px]">
+<option>Ingeniería de Software II - Grupo 402</option>
+<option>Bases de Datos Avanzadas - Grupo 101</option>
+<option>Arquitectura de Microservicios - Grupo 202</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">expand_more</span>
+</div>
+<span class="text-on-surface-variant font-body-sm hidden md:inline">• Ciclo Escolar 2024-B</span>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="flex items-center gap-sm bg-surface-container-highest text-on-surface hover:bg-surface-variant transition-colors px-md py-sm rounded-lg font-button border border-outline-variant/20">
+<span class="material-symbols-outlined text-[20px]">download</span>
+                            Exportar a Excel / CSV
+                        </button>
+</div>
+</div>
+<!-- Summary Cards (Bento style) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant/15 p-lg rounded-xl flex items-center gap-lg hover:shadow-sm transition-shadow">
+<div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[28px]">assessment</span>
+</div>
+<div>
+<p class="font-label-md text-on-surface-variant uppercase tracking-wider">Promedio Grupal</p>
+<div class="flex items-baseline gap-xs">
+<p class="font-headline-md text-headline-md text-on-surface">8.4</p>
+<p class="font-body-sm text-on-surface-variant">/ 10</p>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant/15 p-lg rounded-xl flex items-center gap-lg hover:shadow-sm transition-shadow">
+<div class="w-12 h-12 rounded-full bg-tertiary/10 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[28px]">pending_actions</span>
+</div>
+<div>
+<p class="font-label-md text-on-surface-variant uppercase tracking-wider">Actividades Pendientes</p>
+<p class="font-headline-md text-headline-md text-on-surface">12</p>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest border border-outline-variant/15 p-lg rounded-xl flex items-center gap-lg hover:shadow-sm transition-shadow">
+<div class="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[28px]">trending_up</span>
+</div>
+<div>
+<p class="font-label-md text-on-surface-variant uppercase tracking-wider">Tasa de Aprobación</p>
+<div class="flex items-center gap-sm">
+<p class="font-headline-md text-headline-md text-on-surface">92%</p>
+<span class="bg-secondary-container text-on-secondary-container text-[10px] px-sm py-xs rounded-full font-bold">+4% vs parcial anterior</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Table Container -->
+<div class="bg-surface-container-lowest border border-outline-variant/15 rounded-xl overflow-hidden shadow-sm">
+<div class="overflow-x-auto scrollbar-hide">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant/20">
+<th class="px-lg py-md font-label-md text-on-surface-variant uppercase tracking-wider">Nombre del Estudiante</th>
+<th class="px-md py-md font-label-md text-on-surface-variant uppercase tracking-wider">Matrícula</th>
+<th class="px-md py-md font-label-md text-on-surface-variant uppercase tracking-wider text-center">Quiz 1 (15%)</th>
+<th class="px-md py-md font-label-md text-on-surface-variant uppercase tracking-wider text-center">Tarea 1 (25%)</th>
+<th class="px-md py-md font-label-md text-on-surface-variant uppercase tracking-wider text-center">Examen (30%)</th>
+<th class="px-md py-md font-label-md text-on-surface-variant uppercase tracking-wider text-center">Calificación Final</th>
+<th class="px-lg py-md font-label-md text-on-surface-variant uppercase tracking-wider text-right">Acciones</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="px-lg py-md">
+<div class="flex items-center gap-md">
+<div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary text-xs">AA</div>
+<div>
+<p class="font-body-md font-semibold text-on-surface">Alonso Arriaga</p>
+<p class="text-[12px] text-on-surface-variant">a.arriaga@uptex.edu.mx</p>
+</div>
+</div>
+</td>
+<td class="px-md py-md font-body-sm text-on-surface-variant">20210045</td>
+<td class="px-md py-md text-center font-body-md">9.0</td>
+<td class="px-md py-md text-center font-body-md">8.5</td>
+<td class="px-md py-md text-center font-body-md">9.2</td>
+<td class="px-md py-md text-center">
+<span class="bg-primary-container/10 text-[#0B8043] font-bold px-md py-xs rounded-full">8.9</span>
+</td>
+<td class="px-lg py-md text-right">
+<button class="text-on-surface-variant hover:text-primary p-xs transition-colors">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 (Failing) -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="px-lg py-md">
+<div class="flex items-center gap-md">
+<div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary text-xs">BF</div>
+<div>
+<p class="font-body-md font-semibold text-on-surface">Bruno Fernández</p>
+<p class="text-[12px] text-on-surface-variant">b.fernandez@uptex.edu.mx</p>
+</div>
+</div>
+</td>
+<td class="px-md py-md font-body-sm text-on-surface-variant">20210112</td>
+<td class="px-md py-md text-center font-body-md">4.5</td>
+<td class="px-md py-md text-center font-body-md">5.0</td>
+<td class="px-md py-md text-center font-body-md">6.0</td>
+<td class="px-md py-md text-center">
+<span class="bg-error/10 text-[#E53935] font-bold px-md py-xs rounded-full">5.2</span>
+</td>
+<td class="px-lg py-md text-right">
+<button class="text-on-surface-variant hover:text-primary p-xs transition-colors">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="px-lg py-md">
+<div class="flex items-center gap-md">
+<div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary text-xs">CR</div>
+<div>
+<p class="font-body-md font-semibold text-on-surface">Camila Rojas</p>
+<p class="text-[12px] text-on-surface-variant">c.rojas@uptex.edu.mx</p>
+</div>
+</div>
+</td>
+<td class="px-md py-md font-body-sm text-on-surface-variant">20210289</td>
+<td class="px-md py-md text-center font-body-md">10.0</td>
+<td class="px-md py-md text-center font-body-md">9.8</td>
+<td class="px-md py-md text-center font-body-md">9.5</td>
+<td class="px-md py-md text-center">
+<span class="bg-primary-container/10 text-[#0B8043] font-bold px-md py-xs rounded-full">9.8</span>
+</td>
+<td class="px-lg py-md text-right">
+<button class="text-on-surface-variant hover:text-primary p-xs transition-colors">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="px-lg py-md">
+<div class="flex items-center gap-md">
+<div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary text-xs">DL</div>
+<div>
+<p class="font-body-md font-semibold text-on-surface">Diego López</p>
+<p class="text-[12px] text-on-surface-variant">d.lopez@uptex.edu.mx</p>
+</div>
+</div>
+</td>
+<td class="px-md py-md font-body-sm text-on-surface-variant">20210334</td>
+<td class="px-md py-md text-center font-body-md">7.5</td>
+<td class="px-md py-md text-center font-body-md">8.0</td>
+<td class="px-md py-md text-center font-body-md">7.2</td>
+<td class="px-md py-md text-center">
+<span class="bg-primary-container/10 text-[#0B8043] font-bold px-md py-xs rounded-full">7.6</span>
+</td>
+<td class="px-lg py-md text-right">
+<button class="text-on-surface-variant hover:text-primary p-xs transition-colors">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="px-lg py-md">
+<div class="flex items-center gap-md">
+<div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary text-xs">EV</div>
+<div>
+<p class="font-body-md font-semibold text-on-surface">Elena Vargas</p>
+<p class="text-[12px] text-on-surface-variant">e.vargas@uptex.edu.mx</p>
+</div>
+</div>
+</td>
+<td class="px-md py-md font-body-sm text-on-surface-variant">20210567</td>
+<td class="px-md py-md text-center font-body-md">8.2</td>
+<td class="px-md py-md text-center font-body-md">8.2</td>
+<td class="px-md py-md text-center font-body-md">8.5</td>
+<td class="px-md py-md text-center">
+<span class="bg-primary-container/10 text-[#0B8043] font-bold px-md py-xs rounded-full">8.3</span>
+</td>
+<td class="px-lg py-md text-right">
+<button class="text-on-surface-variant hover:text-primary p-xs transition-colors">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="bg-surface-container-low px-lg py-md flex items-center justify-between border-t border-outline-variant/20">
+<p class="text-body-sm text-on-surface-variant">Mostrando 5 de 42 estudiantes registrados</p>
+<div class="flex items-center gap-sm">
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container transition-colors disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined text-[20px]">chevron_left</span>
+</button>
+<span class="font-label-md px-md">1 / 9</span>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Grading Legend -->
+<div class="flex flex-wrap gap-xl justify-end">
+<div class="flex items-center gap-sm">
+<div class="w-3 h-3 rounded-full bg-[#0B8043]"></div>
+<span class="text-body-sm text-on-surface-variant">Aprobatorio (≥ 6.0)</span>
+</div>
+<div class="flex items-center gap-sm">
+<div class="w-3 h-3 rounded-full bg-[#E53935]"></div>
+<span class="text-body-sm text-on-surface-variant">Reprobatorio (&lt; 6.0)</span>
+</div>
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]">info</span>
+<span class="text-body-sm text-on-surface-variant italic">Las ponderaciones se ajustan en Configuración del Curso</span>
+</div>
+</div>
+</div>
+<!-- Footer Shell Mapping -->
+<footer class="w-full py-xl px-lg flex flex-col md:flex-row justify-between items-center gap-lg border-t border-outline-variant/20 bg-surface-container-highest mt-xl">
+<div class="flex flex-col gap-xs items-center md:items-start">
+<p class="font-headline-sm text-headline-sm font-bold text-primary">UPTex Moodle</p>
+<p class="font-body-sm text-on-surface-variant">© 2024 UPTex Moodle. All rights reserved.</p>
+</div>
+<div class="flex gap-lg">
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-sm" href="#">Privacy</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-sm" href="#">Terms</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-sm" href="#">Accessibility</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-sm" href="#">Contact</a>
+</div>
+</footer>
+</main>
+</div>
+<script>
+        // Micro-interaction for table rows
+        document.querySelectorAll('tbody tr').forEach(row => {
+            row.addEventListener('click', () => {
+                row.classList.add('scale-[0.995]');
+                setTimeout(() => row.classList.remove('scale-[0.995]'), 100);
+            });
+        });
+
+        // Simple reactive search simulation (visual only)
+        const selector = document.querySelector('select');
+        selector.addEventListener('change', (e) => {
+            const table = document.querySelector('table');
+            table.style.opacity = '0.5';
+            setTimeout(() => {
+                table.style.opacity = '1';
+            }, 300);
+        });
+    </script>
+</body></html>

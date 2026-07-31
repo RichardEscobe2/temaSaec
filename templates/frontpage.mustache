@@ -1,0 +1,203 @@
+{{!
+    @template theme_saec/frontpage
+
+    UPTex/SAEC landing page: navbar, full-width hero (Unsplash media +
+    dual CTA), 3 value-proposition cards, a 100% dynamic course grid, an
+    institutional accreditation banner, and the global footer. Every
+    mandatory Moodle core hook (standard_top_of_body_html,
+    standard_after_main_region_html, main_content, page_heading_button) is
+    preserved.
+
+    output.main_content is produced by theme_saec_core_course_renderer
+    (theme/saec/renderers.php), which overrides
+    core_course_renderer::frontpage_available_courses()/frontpage_my_courses()
+    to render theme_saec/core_course/frontpage_courses_grid instead of
+    Moodle's legacy html_writer-built .coursebox markup — no static/demo
+    course cards remain anywhere in this file. Moodle's own duplicate
+    "Available courses" <h2> (still emitted by the un-overridden
+    frontpage_part() wrapper) is suppressed via CSS
+    (#frontpage-available-course-list > h2:first-child, custom.scss).
+
+    All visual classes below (.uptex-hero, .uptex-hero-cta, .uptex-feature-card,
+    .uptex-course-showcase-card, .uptex-accredit-section, .uptex-accredit-card)
+    are defined in scss/custom.scss section 5 — no inline <style> needed.
+
+    Example context (json):
+    {
+        "sitename": "UPTex Moodle",
+        "bodyattributes": "",
+        "output": {
+            "standard_top_of_body_html": "",
+            "standard_after_main_region_html": "",
+            "page_heading_button": "",
+            "main_content": ""
+        },
+        "logourl": "https://example.org/theme/saec/pix/logo1.png",
+        "logofooterurl": "https://example.org/theme/saec/pix/logo2.jpg",
+        "heroimage": "https://example.org/theme/saec/pix/img1.png",
+        "loginurl": "https://example.org/login/index.php",
+        "currentyear": "2026"
+    }
+}}
+{{> theme_boost/head }}
+
+<body {{{ bodyattributes }}}>
+{{> core/local/toast/wrapper}}
+<div id="page-wrapper" class="d-print-block">
+
+    {{{ output.standard_top_of_body_html }}}
+
+    {{> theme_saec/navbar }}
+
+    <div id="page" data-region="mainpage" class="drag-container">
+        <div id="topofscroll" class="main-inner">
+
+            {{! Preserva el hook de acciones de página (breadcrumbs, botón "Activar edición") sin duplicar full_header }}
+            <div class="saec-page-actions container-fluid d-print-none">
+                {{{ output.page_heading_button }}}
+            </div>
+
+            <div id="page-content" class="pb-3 d-print-block">
+                <div id="region-main-box">
+
+                    {{! ===== HERO ===== }}
+                    <section class="uptex-hero">
+                        <div class="container">
+                            <div class="row align-items-center">
+                                <div class="col-lg-6">
+                                    <h1 class="text-white font-weight-bold mb-3">{{#str}} herotitle, theme_saec {{/str}}</h1>
+                                    <p class="text-white-50 mb-4">{{#str}} footertagline, theme_saec {{/str}}</p>
+                                    <a href="#uptex-cursos" class="uptex-hero-cta uptex-hero-cta--primary mr-3 mb-2">
+                                        {{#str}} herobtnexplore, theme_saec {{/str}}
+                                        <i class="icon fa fa-arrow-right" aria-hidden="true"></i>
+                                    </a>
+                                    <a href="{{{ loginurl }}}" class="uptex-hero-cta uptex-hero-cta--outline mb-2">{{#str}} herobtnvalidate, theme_saec {{/str}}</a>
+                                </div>
+                                <div class="col-lg-6 d-none d-lg-block">
+                                    <div class="uptex-hero__media">
+                                        <img src="https://images.unsplash.com/photo-1573164713988-8665fc963095?auto=format&amp;fit=crop&amp;w=800&amp;q=80" alt="">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {{! ===== FEATURE CARDS ===== }}
+                    <section class="container my-5">
+                        <div class="row">
+                            <div class="col-md-4 mb-4">
+                                <div class="uptex-feature-card">
+                                    <div class="uptex-feature-card__icon">
+                                        <i class="icon fa fa-shield-alt" aria-hidden="true"></i>
+                                    </div>
+                                    <h3 class="uptex-feature-card__title">{{#str}} feature1title, theme_saec {{/str}}</h3>
+                                    <p class="uptex-feature-card__desc">{{#str}} feature1desc, theme_saec {{/str}}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-4">
+                                <div class="uptex-feature-card">
+                                    <div class="uptex-feature-card__icon">
+                                        <i class="icon fa fa-terminal" aria-hidden="true"></i>
+                                    </div>
+                                    <h3 class="uptex-feature-card__title">{{#str}} feature2title, theme_saec {{/str}}</h3>
+                                    <p class="uptex-feature-card__desc">{{#str}} feature2desc, theme_saec {{/str}}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-4">
+                                <div class="uptex-feature-card">
+                                    <div class="uptex-feature-card__icon">
+                                        <i class="icon fa fa-users" aria-hidden="true"></i>
+                                    </div>
+                                    <h3 class="uptex-feature-card__title">{{#str}} feature3title, theme_saec {{/str}}</h3>
+                                    <p class="uptex-feature-card__desc">{{#str}} feature3desc, theme_saec {{/str}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {{! ===== FEATURED COURSES — 100% dynamic, no static cards =====
+                        output.main_content is theme_saec_core_course_renderer's
+                        rendered theme_saec/core_course/frontpage_courses_grid —
+                        the real database course list, no example figures or cards. }}
+                    <section id="uptex-cursos" class="container my-5">
+                        <div class="row align-items-end mb-4">
+                            <div class="col-md-8">
+                                <p class="text-primary font-weight-bold text-uppercase small mb-1">{{#str}} academiceyebrow, theme_saec {{/str}}</p>
+                                <h2 class="font-weight-bold mb-2">{{#str}} featuredcoursestitle, theme_saec {{/str}}</h2>
+                                <p class="text-muted mb-0">{{#str}} featuredcoursessubtitle, theme_saec {{/str}}</p>
+                            </div>
+                            <div class="col-md-4 text-md-right mt-3 mt-md-0">
+                                <a href="{{{ baseUrl }}}/course/index.php" class="font-weight-bold text-primary">
+                                    {{#str}} viewfullcatalogue, theme_saec {{/str}}
+                                    <i class="icon fa fa-arrow-right ml-1" aria-hidden="true"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div id="region-main">
+                            {{{ output.main_content }}}
+                        </div>
+                    </section>
+
+                    {{! ===== INSTITUTIONAL ACCREDITATION BANNER ===== }}
+                    <section class="uptex-accredit-section">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-3 col-6 mb-4">
+                                <div class="uptex-accredit-card">
+                                    <div class="uptex-accredit-card__icon">
+                                        <i class="icon fa fa-certificate" aria-hidden="true"></i>
+                                    </div>
+                                    <p class="uptex-accredit-card__title">{{#str}} accredit1title, theme_saec {{/str}}</p>
+                                    <p class="uptex-accredit-card__desc">{{#str}} accredit1desc, theme_saec {{/str}}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6 mb-4">
+                                <div class="uptex-accredit-card">
+                                    <div class="uptex-accredit-card__icon">
+                                        <i class="icon fa fa-bullseye" aria-hidden="true"></i>
+                                    </div>
+                                    <p class="uptex-accredit-card__title">{{#str}} accredit2title, theme_saec {{/str}}</p>
+                                    <p class="uptex-accredit-card__desc">{{#str}} accredit2desc, theme_saec {{/str}}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6 mb-4">
+                                <div class="uptex-accredit-card">
+                                    <div class="uptex-accredit-card__icon">
+                                        <i class="icon fa fa-graduation-cap" aria-hidden="true"></i>
+                                    </div>
+                                    <p class="uptex-accredit-card__title">{{#str}} accredit3title, theme_saec {{/str}}</p>
+                                    <p class="uptex-accredit-card__desc">{{#str}} accredit3desc, theme_saec {{/str}}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6 mb-4">
+                                <div class="uptex-accredit-card">
+                                    <div class="uptex-accredit-card__icon">
+                                        <i class="icon fa fa-sitemap" aria-hidden="true"></i>
+                                    </div>
+                                    <p class="uptex-accredit-card__title">{{#str}} accredit4title, theme_saec {{/str}}</p>
+                                    <p class="uptex-accredit-card__desc">{{#str}} accredit4desc, theme_saec {{/str}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </section>
+
+                </div>
+            </div>
+        </div>
+
+        {{> theme_saec/footer }}
+    </div>
+
+    {{{ output.standard_after_main_region_html }}}
+</div>
+
+</body>
+</html>
+{{#js}}
+M.util.js_pending('theme_boost/loader');
+require(['theme_boost/loader'], function(Loader) {
+    M.util.js_complete('theme_boost/loader');
+});
+{{/js}}

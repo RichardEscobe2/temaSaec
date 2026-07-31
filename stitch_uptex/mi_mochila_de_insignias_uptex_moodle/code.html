@@ -1,0 +1,436 @@
+<!DOCTYPE html><html class="light" lang="es"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Mi Mochila de Insignias - UPTex Moodle</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;800&amp;family=Inter:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "tertiary-fixed-dim": "#ffb4ac",
+            "tertiary-fixed": "#ffdad6",
+            "surface-variant": "#dfe3e8",
+            "inverse-on-surface": "#eef1f7",
+            "error": "#ba1a1a",
+            "surface-container-lowest": "#ffffff",
+            "on-tertiary-container": "#fff1ef",
+            "tertiary-container": "#d42c2b",
+            "primary-fixed": "#93f8ae",
+            "on-secondary": "#ffffff",
+            "background": "#f7f9ff",
+            "error-container": "#ffdad6",
+            "on-tertiary-fixed": "#410002",
+            "primary": "#006532",
+            "surface-container-high": "#e5e8ee",
+            "surface-bright": "#f7f9ff",
+            "primary-fixed-dim": "#77db93",
+            "on-primary": "#ffffff",
+            "on-primary-fixed-variant": "#005228",
+            "on-background": "#181c20",
+            "surface-dim": "#d7dae0",
+            "on-tertiary-fixed-variant": "#93000d",
+            "secondary-fixed": "#b8f47a",
+            "on-primary-fixed": "#00210c",
+            "secondary-container": "#b8f47a",
+            "surface-tint": "#006d37",
+            "on-secondary-fixed": "#0e2000",
+            "tertiary": "#b00a16",
+            "surface": "#f7f9ff",
+            "secondary": "#3c6a00",
+            "inverse-surface": "#2d3135",
+            "primary-container": "#0b8043",
+            "surface-container": "#ebeef4",
+            "on-error-container": "#93000a",
+            "inverse-primary": "#77db93",
+            "surface-container-highest": "#dfe3e8",
+            "on-secondary-fixed-variant": "#2c5000",
+            "on-secondary-container": "#407100",
+            "on-surface": "#181c20",
+            "on-tertiary": "#ffffff",
+            "surface-container-low": "#f1f4fa",
+            "outline-variant": "#becabd",
+            "on-error": "#ffffff",
+            "on-primary-container": "#d1ffd8",
+            "on-surface-variant": "#3f4940",
+            "outline": "#6f7a6f",
+            "secondary-fixed-dim": "#9dd761"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "gutter": "24px",
+            "lg": "24px",
+            "md": "16px",
+            "margin-mobile": "16px",
+            "sm": "8px",
+            "xs": "4px",
+            "xl": "32px",
+            "base": "4px",
+            "xxl": "48px",
+            "margin-desktop": "48px"
+          },
+          "fontFamily": {
+            "display": ["Hanken Grotesk"],
+            "body-lg": ["Inter"],
+            "body-md": ["Inter"],
+            "body-sm": ["Inter"],
+            "label-md": ["Inter"],
+            "headline-md": ["Hanken Grotesk"],
+            "headline-lg": ["Hanken Grotesk"]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .badge-card:hover .badge-overlay {
+      opacity: 1;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #becabd;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopNavBar Implementation -->
+<header class="sticky top-0 z-50 flex justify-between items-center px-lg py-sm w-full bg-surface-container-lowest dark:bg-inverse-surface border-b border-outline-variant/20 dark:border-outline/20">
+<div class="flex items-center gap-md">
+<span class="font-display text-headline-md font-bold text-primary dark:text-primary-fixed">UPTex Moodle</span>
+</div>
+
+<div class="flex items-center gap-md">
+
+<div class="h-8 w-8 rounded-full overflow-hidden border border-outline-variant/30">
+<img class="w-full h-full object-cover" data-alt="Profile headshot of a student wearing a casual university polo shirt, shot against a clean neutral gray studio background, looking professional and friendly, high quality corporate photography style with soft shadows." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBx0KSRdhc_JJQuotA9yMxIRRH-4hoq70A0VHD_NSv7P2cbR6Rw0qGn-cYXQkUhvqji0uQIHybaSH2s14SDy8pXQbQwTUsCRu_DceSKh_WaO2sWfGCeq51dYlx8nEArmdxlmStLDn-hF6Om7QS64V0Y10njQn5Ec-RXWL9Qz8ocrURlFTpYbVxUjcT8SXLutmkYpu2A6jY5wFiReSIX4laFvH9FeIJTjRwhRlb9AaV9-3-8Ps_bKRd9Pg">
+</div>
+</div>
+</header>
+<div class="flex min-h-screen">
+<!-- SideNavBar Implementation -->
+<aside class="hidden md:flex flex-col h-screen fixed left-0 top-0 border-r border-outline-variant/20 w-64 z-40 bg-surface-container dark:bg-surface-dim pt-20">
+<div class="px-md mb-xl">
+<div class="flex items-center gap-md px-md py-sm">
+<div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-white">
+<span class="material-symbols-outlined">school</span>
+</div>
+<div>
+<h3 class="font-headline-md text-body-md font-bold text-primary">UPTex Dashboard</h3>
+<p class="text-label-md text-on-surface-variant">Institutional Portal</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant dark:hover:bg-inverse-surface rounded-full mx-md my-xs px-md py-sm flex items-center gap-md transition-all font-label-md" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+          Dashboard
+        </a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant dark:hover:bg-inverse-surface rounded-full mx-md my-xs px-md py-sm flex items-center gap-md transition-all font-label-md" href="#">
+<span class="material-symbols-outlined">school</span>
+          Courses
+        </a>
+<a class="bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary rounded-full mx-md my-xs px-md py-sm flex items-center gap-md font-label-md active" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">verified</span>
+          Credentials
+        </a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant dark:hover:bg-inverse-surface rounded-full mx-md my-xs px-md py-sm flex items-center gap-md transition-all font-label-md" href="#">
+<span class="material-symbols-outlined">analytics</span>
+          Analytics
+        </a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant dark:hover:bg-inverse-surface rounded-full mx-md my-xs px-md py-sm flex items-center gap-md transition-all font-label-md" href="#">
+<span class="material-symbols-outlined">settings</span>
+          Settings
+        </a>
+</nav>
+<div class="border-t border-outline-variant/20 pt-md pb-xl">
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-full mx-md my-xs px-md py-sm flex items-center gap-md transition-all font-label-md" href="#">
+<span class="material-symbols-outlined">help</span>
+          Help Center
+        </a>
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-full mx-md my-xs px-md py-sm flex items-center gap-md transition-all font-label-md" href="#">
+<span class="material-symbols-outlined">logout</span>
+          Logout
+        </a>
+</div>
+</aside>
+<!-- Main Content Workspace -->
+<main class="flex-1 md:ml-64 p-lg bg-background">
+<div class="max-w-6xl mx-auto space-y-xl">
+<!-- Header Section -->
+<header class="flex flex-col md:flex-row justify-between items-end gap-md">
+<div>
+<h1 class="font-display text-headline-lg font-bold text-on-background">Mi Mochila de Insignias</h1>
+<p class="text-on-surface-variant font-body-md mt-xs">Gestiona tus logros académicos certificados por UPTex y Credly.</p>
+</div>
+<div class="flex gap-sm">
+<button class="bg-surface-container-high hover:bg-surface-variant text-on-surface px-md py-sm rounded-xl font-button transition-colors border border-outline-variant/10 flex items-center gap-sm">
+<span class="material-symbols-outlined text-[20px]">filter_list</span>
+              Filtrar
+            </button>
+<button class="bg-primary text-on-primary px-lg py-sm rounded-xl font-button transition-transform active:scale-95 flex items-center gap-sm shadow-md">
+<span class="material-symbols-outlined text-[20px]">sync</span>
+              Actualizar Mochila
+            </button>
+</div>
+</header>
+<!-- Credly Integration Banner -->
+<section class="bg-surface-container-low rounded-xxl p-lg border border-outline-variant/15 flex flex-col md:flex-row items-center gap-lg relative overflow-hidden group">
+<div class="absolute -right-12 -top-12 w-48 h-48 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors"></div>
+<div class="w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-sm shrink-0 border border-outline-variant/20">
+<span class="material-symbols-outlined text-primary text-[40px]" style="font-variation-settings: 'FILL' 1;">cloud_done</span>
+</div>
+<div class="flex-1">
+<p class="text-label-md text-primary font-bold uppercase tracking-wider">Integración Credly Activa</p>
+<h2 class="text-headline-md font-bold text-on-background mt-xs">Cuenta Credly vinculada: <span class="text-primary-container">alex.student@uptex.edu.mx</span></h2>
+<p class="text-body-sm text-on-surface-variant mt-xs">Tus insignias digitales están sincronizadas automáticamente con tu perfil profesional global.</p>
+</div>
+<button class="bg-secondary-container hover:bg-secondary text-on-secondary-container hover:text-on-secondary px-xl py-md rounded-full font-button transition-all flex items-center gap-sm shadow-sm">
+<span class="material-symbols-outlined">sync_alt</span>
+            Sincronizar Mochila con Credly
+          </button>
+</section>
+<!-- Filters Tabs -->
+<div class="flex border-b border-outline-variant/30 gap-lg">
+<button class="pb-md border-b-2 border-primary text-primary font-bold font-label-md">Todas (12)</button>
+<button class="pb-md border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors font-label-md">Acreditadas en Credly (8)</button>
+<button class="pb-md border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors font-label-md">En Proceso (4)</button>
+</div>
+<!-- Badge Gallery Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<!-- Badge Card 1 -->
+<div class="badge-card bg-white rounded-xl border border-outline-variant/15 p-md flex flex-col items-center text-center transition-all hover:shadow-lg relative group">
+<div class="w-32 h-32 mb-md relative">
+<img class="w-full h-full object-contain" data-alt="A highly detailed 3D digital badge icon for Advanced Python Programming, featuring a metallic gold snake emblem on a deep forest green circular shield with crystalline textures and light refracting through glass-like edges, professional certification aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPLQ2WDv4zagXprEepyO5-UsO2RuuYfCmlNcFymj5jEfygyKfiwbv0QjNKjANll6_QDsPhri5TOWq-HfoXTzXBzClaKk2gvlyRQme3CVz3kLUPRBUPXHqrt9lnobpzg4j4535EepsvcQlskaOcAkOb8hR3QsqP6gS0lykv2q6j4bgcnCbdYqJomf54F3eqTzhMyZ_tdZD1W3hTZWF9Ysi-hJzXL8jrVI7QTQTyR2KkBi6Qw5KytBNWig">
+<div class="absolute bottom-0 right-0 bg-secondary-container text-on-secondary-container p-xs rounded-full shadow-sm border border-white">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</div>
+<h3 class="font-bold text-on-surface text-body-md line-clamp-1">Advanced Python Programming</h3>
+<p class="text-label-md text-on-surface-variant mt-xs">Depto. Ciencias de Datos</p>
+<div class="flex items-center gap-xs mt-sm text-secondary font-semibold text-label-md">
+<span class="material-symbols-outlined text-[14px]">link</span>
+              Blockchain Verified
+            </div>
+<p class="text-body-sm text-on-surface-variant mt-sm">Emitido: Oct 24, 2023</p>
+<div class="badge-overlay absolute inset-0 bg-white/95 opacity-0 flex flex-col justify-center items-center gap-sm p-md transition-opacity rounded-xl backdrop-blur-sm">
+<button class="w-full py-sm bg-primary text-on-primary rounded-lg font-button flex items-center justify-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">share</span> Compartir en LinkedIn
+              </button>
+<button class="w-full py-sm border border-primary text-primary rounded-lg font-button flex items-center justify-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">visibility</span> Ver Metadatos
+              </button>
+<button class="w-full py-sm text-on-surface-variant hover:text-primary rounded-lg font-button flex items-center justify-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">upload_file</span> Exportar a Credly
+              </button>
+</div>
+</div>
+<!-- Badge Card 2 -->
+<div class="badge-card bg-white rounded-xl border border-outline-variant/15 p-md flex flex-col items-center text-center transition-all hover:shadow-lg relative group">
+<div class="w-32 h-32 mb-md relative">
+<img class="w-full h-full object-contain" data-alt="A professional certification badge for UI/UX Design Fundamentals, featuring a minimalist silver-colored pencil and compass icon on a bright teal geometric hexagonal frame with subtle gradient textures and soft global illumination." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVNx-8wGhs88ZI895bQRa67FDiU3CinRfnMONTXaUbT6WZHZvJu_63WJHnQLfy86Sckebb4PQJxbnkNu3dLBYRoyP_iOvTJldUY60D_HSWNJDCe2aBIPK--___4ry2YBk8Mhg3m_nGXULS0iZX2UJ4VntqTgpmnzR5KV4WG85pSVNSeYmtUww--01VH5tfFwBepT68c4-xweg7C5SMcx9-9dYTKOJ9wsH-2JiKDoNSxE9gE0RYEmEkeQ">
+<div class="absolute bottom-0 right-0 bg-secondary-container text-on-secondary-container p-xs rounded-full shadow-sm border border-white">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</div>
+<h3 class="font-bold text-on-surface text-body-md line-clamp-1">UI/UX Design Essentials</h3>
+<p class="text-label-md text-on-surface-variant mt-xs">Depto. Diseño Digital</p>
+<div class="flex items-center gap-xs mt-sm text-secondary font-semibold text-label-md">
+<span class="material-symbols-outlined text-[14px]">link</span>
+              Credly Verified
+            </div>
+<p class="text-body-sm text-on-surface-variant mt-sm">Emitido: Nov 12, 2023</p>
+<div class="badge-overlay absolute inset-0 bg-white/95 opacity-0 flex flex-col justify-center items-center gap-sm p-md transition-opacity rounded-xl backdrop-blur-sm">
+<button class="w-full py-sm bg-primary text-on-primary rounded-lg font-button flex items-center justify-center gap-xs"><span class="material-symbols-outlined text-[18px]">share</span> LinkedIn</button>
+<button class="w-full py-sm border border-primary text-primary rounded-lg font-button flex items-center justify-center gap-xs"><span class="material-symbols-outlined text-[18px]">visibility</span> Metadatos</button>
+</div>
+</div>
+<!-- Badge Card 3 (In Process) -->
+<div class="badge-card bg-white rounded-xl border border-outline-variant/15 p-md flex flex-col items-center text-center transition-all hover:shadow-lg relative group opacity-80">
+<div class="w-32 h-32 mb-md relative grayscale">
+<img class="w-full h-full object-contain" data-alt="A futuristic certification badge for Cybersecurity Ethics, featuring a glowing blue shield with a digital padlock icon, surrounded by an intricate circuit board pattern in matte black and neon blue colors, professional IT certificate style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAprMhWKV4d1WL-JUaE-Ge-P-goGesG4FVNmTx9c4vPBinqcyzJnNe884wLbdqqviFe4oZmp5y6UIkCRivc3aTFL7ODs5sMfVhn6AkOXNkLdl0FhcGNA22FEIggH9ZdoC_qteLiVrKHecWlk0D4xocqz2ckUUlPp9VOKOFyTg-Fu9qy_UJZxhPGFq-iw5CufWYniDvv4u8CjVy50aNsTTAInwXBl_-igSD7fO-JR5OFeXBBNYhlhvyEXw">
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="bg-surface-container px-sm py-xs rounded-full border border-outline-variant shadow-sm text-label-md font-bold text-on-surface flex items-center gap-xs">
+<span class="material-symbols-outlined text-[14px] animate-spin">refresh</span>
+                    Procesando
+                 </div>
+</div>
+</div>
+<h3 class="font-bold text-on-surface text-body-md line-clamp-1">Cybersecurity Ethics</h3>
+<p class="text-label-md text-on-surface-variant mt-xs">Depto. Ingeniería</p>
+<div class="flex items-center gap-xs mt-sm text-on-tertiary-fixed-variant font-semibold text-label-md">
+<span class="material-symbols-outlined text-[14px]">history</span>
+              Verificación pendiente
+            </div>
+<p class="text-body-sm text-on-surface-variant mt-sm">Esperado: Ene 2024</p>
+<div class="badge-overlay absolute inset-0 bg-white/95 opacity-0 flex flex-col justify-center items-center gap-sm p-md transition-opacity rounded-xl backdrop-blur-sm">
+<button class="w-full py-sm border border-outline text-on-surface-variant rounded-lg font-button flex items-center justify-center gap-xs" disabled="">
+<span class="material-symbols-outlined text-[18px]">lock</span> Bloqueado
+              </button>
+</div>
+</div>
+<!-- Badge Card 4 -->
+<div class="badge-card bg-white rounded-xl border border-outline-variant/15 p-md flex flex-col items-center text-center transition-all hover:shadow-lg relative group">
+<div class="w-32 h-32 mb-md relative">
+<img class="w-full h-full object-contain" data-alt="A clean academic badge for Academic Writing Excellence, featuring a stylized quill pen resting on an open book, rendered in deep navy blue and ivory white with gold leaf accents on the edges, elegant and traditional educational design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAd3nxomJfs7c-IJSO6UNwRJrzwtbuS4hwMufrUT2eUHKM0kjl0Sk-PNp_FGSWEfp05z9Id8q-SAJNvpNOioYj867oGEXqYYW9ndwsD6S6-b0gdm5lt0t6scrZbSLi-Bg7-iozpdHtR8OPaIZUifqklz_9IyRcN-HnLFaIAzNsFtKeLj87XSoMKVOiE7KTVmVHL1bxkSHtQTjoRHRqZLHrCMdZPTG2B2Ri2MJ2N3NsvtxVF45oFHdHxGQ">
+<div class="absolute bottom-0 right-0 bg-secondary-container text-on-secondary-container p-xs rounded-full shadow-sm border border-white">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</div>
+<h3 class="font-bold text-on-surface text-body-md line-clamp-1">Academic Writing</h3>
+<p class="text-label-md text-on-surface-variant mt-xs">Depto. Humanidades</p>
+<div class="flex items-center gap-xs mt-sm text-secondary font-semibold text-label-md">
+<span class="material-symbols-outlined text-[14px]">link</span>
+              Blockchain Verified
+            </div>
+<p class="text-body-sm text-on-surface-variant mt-sm">Emitido: Sep 10, 2023</p>
+<div class="badge-overlay absolute inset-0 bg-white/95 opacity-0 flex flex-col justify-center items-center gap-sm p-md transition-opacity rounded-xl backdrop-blur-sm">
+<button class="w-full py-sm bg-primary text-on-primary rounded-lg font-button flex items-center justify-center gap-xs"><span class="material-symbols-outlined text-[18px]">share</span> LinkedIn</button>
+<button class="w-full py-sm border border-primary text-primary rounded-lg font-button flex items-center justify-center gap-xs"><span class="material-symbols-outlined text-[18px]">visibility</span> Metadatos</button>
+</div>
+</div>
+<!-- Badge Card 5 -->
+<div class="badge-card bg-white rounded-xl border border-outline-variant/15 p-md flex flex-col items-center text-center transition-all hover:shadow-lg relative group">
+<div class="w-32 h-32 mb-md relative">
+<img class="w-full h-full object-contain" data-alt="A modern tech badge for Cloud Computing Associate, featuring stylized clouds integrated with a circuit network node in electric purple and dark charcoal gray, with a semi-transparent glossy finish and high-tech corporate identity style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXMefbu7PnSZNsGVuHIEnS9Ca1RAH-TePS4vZk6AZ-YW2043-0090ajGlC5rOgoLK4WO6Nfc7FcUqdO7zZ1IZDX2zolBx3M8Elz1QVRXGXdMoBXL-wdCgjUK5WIjoIq2ZijqDVwI5IHVTgto1dnDXnKzlQOYM_-pLMyoYGccIFcCp4kQvQ7XY-ltAkhcpR0rXs2clcJUc1DuzXlbH2aboTX8v9Qgtni6ux275mqm_ppl3nwjcIfcApNA">
+<div class="absolute bottom-0 right-0 bg-secondary-container text-on-secondary-container p-xs rounded-full shadow-sm border border-white">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</div>
+<h3 class="font-bold text-on-surface text-body-md line-clamp-1">Cloud Associate</h3>
+<p class="text-label-md text-on-surface-variant mt-xs">Amazon Web Services</p>
+<div class="flex items-center gap-xs mt-sm text-secondary font-semibold text-label-md">
+<span class="material-symbols-outlined text-[14px]">link</span>
+              Credly Verified
+            </div>
+<p class="text-body-sm text-on-surface-variant mt-sm">Emitido: Ago 05, 2023</p>
+<div class="badge-overlay absolute inset-0 bg-white/95 opacity-0 flex flex-col justify-center items-center gap-sm p-md transition-opacity rounded-xl backdrop-blur-sm">
+<button class="w-full py-sm bg-primary text-on-primary rounded-lg font-button flex items-center justify-center gap-xs"><span class="material-symbols-outlined text-[18px]">share</span> LinkedIn</button>
+<button class="w-full py-sm border border-primary text-primary rounded-lg font-button flex items-center justify-center gap-xs"><span class="material-symbols-outlined text-[18px]">visibility</span> Metadatos</button>
+</div>
+</div>
+<!-- Badge Card 6 -->
+<div class="badge-card bg-white rounded-xl border border-outline-variant/15 p-md flex flex-col items-center text-center transition-all hover:shadow-lg relative group">
+<div class="w-32 h-32 mb-md relative">
+<img class="w-full h-full object-contain" data-alt="A professional badge for Digital Marketing Specialist, featuring a megaphone and bar chart icon in bright orange and deep navy, enclosed in a multi-layered circular frame with subtle textured dots and modern flat design elements." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6rjhLmKPcPySQbX1btJtLtr9NgHZJsNOCQlqW1nCHWGfhp3VLgmDrTbnxdJCvF5Zw5c3zI3dEk-96e33aXeQFQVOYl5sj8fsCbTKNT-cwJHM9pPqEaGCXSy_Vt2YX67oN5KFQae5lo-X1XoNhns0a7w8LjBUPyyt04E6j_yrLQJQpoOXIN-KrVeLik2VZiPaIr5VXflCLBYzu_tWuNS3Yag94GosLissjrbRTND6dONR8bfPSgWX9yw">
+<div class="absolute bottom-0 right-0 bg-secondary-container text-on-secondary-container p-xs rounded-full shadow-sm border border-white">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</div>
+<h3 class="font-bold text-on-surface text-body-md line-clamp-1">Digital Marketing</h3>
+<p class="text-label-md text-on-surface-variant mt-xs">Depto. Mercadotecnia</p>
+<div class="flex items-center gap-xs mt-sm text-secondary font-semibold text-label-md">
+<span class="material-symbols-outlined text-[14px]">link</span>
+              Blockchain Verified
+            </div>
+<p class="text-body-sm text-on-surface-variant mt-sm">Emitido: Jul 20, 2023</p>
+<div class="badge-overlay absolute inset-0 bg-white/95 opacity-0 flex flex-col justify-center items-center gap-sm p-md transition-opacity rounded-xl backdrop-blur-sm">
+<button class="w-full py-sm bg-primary text-on-primary rounded-lg font-button flex items-center justify-center gap-xs"><span class="material-symbols-outlined text-[18px]">share</span> LinkedIn</button>
+<button class="w-full py-sm border border-primary text-primary rounded-lg font-button flex items-center justify-center gap-xs"><span class="material-symbols-outlined text-[18px]">visibility</span> Metadatos</button>
+</div>
+</div>
+<!-- Badge Card 7 -->
+<div class="badge-card bg-white rounded-xl border border-outline-variant/15 p-md flex flex-col items-center text-center transition-all hover:shadow-lg relative group">
+<div class="w-32 h-32 mb-md relative">
+<img class="w-full h-full object-contain" data-alt="A minimalist tech badge for React Development, featuring the atomic icon in bright cyan on a dark slate circular background with glowing edges and professional software engineering certification styling." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqljFsowFr2Y_IF0pDXknWqLdDqjOiWYvhIcbA9phDn5tTZcgGXdgCZVBPfPWPYl304O3Uq4-yr0Yqm8cDRWeQpsTrnCqbLPe-UwlmqQ0rVODQxurEyPD2yJv4yQUhu_KMDsQbGY6p0TlilFf9h_gvrFp93gNok713GuyiN6cej-7JCmZDtR-hsGkENDLxqcYmoe2J0oTorVAQRLcgI1TEKJmx4aSYe0O1XUYEu8vkHCu3s1hy2Mw8Tw">
+<div class="absolute bottom-0 right-0 bg-secondary-container text-on-secondary-container p-xs rounded-full shadow-sm border border-white">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</div>
+<h3 class="font-bold text-on-surface text-body-md line-clamp-1">React Advanced Dev</h3>
+<p class="text-label-md text-on-surface-variant mt-xs">Depto. Software</p>
+<div class="flex items-center gap-xs mt-sm text-secondary font-semibold text-label-md">
+<span class="material-symbols-outlined text-[14px]">link</span>
+              Blockchain Verified
+            </div>
+<p class="text-body-sm text-on-surface-variant mt-sm">Emitido: Jun 30, 2023</p>
+<div class="badge-overlay absolute inset-0 bg-white/95 opacity-0 flex flex-col justify-center items-center gap-sm p-md transition-opacity rounded-xl backdrop-blur-sm">
+<button class="w-full py-sm bg-primary text-on-primary rounded-lg font-button flex items-center justify-center gap-xs"><span class="material-symbols-outlined text-[18px]">share</span> LinkedIn</button>
+<button class="w-full py-sm border border-primary text-primary rounded-lg font-button flex items-center justify-center gap-xs"><span class="material-symbols-outlined text-[18px]">visibility</span> Metadatos</button>
+</div>
+</div>
+<!-- Badge Card 8 -->
+<div class="badge-card bg-white rounded-xl border border-outline-variant/15 p-md flex flex-col items-center text-center transition-all hover:shadow-lg relative group">
+<div class="w-32 h-32 mb-md relative">
+<img class="w-full h-full object-contain" data-alt="A striking achievement badge for Leadership and Soft Skills, featuring a golden laurel wreath encircling a stylized torch icon, rendered with high-fidelity metallic textures and soft depth of field, premium institutional quality." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZeUIVIPbwHJZotWyw4jDnCDoNeZAddESeTxH8A-S1dPdwhLtxqxjcOy7zuyPiG8H1XQzM1PeL0OHkVrmk3udBmxXzCcoHUff6v4b2lKmQ97FLnEPbN6JoxlMWSp9C2ee77tgzqqJ1FHvU_o0CFOXfK57eSVQrFwLijAP_u95lky8rH5QEC83qAI25b76TJBYjllumIhinSLPsDxu9UR_XKSaXXn2j2-LEXAqqLazL7grqzTA0gG0KcA">
+<div class="absolute bottom-0 right-0 bg-secondary-container text-on-secondary-container p-xs rounded-full shadow-sm border border-white">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</div>
+<h3 class="font-bold text-on-surface text-body-md line-clamp-1">Liderazgo Efectivo</h3>
+<p class="text-label-md text-on-surface-variant mt-xs">Centro de Posgrado</p>
+<div class="flex items-center gap-xs mt-sm text-secondary font-semibold text-label-md">
+<span class="material-symbols-outlined text-[14px]">link</span>
+              Credly Verified
+            </div>
+<p class="text-body-sm text-on-surface-variant mt-sm">Emitido: May 15, 2023</p>
+<div class="badge-overlay absolute inset-0 bg-white/95 opacity-0 flex flex-col justify-center items-center gap-sm p-md transition-opacity rounded-xl backdrop-blur-sm">
+<button class="w-full py-sm bg-primary text-on-primary rounded-lg font-button flex items-center justify-center gap-xs"><span class="material-symbols-outlined text-[18px]">share</span> LinkedIn</button>
+<button class="w-full py-sm border border-primary text-primary rounded-lg font-button flex items-center justify-center gap-xs"><span class="material-symbols-outlined text-[18px]">visibility</span> Metadatos</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Footer Implementation -->
+<footer class="w-full py-xl px-lg flex flex-col md:flex-row justify-between items-center gap-lg border-t border-outline-variant/20 bg-surface-container-highest dark:bg-inverse-surface mt-xl">
+<div>
+<span class="font-headline-sm text-headline-sm font-bold text-primary dark:text-primary-fixed">UPTex Moodle</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xs">© 2024 UPTex Moodle. All rights reserved.</p>
+</div>
+<div class="flex gap-lg">
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors font-body-sm" href="#">Privacy</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors font-body-sm" href="#">Terms</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors font-body-sm" href="#">Accessibility</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors font-body-sm" href="#">Contact</a>
+</div>
+</footer>
+<!-- Micro-interactions Script -->
+<script>
+    // Ripple effect or simple click scale feedback
+    document.querySelectorAll('button').forEach(button => {
+      button.addEventListener('mousedown', () => {
+        button.style.transform = 'scale(0.97)';
+      });
+      button.addEventListener('mouseup', () => {
+        button.style.transform = '';
+      });
+      button.addEventListener('mouseleave', () => {
+        button.style.transform = '';
+      });
+    });
+
+    // Simple filter simulation
+    const filterButtons = document.querySelectorAll('.flex.border-b.border-outline-variant\\/30 button');
+    filterButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            filterButtons.forEach(b => {
+                b.classList.remove('border-primary', 'text-primary', 'font-bold');
+                b.classList.add('border-transparent', 'text-on-surface-variant');
+            });
+            btn.classList.add('border-primary', 'text-primary', 'font-bold');
+            btn.classList.remove('border-transparent', 'text-on-surface-variant');
+        });
+    });
+  </script>
+
+
+</body></html>

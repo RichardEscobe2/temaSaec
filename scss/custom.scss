@@ -1,0 +1,1301 @@
+// theme_saec — custom.scss
+// Fase 1: migración de la capa visual UPTex (stitch_uptex/) al tema Moodle.
+// Compatibilidad estricta con Bootstrap 4.6.2 / theme_boost.
+// No se sobrescriben variables nativas de Boost ($primary, $body-bg,
+// $link-color, etc.) — todos los overrides se aplican a nivel de selector
+// CSS para evitar colisiones con la compilación SCSS del núcleo.
+
+/* ===========================================================================
+   1. Variables y Paleta de Colores UPTex
+   =========================================================================== */
+$uptex-primary:        #0B8043; // Verde Institucional — navegación, botones primarios, encabezados.
+$uptex-primary-hover:  darken($uptex-primary, 8%);
+$uptex-primary-light:  rgba($uptex-primary, 0.08); // Fondos tenues de iconos / hover.
+$uptex-primary-soft:   rgba($uptex-primary, 0.12);
+$uptex-hover-tint:     #E8F5E9; // Tinte de hover en ítems de navegación (sidebar) — no es un rgba() de $uptex-primary, tono propio.
+
+$uptex-accent-green:       #7CB342; // Verde Acento — progreso, éxito, refuerzo positivo.
+$uptex-accent-green-light: rgba(#7CB342, 0.15);
+
+$uptex-danger:       #E53935; // Rojo Institucional — alertas, vencimientos, reprobatorio.
+$uptex-danger-light: rgba(#E53935, 0.08);
+
+$uptex-slate:       #5F6368; // Gris Pizarra — texto secundario, bordes, iconografía neutral.
+$uptex-slate-light: rgba(#5F6368, 0.15); // "Ghost border" institucional.
+$uptex-slate-soft:  rgba(#5F6368, 0.08);
+
+$uptex-bg-main:   #F8FAFC; // Fondo base del shell de la aplicación.
+$uptex-bg-alt:    #F4F6F8; // Fondo de paneles secundarios (encabezados de tabla).
+$uptex-bg-subtle: #F8F9FA; // Fondo de contenedores de imagen / placeholders.
+$uptex-surface:   #FFFFFF; // Tarjetas y paneles elevados.
+
+$uptex-text-dark:  #1E293B; // Texto primario de alto contraste.
+$uptex-text-muted: $uptex-slate; // Texto secundario / metadatos.
+
+$uptex-border-color: $uptex-slate-light; // Borde 1px sutil ("ghost border").
+
+$uptex-radius-sm:   8px;   // Botones, inputs, componentes estándar.
+$uptex-radius-lg:   12px;  // Tarjetas, contenedores grandes, modales.
+$uptex-radius-pill: 999px; // Badges, chips, controles de asistencia.
+
+$uptex-shadow-sm:          0 1px 3px rgba(15, 23, 42, 0.06);
+$uptex-shadow-md:          0 4px 12px rgba(95, 99, 104, 0.1); // Sombra difusa estándar (dropdowns, hover).
+$uptex-shadow-card-hover:  0 4px 6px -1px rgba(11, 128, 67, 0.08), 0 2px 4px -2px rgba(11, 128, 67, 0.1); // Sombra ambiental con tinte verde.
+
+$uptex-transition: all 0.15s ease-in-out;
+
+/* ===========================================================================
+   2. Sobrescritura de Componentes Bootstrap / Boost
+   =========================================================================== */
+
+// -- Fondo general y enlaces -------------------------------------------------
+body {
+    background-color: $uptex-bg-main;
+}
+
+a {
+    color: $uptex-primary;
+
+    &:hover,
+    &:focus {
+        color: $uptex-primary-hover;
+    }
+}
+
+// -- Jerarquía tipográfica ----------------------------------------------------
+h1, .h1 { font-size: 2rem;    font-weight: 700; color: $uptex-text-dark; }
+h2, .h2 { font-size: 1.75rem; font-weight: 700; color: $uptex-text-dark; }
+h3, .h3 { font-size: 1.5rem;  font-weight: 600; color: $uptex-text-dark; }
+h4, .h4 { font-size: 1.25rem; font-weight: 600; color: $uptex-text-dark; }
+h5, .h5 { font-size: 1rem;    font-weight: 600; color: $uptex-text-dark; }
+h6, .h6 { font-size: 0.875rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; color: $uptex-text-muted; }
+
+p {
+    color: $uptex-text-dark;
+
+    &.text-muted {
+        color: $uptex-text-muted !important;
+    }
+}
+
+// -- Botones ------------------------------------------------------------------
+.btn-primary {
+    background-color: $uptex-primary;
+    border-color: $uptex-primary;
+
+    &:hover,
+    &:focus,
+    &:active {
+        background-color: $uptex-primary-hover !important;
+        border-color: $uptex-primary-hover !important;
+    }
+}
+
+.btn-outline-primary {
+    color: $uptex-primary;
+    border-color: $uptex-primary;
+
+    &:hover,
+    &:focus {
+        background-color: $uptex-primary;
+        border-color: $uptex-primary;
+    }
+}
+
+.btn-danger {
+    background-color: $uptex-danger;
+    border-color: $uptex-danger;
+
+    &:hover,
+    &:focus {
+        background-color: darken($uptex-danger, 8%) !important;
+        border-color: darken($uptex-danger, 8%) !important;
+    }
+}
+
+.btn,
+.form-control,
+.custom-select {
+    border-radius: $uptex-radius-sm;
+}
+
+.form-control:focus,
+.custom-select:focus {
+    border-color: $uptex-primary;
+    box-shadow: 0 0 0 2px $uptex-primary-soft;
+}
+
+// -- Tarjetas Bootstrap (.card) ------------------------------------------------
+// Blanco puro, borde 1px "ghost", radio 12px y sombra SOLO en hover
+// (Elevation & Depth: "No shadow by default; a soft shadow appears only on hover").
+.card {
+    background-color: $uptex-surface;
+    border: 1px solid $uptex-border-color;
+    border-radius: $uptex-radius-lg;
+    box-shadow: none;
+    transition: $uptex-transition, transform 0.15s ease-in-out;
+
+    &:hover {
+        box-shadow: $uptex-shadow-card-hover;
+    }
+}
+
+// -- Badges Bootstrap (.badge) --------------------------------------------------
+.badge {
+    font-weight: 700;
+    padding: 0.35em 0.75em;
+    border-radius: $uptex-radius-pill;
+}
+
+.badge-primary {
+    background-color: $uptex-primary-light;
+    color: $uptex-primary;
+}
+
+.badge-success {
+    background-color: $uptex-accent-green-light;
+    color: darken($uptex-accent-green, 15%);
+}
+
+.badge-danger {
+    background-color: $uptex-danger-light;
+    color: $uptex-danger;
+}
+
+.badge-secondary,
+.badge-info {
+    background-color: $uptex-slate-soft;
+    color: $uptex-slate;
+}
+
+// -- Barras de progreso Bootstrap (.progress) -----------------------------------
+.progress {
+    background-color: $uptex-slate-soft;
+    border-radius: $uptex-radius-pill;
+    height: 0.5rem;
+    overflow: hidden;
+}
+
+.progress-bar {
+    background-color: $uptex-accent-green;
+    border-radius: $uptex-radius-pill;
+}
+
+.progress-bar-danger {
+    background-color: $uptex-danger;
+}
+
+// -- Tablas Bootstrap base --------------------------------------------------
+.table {
+    color: $uptex-text-dark;
+
+    thead th {
+        background-color: $uptex-bg-alt;
+        color: $uptex-text-muted;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        border-bottom: 1px solid $uptex-border-color;
+        border-top: none;
+        white-space: nowrap;
+    }
+
+    tbody tr {
+        border-bottom: 1px solid $uptex-border-color;
+        transition: background-color 0.1s ease-in-out;
+
+        &:hover {
+            background-color: $uptex-bg-alt;
+        }
+    }
+
+    td, th {
+        vertical-align: middle;
+        border-top: none;
+    }
+}
+
+/* ===========================================================================
+   3. Componentes Personalizados (Cards, Badges, Metrics)
+   =========================================================================== */
+
+// -- Tarjeta de curso / entidad genérica ---------------------------------------
+.uptex-card {
+    background-color: $uptex-surface;
+    border: 1px solid $uptex-border-color;
+    border-radius: $uptex-radius-lg;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease-in-out;
+
+    &--interactive:hover,
+    &--interactive:focus {
+        transform: translateY(-4px);
+        box-shadow: $uptex-shadow-card-hover;
+    }
+
+    &__media {
+        position: relative;
+        height: 180px;
+        background-color: $uptex-bg-subtle;
+        overflow: hidden;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    &__tag {
+        position: absolute;
+        top: 0.5rem;
+        left: 0.5rem;
+        background-color: $uptex-primary-light;
+        color: $uptex-primary;
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 0.25rem 0.6rem;
+        border-radius: $uptex-radius-sm;
+    }
+
+    &__body {
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 auto;
+        gap: 0.5rem;
+    }
+
+    &__title {
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: $uptex-text-dark;
+        margin: 0;
+    }
+
+    &__meta {
+        margin-top: auto;
+    }
+}
+
+// -- Tarjeta de métrica (KPI / bento) — usada en Calificador, Asistencia,
+// Rendimiento Académico y Estudiantes y Progreso.
+.uptex-metric-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background-color: $uptex-surface;
+    border: 1px solid $uptex-border-color;
+    border-radius: $uptex-radius-lg;
+    padding: 1.25rem;
+    transition: $uptex-transition;
+
+    &:hover {
+        box-shadow: $uptex-shadow-sm;
+    }
+
+    &__icon {
+        flex-shrink: 0;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: $uptex-primary-light;
+        color: $uptex-primary;
+        font-size: 1.4rem;
+
+        &--accent {
+            background-color: $uptex-accent-green-light;
+            color: darken($uptex-accent-green, 15%);
+        }
+
+        &--danger {
+            background-color: $uptex-danger-light;
+            color: $uptex-danger;
+        }
+
+        &--neutral {
+            background-color: $uptex-slate-soft;
+            color: $uptex-slate;
+        }
+    }
+
+    &__label {
+        color: $uptex-text-muted;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin: 0 0 0.15rem;
+    }
+
+    &__value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: $uptex-text-dark;
+        margin: 0;
+        line-height: 1.2;
+
+        small {
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: $uptex-text-muted;
+        }
+    }
+}
+
+// -- Avatar circular con iniciales (tablas de calificador / asistencia) -------
+.uptex-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.8rem;
+    background-color: $uptex-primary-light;
+    color: $uptex-primary;
+    overflow: hidden;
+    flex-shrink: 0;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    &--sm {
+        width: 32px;
+        height: 32px;
+        font-size: 0.7rem;
+    }
+}
+
+// -- Chips / estados (Aprobatorio, Elegible, En Proceso, Pendiente...) --------
+.uptex-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: $uptex-radius-pill;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+
+    &--success {
+        background-color: $uptex-accent-green-light;
+        color: darken($uptex-accent-green, 15%);
+    }
+
+    &--primary {
+        background-color: $uptex-primary-light;
+        color: $uptex-primary;
+    }
+
+    &--danger {
+        background-color: $uptex-danger-light;
+        color: $uptex-danger;
+    }
+
+    &--neutral {
+        background-color: $uptex-slate-soft;
+        color: $uptex-slate;
+    }
+}
+
+// -- Insignia / credencial digital (Mi Mochila de Insignias) ------------------
+.uptex-badge-credential {
+    background-color: $uptex-surface;
+    border: 1px solid $uptex-border-color;
+    border-radius: $uptex-radius-lg;
+    padding: 1rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: box-shadow 0.2s ease-in-out;
+
+    &:hover {
+        box-shadow: $uptex-shadow-md;
+    }
+
+    &--pending {
+        opacity: 0.75;
+
+        .uptex-badge-credential__media {
+            filter: grayscale(1);
+        }
+    }
+
+    &__media {
+        width: 96px;
+        height: 96px;
+        margin-bottom: 0.75rem;
+        position: relative;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+    }
+
+    &__verified {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        background-color: $uptex-accent-green-light;
+        color: darken($uptex-accent-green, 15%);
+        border: 2px solid $uptex-surface;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    &__title {
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: $uptex-text-dark;
+        margin: 0;
+    }
+
+    &__dept {
+        font-size: 0.7rem;
+        color: $uptex-text-muted;
+        margin: 0.15rem 0 0;
+    }
+
+    &__date {
+        font-size: 0.75rem;
+        color: $uptex-text-muted;
+        margin-top: 0.35rem;
+    }
+}
+
+// -- Widget de métrica de avance (nivel / XP / tendencia) ---------------------
+.uptex-progress-widget {
+    background-color: $uptex-surface;
+    border: 1px solid $uptex-border-color;
+    border-radius: $uptex-radius-lg;
+    padding: 1.25rem;
+
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.75rem;
+    }
+
+    &__badge {
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: $uptex-primary;
+        background-color: $uptex-surface;
+        border: 1px solid $uptex-border-color;
+        padding: 0.2rem 0.6rem;
+        border-radius: $uptex-radius-sm;
+    }
+
+    &__footnote {
+        font-size: 0.7rem;
+        color: $uptex-text-muted;
+        margin-top: 0.5rem;
+    }
+}
+
+/* ===========================================================================
+   4. Tablas y Vistas de Datos (Libro de Calificaciones, Control de Asistencia)
+   =========================================================================== */
+
+// -- Contenedor de tabla institucional -----------------------------------------
+.uptex-table-container {
+    background-color: $uptex-surface;
+    border: 1px solid $uptex-border-color;
+    border-radius: $uptex-radius-lg;
+    overflow: hidden;
+    box-shadow: $uptex-shadow-sm;
+
+    .table {
+        margin-bottom: 0;
+    }
+
+    &__footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        padding: 0.75rem 1.25rem;
+        background-color: $uptex-bg-alt;
+        border-top: 1px solid $uptex-border-color;
+        font-size: 0.8rem;
+        color: $uptex-text-muted;
+    }
+}
+
+// -- Celda de estudiante (avatar + nombre + subtítulo) -------------------------
+.uptex-table-student {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    &__name {
+        font-weight: 700;
+        color: $uptex-text-dark;
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    &__subtext {
+        font-size: 0.75rem;
+        color: $uptex-text-muted;
+        margin: 0;
+    }
+}
+
+// -- Pastilla de calificación (Libro de Calificaciones) -------------------------
+// Aprobatorio (>= 6.0) en verde institucional, reprobatorio (< 6.0) en rojo.
+.uptex-grade-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 3rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: $uptex-radius-pill;
+    font-weight: 700;
+    font-size: 0.9rem;
+    background-color: $uptex-primary-light;
+    color: $uptex-primary;
+
+    &--fail {
+        background-color: $uptex-danger-light;
+        color: $uptex-danger;
+    }
+}
+
+// -- Control de asistencia: grupo de estados P / R / J / F ----------------------
+.uptex-attendance-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    background-color: $uptex-bg-alt;
+    border: 1px solid $uptex-border-color;
+    border-radius: $uptex-radius-pill;
+    padding: 0.25rem;
+}
+
+.uptex-attendance-option {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: $uptex-text-muted;
+    background-color: transparent;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: $uptex-transition;
+
+    &:hover {
+        background-color: rgba($uptex-surface, 0.6);
+    }
+
+    // Variantes de estado — se activan agregando el modificador correspondiente
+    // junto con `is-active` (equivalente al patrón `:checked` de los mockups).
+    &.is-active {
+        color: $uptex-surface;
+
+        &.uptex-attendance-option--present   { background-color: $uptex-primary; }
+        &.uptex-attendance-option--late      { background-color: $uptex-accent-green; }
+        &.uptex-attendance-option--justified { background-color: $uptex-slate; }
+        &.uptex-attendance-option--absent    { background-color: $uptex-danger; }
+    }
+}
+
+// -- Barra de progreso compacta embebida en celdas de tabla ---------------------
+.uptex-table-progress {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    &__track {
+        flex: 1 1 auto;
+        max-width: 100px;
+        height: 6px;
+        border-radius: $uptex-radius-pill;
+        background-color: $uptex-slate-soft;
+        overflow: hidden;
+    }
+
+    &__fill {
+        height: 100%;
+        border-radius: $uptex-radius-pill;
+        background-color: $uptex-accent-green;
+
+        &--danger {
+            background-color: $uptex-danger;
+        }
+    }
+
+    &__value {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: $uptex-text-dark;
+        white-space: nowrap;
+    }
+}
+
+// -- Leyenda de estados (colores de referencia bajo la tabla) -------------------
+.uptex-table-legend {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.5rem;
+    justify-content: flex-end;
+
+    &__item {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.8rem;
+        color: $uptex-text-muted;
+    }
+
+    &__dot {
+        width: 0.65rem;
+        height: 0.65rem;
+        border-radius: 50%;
+
+        &--primary { background-color: $uptex-primary; }
+        &--accent  { background-color: $uptex-accent-green; }
+        &--danger  { background-color: $uptex-danger; }
+        &--neutral { background-color: $uptex-slate; }
+    }
+}
+
+// -- Paginación de tabla ---------------------------------------------------------
+.uptex-table-pagination {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    &__btn {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: $uptex-radius-sm;
+        border: 1px solid $uptex-border-color;
+        color: $uptex-text-muted;
+        background-color: $uptex-surface;
+        transition: $uptex-transition;
+
+        &:hover:not(:disabled) {
+            background-color: $uptex-bg-alt;
+        }
+
+        &.is-active {
+            background-color: $uptex-primary;
+            border-color: $uptex-primary;
+            color: $uptex-surface;
+        }
+
+        &:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+    }
+}
+
+/* ===========================================================================
+   5. Página de Inicio / Marketing (Fase 5): Hero, tarjetas de valor, grid de
+   cursos destacados y banner de acreditación institucional.
+   =========================================================================== */
+
+// -- Paleta ampliada para esta fase ------------------------------------------
+$uptex-tag-green:     $uptex-primary;   // Etiqueta de categoría — Web Development.
+$uptex-tag-darkgreen: #2E7D32;          // Etiqueta de categoría — Ciberseguridad.
+$uptex-tag-red:       #C62828;          // Etiqueta de categoría — Inteligencia Artificial.
+$uptex-tag-gray:      #424242;          // Etiqueta de categoría — Arquitectura IT.
+$uptex-accent-dark:   #085E32;          // Fondo de tarjetas de acreditación institucional.
+
+$uptex-shadow-hero-media:    0 20px 40px rgba(0, 0, 0, 0.15);
+$uptex-shadow-feature-hover: 0 12px 24px rgba(0, 0, 0, 0.06);
+
+// -- Hero institucional --------------------------------------------------------
+.uptex-hero {
+    background-color: $uptex-primary;
+    color: $uptex-surface;
+    padding: 4rem 0;
+
+    &__media {
+        border-radius: 16px;
+        box-shadow: $uptex-shadow-hero-media;
+        overflow: hidden;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+    }
+}
+
+// -- Botones de acción del Hero -------------------------------------------------
+.uptex-hero-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 700;
+    padding: 0.75rem 1.5rem;
+    border-radius: $uptex-radius-sm;
+    text-decoration: none;
+    transition: $uptex-transition, transform 0.15s ease-in-out;
+
+    &--primary {
+        background-color: $uptex-accent-green;
+        color: $uptex-text-dark;
+        border: none;
+
+        &:hover,
+        &:focus {
+            background-color: darken($uptex-accent-green, 8%);
+            color: $uptex-text-dark;
+            text-decoration: none;
+            transform: translateY(-2px);
+        }
+    }
+
+    &--outline {
+        background-color: transparent;
+        color: $uptex-surface;
+        border: 2px solid $uptex-surface;
+
+        &:hover,
+        &:focus {
+            background-color: rgba($uptex-surface, 0.12);
+            color: $uptex-surface;
+            text-decoration: none;
+            transform: translateY(-2px);
+        }
+    }
+}
+
+// -- Tarjetas de valor (feature cards) -------------------------------------------
+.uptex-feature-card {
+    background-color: $uptex-surface;
+    border-radius: $uptex-radius-lg;
+    padding: 1.75rem;
+    text-align: center;
+    height: 100%;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+
+    &:hover,
+    &:focus-within {
+        transform: translateY(-4px);
+        box-shadow: $uptex-shadow-feature-hover;
+    }
+
+    &__icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background-color: $uptex-primary-light;
+        color: $uptex-primary;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        font-size: 1.5rem;
+    }
+
+    &__title {
+        font-weight: 700;
+        color: $uptex-text-dark;
+        margin-bottom: 0.5rem;
+    }
+
+    &__desc {
+        color: $uptex-text-muted;
+        margin: 0;
+        font-size: 0.9rem;
+    }
+}
+
+// -- Grid de cursos destacados ---------------------------------------------------
+.uptex-frontpage-courses {
+    // Envuelve el listado nativo de Moodle (output.main_content) cuando se
+    // muestra bajo el showcase curado — sin estilos propios más allá del
+    // espaciado heredado del <section> contenedor.
+}
+
+.uptex-course-showcase-card {
+    background-color: $uptex-surface;
+    border: 1px solid $uptex-border-color;
+    border-radius: $uptex-radius-lg;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+
+    &:hover,
+    &:focus-within {
+        transform: translateY(-4px);
+        box-shadow: $uptex-shadow-card-hover;
+    }
+
+    &__media {
+        position: relative;
+        height: 160px;
+        overflow: hidden;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    &__tag {
+        position: absolute;
+        top: 0.75rem;
+        left: 0.75rem;
+        color: $uptex-surface;
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 0.3rem 0.7rem;
+        border-radius: $uptex-radius-sm;
+
+        &--green     { background-color: $uptex-tag-green; }
+        &--darkgreen { background-color: $uptex-tag-darkgreen; }
+        &--red       { background-color: $uptex-tag-red; }
+        &--gray      { background-color: $uptex-tag-gray; }
+    }
+
+    &__body {
+        padding: 1.1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        flex: 1 1 auto;
+    }
+
+    &__meta {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        color: $uptex-text-muted;
+        font-size: 0.75rem;
+    }
+
+    &__title {
+        font-weight: 700;
+        color: $uptex-text-dark;
+        margin: 0;
+        font-size: 1rem;
+    }
+
+    &__instructor {
+        color: $uptex-text-muted;
+        font-size: 0.8rem;
+        margin: 0;
+    }
+
+    &__footer {
+        margin-top: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+    }
+}
+
+// -- Banner de acreditación institucional (4 tarjetas verde oscuro) --------------
+.uptex-accredit-section {
+    background-color: $uptex-accent-dark;
+    padding: 3.5rem 0;
+}
+
+.uptex-accredit-card {
+    background: linear-gradient(135deg, rgba($uptex-surface, 0.08) 0%, rgba($uptex-surface, 0.02) 100%);
+    border: 1px solid rgba($uptex-surface, 0.18);
+    border-radius: 16px;
+    color: $uptex-surface;
+    text-align: center;
+    padding: 1.75rem 1.25rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+
+    &:hover,
+    &:focus-within {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+    }
+
+    &__icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: rgba($uptex-surface, 0.15);
+        color: $uptex-accent-green;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        margin-bottom: 0.25rem;
+    }
+
+    &__title {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: $uptex-surface;
+        margin: 1rem 0 0;
+    }
+
+    &__desc {
+        color: rgba($uptex-surface, 0.85);
+        font-size: 0.9rem;
+        line-height: 1.5;
+        margin: 0;
+    }
+}
+
+// -- Suprime el <h2> nativo que core_course_renderer::frontpage_part()
+// antepone a la salida de frontpage_available_courses()/frontpage_my_courses()
+// (ids reales: #frontpage-available-course-list / #frontpage-course-list,
+// verificados en course/renderer.php). El propio encabezado "Excelencia
+// Académica" de frontpage.mustache ya cumple ese rol — evita duplicarlo.
+#frontpage-available-course-list > h2:first-child,
+#frontpage-course-list > h2:first-child {
+    display: none;
+}
+
+/* ===========================================================================
+   6. Catálogo de Cursos (/course/index.php) y Páginas de Sistema Genéricas
+   (/admin/tool/dataprivacy/, tablas y cajas de contenido en todo el sitio).
+   Selectores verificados renderizando core_course_renderer::course_category()
+   y por convención documentada de Moodle (body id = $PAGE->pagetype, aquí
+   "page-course-index" para /course/index.php) — no inventados.
+   =========================================================================== */
+
+// -- Banner de cabecera institucional (sólo /course/index.php) ------------------
+#page-course-index #page-header {
+    background: linear-gradient(135deg, $uptex-primary 0%, $uptex-primary-hover 100%);
+    border-radius: $uptex-radius-lg;
+    padding: 1.5rem 1.75rem;
+    margin-bottom: 1.5rem;
+
+    .page-header-headings,
+    .page-header-headings h1 {
+        color: $uptex-surface;
+    }
+}
+
+// -- Barra de búsqueda / filtros (#action_bar, real en course_category()) -------
+#page-course-index #action_bar {
+    .form-control,
+    .custom-select {
+        border-radius: 10px;
+        border-color: $uptex-border-color;
+
+        &:focus {
+            border-color: $uptex-primary;
+            box-shadow: 0 0 0 2px $uptex-primary-soft;
+        }
+    }
+
+    .btn-primary.search-icon {
+        background-color: $uptex-primary;
+        border-color: $uptex-primary;
+        border-radius: 0 10px 10px 0;
+    }
+}
+
+// -- Árbol de categorías y listados de curso -------------------------------------
+#page-course-index .category-browse {
+    background-color: $uptex-surface;
+    border-radius: $uptex-radius-lg;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+    padding: 1.25rem 1.5rem;
+
+    .category {
+        border-left: 4px solid $uptex-primary;
+        border-radius: $uptex-radius-sm;
+        padding: 0.75rem 1rem;
+        margin-bottom: 0.5rem;
+        background-color: $uptex-bg-alt;
+        transition: background-color 0.15s ease-in-out;
+
+        &:hover {
+            background-color: $uptex-primary-light;
+        }
+    }
+
+    .categoryname a {
+        color: $uptex-text-dark;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .coursebox {
+        background-color: $uptex-surface;
+        border: 1px solid $uptex-border-color;
+        border-radius: $uptex-radius-lg;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+        margin-bottom: 1rem;
+        padding: 1rem;
+    }
+}
+
+// -- Cajas de contenido genéricas de todo el sitio (.box/.generalbox) -----------
+// Incluye /admin/tool/dataprivacy/ (resúmenes de privacidad, listas de
+// finalidades/categorías) y cualquier otra página de administración que
+// use el patrón estándar de Moodle core_renderer::box().
+.uptex-card-panel,
+.box.generalbox,
+.generalbox {
+    background-color: $uptex-surface;
+    border: 1px solid $uptex-border-color;
+    border-radius: $uptex-radius-lg;
+    padding: 1.25rem 1.5rem;
+}
+
+// -- Tablas estándar de Moodle (core_renderer::table(), listados de reglas) -----
+.table {
+    thead th {
+        background-color: $uptex-primary;
+        color: $uptex-surface;
+        font-weight: 700;
+        border-color: $uptex-primary-hover;
+    }
+
+    tbody tr:nth-of-type(odd) {
+        background-color: $uptex-bg-alt;
+    }
+
+    td,
+    th {
+        padding: 0.65rem 1rem;
+        vertical-align: middle;
+    }
+}
+
+// Pastillas de estado (retención, vigente/vencido, etc. en Data Privacy):
+// .badge-success/-danger/-secondary/-info ya están cubiertos en la sección 2
+// (Bootstrap Overrides) — .badge-info se añadió ahí junto a .badge-secondary
+// en vez de duplicar las reglas aquí.
+
+/* ===========================================================================
+   7. Página de Inicio de Sesión (/login/index.php) — layout/login.php +
+   templates/login.mustache + templates/core/loginform.mustache.
+   Todo namespaced bajo .uptex-login-* para no afectar ninguna otra página
+   (Home, dashboard, catálogo, etc. quedan intactas — cero seguidores).
+   =========================================================================== */
+
+.uptex-login-wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: $uptex-bg-main;
+    padding: 2rem 1rem;
+}
+
+.uptex-login-card {
+    width: 100%;
+    max-width: 1000px;
+    background-color: $uptex-surface;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+
+    &__hero {
+        background-color: $uptex-primary;
+        color: $uptex-surface;
+        height: 100%;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 3rem 2.5rem;
+    }
+
+    &__hero-badge {
+        width: 56px;
+        height: 56px;
+        border-radius: $uptex-radius-lg;
+        background-color: $uptex-accent-green;
+        color: $uptex-surface;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    &__hero-title {
+        color: $uptex-surface;
+        font-weight: 800;
+        font-size: 1.75rem;
+        line-height: 1.25;
+        margin-bottom: 1rem;
+    }
+
+    &__hero-subtitle {
+        color: rgba($uptex-surface, 0.85);
+        max-width: 22rem;
+        margin-bottom: 2rem;
+    }
+
+    &__hero-media {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+    }
+
+    &__form {
+        padding: 3rem 2.5rem;
+    }
+
+    &__form-inner {
+        max-width: 26rem;
+        margin: 0 auto;
+    }
+
+    &__form-logo {
+        max-height: 48px;
+    }
+}
+
+.uptex-login-sso {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+
+    &__btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        border-radius: $uptex-radius-sm;
+        border-color: $uptex-border-color;
+        color: $uptex-text-muted;
+        padding: 0.65rem;
+        opacity: 0.65;
+        cursor: not-allowed;
+    }
+}
+
+.uptex-login-divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: $uptex-text-muted;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 1.5rem;
+
+    &::before,
+    &::after {
+        content: "";
+        flex: 1 1 auto;
+        height: 1px;
+        background-color: $uptex-border-color;
+    }
+}
+
+.uptex-login-label {
+    display: block;
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: $uptex-text-muted;
+    margin-bottom: 0.35rem;
+}
+
+.uptex-login-footer {
+    text-align: center;
+    color: $uptex-text-muted;
+    font-size: 0.8rem;
+    margin-top: 1.5rem;
+
+    a {
+        color: $uptex-text-muted;
+
+        &:hover,
+        &:focus {
+            color: $uptex-primary;
+        }
+    }
+}
+
+// Imagen del hero de login (mockup Unsplash): sin recorte/distorsión — a
+// diferencia de .uptex-hero__media (portada, object-fit: cover), aquí se
+// respeta la relación de aspecto original de la gráfica.
+.uptex-login-hero-img {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* ===========================================================================
+   8. Tarjeta de curso nativa (core_course/coursecard + coursecards override):
+   /my/courses.php, bloque "Resumen de cursos" del dashboard, MoodleNet.
+   Promovido desde un <style> inline en coursecards.mustache (Fase 9: auditoría).
+   =========================================================================== */
+.uptex-course-card {
+    border: 1px solid rgba($uptex-primary, 0.15);
+    border-radius: $uptex-radius-lg;
+    overflow: hidden;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+
+    &:hover,
+    &:focus-within {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    &__media .card-img-top {
+        height: 150px;
+        background-size: cover;
+        background-position: center;
+    }
+
+    &__title {
+        color: $uptex-text-dark;
+        font-weight: 700;
+    }
+
+    &__category .categoryname {
+        color: $uptex-slate;
+        font-size: 0.8rem;
+    }
+}

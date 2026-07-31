@@ -1,0 +1,102 @@
+{{!
+    @template theme_saec/components/attendance_table
+
+    mod_attendance-style session roster (.uptex-table-container +
+    .uptex-attendance-group/__option, custom.scss Phase 1): student
+    identity, a P/R/J/F status toggle group and cumulative attendance %.
+
+    The active status is rendered server-side from ispresent/islate/
+    isjustified/isabsent — live client-side re-toggling of the radio
+    group needs a JS module (theme_saec/attendance or similar), which is
+    out of scope for this templates-only phase; on submit, a real form
+    posting these radios would still work without it.
+
+    Example context (json):
+    {
+        "students": [
+            {
+                "hasavatar": true,
+                "avatarurl": "https://example.org/avatar.jpg",
+                "initials": "GM",
+                "name": "García Mendoza, Valentina",
+                "subtext": "Ingeniería en Sistemas",
+                "matricula": "2021300452",
+                "attendanceid": 1,
+                "ispresent": true,
+                "islate": false,
+                "isjustified": false,
+                "isabsent": false,
+                "attendancepercent": 98,
+                "isgoodattendance": true
+            }
+        ]
+    }
+}}
+<div class="uptex-table-container">
+    <div class="table-responsive">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th>{{#str}} fullnameuser, moodle {{/str}}</th>
+                    <th>{{#str}} idnumber, moodle {{/str}}</th>
+                    <th class="text-center">{{#str}} status, moodle {{/str}}</th>
+                    <th class="text-right">{{#str}} progress, moodle {{/str}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#students}}
+                <tr>
+                    <td>
+                        <div class="uptex-table-student">
+                            <span class="uptex-avatar">
+                                {{#hasavatar}}
+                                    <img src="{{{ avatarurl }}}" alt="">
+                                {{/hasavatar}}
+                                {{^hasavatar}}
+                                    {{ initials }}
+                                {{/hasavatar}}
+                            </span>
+                            <div>
+                                <p class="uptex-table-student__name">{{ name }}</p>
+                                <p class="uptex-table-student__subtext">{{ subtext }}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td>{{ matricula }}</td>
+                    <td class="text-center">
+                        <div class="uptex-attendance-group">
+                            <label class="uptex-attendance-option uptex-attendance-option--present {{#ispresent}}is-active{{/ispresent}}">
+                                <input type="radio" name="att_{{ attendanceid }}" class="sr-only" {{#ispresent}}checked{{/ispresent}}>
+                                {{#str}} statuspresent, theme_saec {{/str}}
+                            </label>
+                            <label class="uptex-attendance-option uptex-attendance-option--late {{#islate}}is-active{{/islate}}">
+                                <input type="radio" name="att_{{ attendanceid }}" class="sr-only" {{#islate}}checked{{/islate}}>
+                                {{#str}} statuslate, theme_saec {{/str}}
+                            </label>
+                            <label class="uptex-attendance-option uptex-attendance-option--justified {{#isjustified}}is-active{{/isjustified}}">
+                                <input type="radio" name="att_{{ attendanceid }}" class="sr-only" {{#isjustified}}checked{{/isjustified}}>
+                                {{#str}} statusjustified, theme_saec {{/str}}
+                            </label>
+                            <label class="uptex-attendance-option uptex-attendance-option--absent {{#isabsent}}is-active{{/isabsent}}">
+                                <input type="radio" name="att_{{ attendanceid }}" class="sr-only" {{#isabsent}}checked{{/isabsent}}>
+                                {{#str}} statusabsent, theme_saec {{/str}}
+                            </label>
+                        </div>
+                    </td>
+                    <td class="text-right">
+                        <div class="uptex-table-progress justify-content-end">
+                            <div class="uptex-table-progress__track">
+                                <div class="uptex-table-progress__fill {{^isgoodattendance}}uptex-table-progress__fill--danger{{/isgoodattendance}}" style="width: {{ attendancepercent }}%"></div>
+                            </div>
+                            <span class="uptex-table-progress__value">{{ attendancepercent }}%</span>
+                        </div>
+                    </td>
+                </tr>
+                {{/students}}
+            </tbody>
+        </table>
+    </div>
+    {{^students}}
+        <div class="text-center text-muted p-4">{{#str}} nothingtodisplay, moodle {{/str}}</div>
+    {{/students}}
+</div>

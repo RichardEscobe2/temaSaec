@@ -1,0 +1,68 @@
+{{!
+    @template theme_saec/nav-drawer
+
+    UPTex application sidebar: brand mini-header + role-based navigation
+    items (Student/Teacher/Admin menus computed in layout/drawers.php from
+    native Moodle capability checks — this template just iterates whatever
+    navitems array it's given) + a Help/Logout footer.
+
+    This is INNER content only — it is rendered inside Boost's reusable
+    drawer-left shell (theme_boost/drawer, id="theme_saec-drawers-mainnav")
+    from theme_saec/drawers, which already provides the accessible wrapper,
+    close button and native drawer toggle/ARIA/JS wiring.
+
+    Example context (json):
+    {
+        "sitename": "UPTex Moodle",
+        "navitems": [
+            {
+                "label": "Panel Principal",
+                "url": "https://example.org/my/",
+                "icon": "<img class='saec-sidebar__icon-img' src='...' alt=''>",
+                "isactive": true,
+                "disabled": false
+            }
+        ],
+        "hashelp": true,
+        "helpurl": "https://example.org/help",
+        "logouturl": "https://example.org/login/logout.php?sesskey=xxx"
+    }
+}}
+<div class="saec-sidebar">
+    <div class="saec-sidebar__brand">
+        <div class="saec-sidebar__brand-mark" aria-hidden="true">
+            {{#pix}} i/course, moodle {{/pix}}
+        </div>
+        <div class="saec-sidebar__brand-text">
+            <p class="saec-sidebar__brand-title">{{sitename}}</p>
+            <p class="saec-sidebar__brand-subtitle">{{#str}} portaltag, theme_saec {{/str}}</p>
+        </div>
+    </div>
+
+    <nav class="saec-sidebar__nav" aria-label="{{#str}} sidebarnav, theme_saec {{/str}}">
+        {{#navitems}}
+            <a
+                href="{{{ url }}}"
+                class="saec-sidebar__link {{#isactive}}active{{/isactive}} {{#disabled}}saec-sidebar__link--disabled{{/disabled}}"
+                {{#isactive}}aria-current="page"{{/isactive}}
+                {{#disabled}}aria-disabled="true" tabindex="-1"{{/disabled}}
+            >
+                <span class="saec-sidebar__icon">{{{ icon }}}</span>
+                <span class="saec-sidebar__label">{{ label }}</span>
+            </a>
+        {{/navitems}}
+    </nav>
+
+    <div class="saec-sidebar__footer">
+        {{#hashelp}}
+            <a href="{{{ helpurl }}}" class="saec-sidebar__link" target="_blank" rel="noopener noreferrer">
+                <span class="saec-sidebar__icon">{{#pix}} help, moodle {{/pix}}</span>
+                <span class="saec-sidebar__label">{{#str}} help {{/str}}</span>
+            </a>
+        {{/hashelp}}
+        <a href="{{{ logouturl }}}" class="saec-sidebar__link">
+            <span class="saec-sidebar__icon">{{#pix}} t/locked, moodle {{/pix}}</span>
+            <span class="saec-sidebar__label">{{#str}} logout {{/str}}</span>
+        </a>
+    </div>
+</div>

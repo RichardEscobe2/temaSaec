@@ -1,0 +1,324 @@
+<!DOCTYPE html><html class="light" lang="es"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>UPTex Moodle - Portal Institucional</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=Hanken+Grotesk:wght@600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind Config Verification -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "error-container": "#ffdad6",
+                "on-tertiary-fixed": "#410002",
+                "surface-container": "#ebeef4",
+                "outline": "#6f7a6f",
+                "surface-container-high": "#e5e8ee",
+                "secondary-fixed": "#b8f47a",
+                "on-tertiary-container": "#fff1ef",
+                "tertiary-container": "#d42c2b",
+                "on-error-container": "#93000a",
+                "secondary": "#3c6a00",
+                "surface-bright": "#f7f9ff",
+                "background": "#f7f9ff",
+                "on-error": "#ffffff",
+                "primary-fixed-dim": "#77db93",
+                "inverse-on-surface": "#eef1f7",
+                "surface-variant": "#dfe3e8",
+                "outline-variant": "#becabd",
+                "primary-container": "#0b8043",
+                "surface-container-low": "#f1f4fa",
+                "surface-dim": "#d7dae0",
+                "on-surface-variant": "#3f4940",
+                "surface": "#f7f9ff",
+                "on-tertiary-fixed-variant": "#93000d",
+                "surface-container-highest": "#dfe3e8",
+                "tertiary-fixed-dim": "#ffb4ac",
+                "tertiary-fixed": "#ffdad6",
+                "on-background": "#181c20",
+                "on-primary-container": "#d1ffd8",
+                "tertiary": "#b00a16",
+                "surface-container-lowest": "#ffffff",
+                "on-primary-fixed-variant": "#005228",
+                "on-primary": "#ffffff",
+                "on-secondary-container": "#407100",
+                "inverse-primary": "#77db93",
+                "primary-fixed": "#93f8ae",
+                "on-primary-fixed": "#00210c",
+                "on-tertiary": "#ffffff",
+                "inverse-surface": "#2d3135",
+                "surface-tint": "#006d37",
+                "secondary-container": "#b8f47a",
+                "on-secondary-fixed-variant": "#2c5000",
+                "on-secondary": "#ffffff",
+                "on-secondary-fixed": "#0e2000",
+                "error": "#ba1a1a",
+                "primary": "#006532",
+                "secondary-fixed-dim": "#9dd761",
+                "on-surface": "#181c20"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+            },
+            "spacing": {
+                "base": "4px",
+                "lg": "24px",
+                "sm": "8px",
+                "md": "16px",
+                "margin-desktop": "48px",
+                "gutter": "24px",
+                "xs": "4px",
+                "xl": "32px",
+                "margin-mobile": "16px",
+                "xxl": "48px"
+            },
+            "fontFamily": {
+                "body-md": ["Inter"],
+                "headline-lg-mobile": ["Hanken Grotesk"],
+                "headline-md": ["Hanken Grotesk"],
+                "button": ["Inter"],
+                "label-md": ["Inter"],
+                "body-sm": ["Inter"],
+                "display": ["Hanken Grotesk"],
+                "headline-lg": ["Hanken Grotesk"],
+                "body-lg": ["Inter"]
+            },
+            "fontSize": {
+                "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                "button": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                "display": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #f7f9ff; color: #181c20; overflow-x: hidden; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .hero-gradient { background: linear-gradient(135deg, #006532 0%, #0b8043 100%); }
+        .card-shadow { box-shadow: 0 4px 12px rgba(95, 99, 104, 0.1); }
+        .card-hover:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(95, 99, 104, 0.15); transition: all 0.3s ease; }
+        .glass-header { backdrop-filter: blur(12px); background: rgba(255, 255, 255, 0.85); }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+<!-- TopNavBar (JSON Managed) -->
+<header class="sticky top-0 z-50 flex justify-between items-center px-lg py-sm w-full bg-surface-container-lowest dark:bg-inverse-surface border-b border-outline-variant/20">
+<div class="flex items-center gap-md">
+<span class="font-display text-headline-md font-bold text-primary dark:text-primary-fixed">UPTex Moodle</span>
+</div>
+
+<div class="flex items-center gap-md"><button class="bg-primary text-on-primary px-xl py-sm rounded-full font-button text-button hover:bg-primary/90 transition-all">Iniciar Sesión</button></div>
+</header>
+<main class="flex-grow">
+<!-- Hero Section -->
+<section class="relative h-[80vh] flex items-center overflow-hidden bg-primary-container">
+
+<div class="container mx-auto px-margin-mobile md:px-margin-desktop relative z-10 grid grid-cols-1 md:grid-cols-12 gap-lg items-center">
+<div class="md:col-span-7">
+<h1 class="font-display text-headline-lg-mobile md:text-display text-on-primary-container mb-md leading-tight">
+                        Potencia tu Futuro con <span class="text-primary-fixed">Credenciales Digitales</span> de Clase Mundial
+                    </h1>
+<p class="font-body-lg text-body-lg text-on-primary-container/90 mb-xl max-w-2xl">
+                        Accede a formación técnica de alto nivel con certificación institucional verificable. UPTex Moodle es tu plataforma para el dominio de las tecnologías emergentes.
+                    </p>
+<div class="flex flex-wrap gap-md">
+<button class="bg-secondary-container text-on-secondary-container px-xl py-md rounded-xl font-button text-button hover:bg-secondary-fixed transition-all flex items-center gap-sm">
+                            Explorar Catálogo <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+<button class="border-2 border-on-primary-container text-on-primary-container px-xl py-md rounded-xl font-button text-button hover:bg-on-primary-container hover:text-primary-container transition-all">
+                            Validar Certificado
+                        </button>
+</div>
+</div>
+<div class="hidden md:flex md:col-span-5 justify-end">
+<div class="relative w-full max-w-md aspect-square bg-surface-container-lowest/10 backdrop-blur-xl border border-white/20 rounded-xxl overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional young student interacting with a high-tech digital holographic display showing code, network security icons, and architectural blueprints. The scene is set in a modern, brightly lit institutional lab with Primary Green and Accent Light Green highlights. Minimalist, corporate, and dependable atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAL4EXfiB7mcGiirk8WZy9nB69W2ZPVgLbApGEyQabH59ooE6CRorPqUkpuijAnzwMm31uHOLfDsdis3NlGTC9kF-ZXnCgKhQclAewmasAKwByOj28r8QJhi03DqN9_LOFXU30463FClyHjB9R2sOc3L1HrSF6I_i_aDtA-vtkJe81xuwo6ZLYeznVwIAxuX0ZPbca8RsLALaiVtehOTLlnt3zf5PqFOwHGtmQBonWgSCJf0pM31t3bVg">
+</div>
+</div>
+</div>
+</section>
+<!-- Benefits Grid -->
+<section class="py-xxl bg-surface">
+<div class="container mx-auto px-margin-mobile md:px-margin-desktop">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+<div class="p-xl bg-surface-container-lowest border border-outline-variant/20 rounded-xl flex flex-col gap-md">
+<span class="material-symbols-outlined text-primary text-headline-lg" style="font-variation-settings: 'FILL' 1;">verified</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">Validación Global</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Certificaciones con estándar Open Badges compatibles con LinkedIn y Credly para maximizar tu empleabilidad.</p>
+</div>
+<div class="p-xl bg-surface-container-lowest border border-outline-variant/20 rounded-xl flex flex-col gap-md">
+<span class="material-symbols-outlined text-secondary text-headline-lg" style="font-variation-settings: 'FILL' 1;">terminal</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">Enfoque Práctico</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Contenido diseñado por expertos de la industria, enfocado en proyectos reales y laboratorios virtuales avanzados.</p>
+</div>
+<div class="p-xl bg-surface-container-lowest border border-outline-variant/20 rounded-xl flex flex-col gap-md">
+<span class="material-symbols-outlined text-tertiary text-headline-lg" style="font-variation-settings: 'FILL' 1;">diversity_3</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">Red Alumni</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Conéctate con una comunidad de más de 50,000 profesionales graduados en el ecosistema institucional UPTex.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Cursos y Microcredenciales Destacadas Section -->
+<section class="py-xxl bg-surface-container-low">
+<div class="container mx-auto px-margin-mobile md:px-margin-desktop">
+<div class="flex flex-col md:flex-row justify-between items-end mb-xl gap-md">
+<div class="max-w-2xl">
+<span class="text-secondary font-label-md text-label-md uppercase tracking-widest block mb-xs">Excelencia Académica</span>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Cursos y Microcredenciales Destacadas</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-sm">Adquiere habilidades críticas en ciclos cortos con nuestra oferta de micro-aprendizaje certificado.</p>
+</div>
+<button class="text-primary font-button text-button flex items-center gap-xs hover:gap-sm transition-all">
+                        Ver todo el catálogo <span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-lg">
+<!-- Course Card 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant/20 rounded-xl overflow-hidden card-hover flex flex-col h-full">
+<div class="relative h-48">
+<img class="w-full h-full object-cover" data-alt="Close up of a high-resolution laptop screen displaying complex Javascript and React code. Soft daylight illuminates a clean, modern workspace. Professional corporate photography style, primary green accents, focused and calm mood." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDWeBYCI0osEHZjyAq_AmICeArsCdpyuPnarR-OZFoqPObW0s0snF-8eyzajpTBvQqjPC4Yy9Z1VQTxGEkY4G7xR2-UwSLvLAIjdYWNrlxiX1e8rDMyeYzBMMWPCzaQ9DGkEsrPNXUt_fFB-tKVTcLVA2Bg6yOBGAC4Vzbb3BjqrxG8pMzVQoYPtm9O-BTP23icUeCGZqmYbn4B6nl_V-Gc44FuoXRSAj_pOgO9p6-EAmd6_98UIyQvlA">
+<div class="absolute top-md left-md bg-primary-container text-on-primary-container px-sm py-xs rounded text-label-md font-label-md">Web Development</div>
+</div>
+<div class="p-md flex flex-col flex-grow">
+<div class="flex items-center gap-sm text-on-surface-variant mb-xs">
+<span class="material-symbols-outlined text-[18px]">schedule</span>
+<span class="text-body-sm font-body-sm">40 hrs / 4 Semanas</span>
+</div>
+<h4 class="font-headline-md text-headline-md text-on-surface mb-md">Desarrollo Web Full-Stack</h4>
+<div class="mt-auto pt-md border-t border-outline-variant/10">
+<div class="flex items-center justify-between mb-md">
+<img class="w-10 h-10" data-alt="A small, elegant circular digital badge icon featuring a golden globe and a green gear, representing a certified web developer qualification. 3D rendered style with metallic finish on white background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzTbRQfV_NleOfaDyUVBvDpXsftc8jcyXpyUb9Q3JyiWaqt4aR7aH5y-K2nPnIJXVZ-hC2fBV2X7KBtNjyvJRfZkC7jxBDot51K7BmFRwx5N9oZP8j1sRz-e0qop6nqHENuM4rzNYO0hFn_FqEvK7xytECkpno0h_GZHVdU5Yh5HUDezbfKGcrPTbGg_F_MH_FurfFPRkhEGdRq7OD9seQg1S6eazyF3MG_YNxSemf6_rf5YnTQ1esYg">
+<div class="bg-surface-container px-sm py-xs rounded-full flex items-center gap-xs">
+<span class="material-symbols-outlined text-secondary text-[16px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase">Verificable en Credly</span>
+</div>
+</div>
+<button class="w-full bg-primary text-on-primary py-sm rounded-lg font-button text-button hover:bg-primary-container active:scale-95 transition-all">Ver Detalles / Inscribirse</button>
+</div>
+</div>
+</div>
+<!-- Course Card 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant/20 rounded-xl overflow-hidden card-hover flex flex-col h-full">
+<div class="relative h-48">
+<img class="w-full h-full object-cover" data-alt="Cybersecurity concept visualization: Digital blue and green binary data streams flowing through a crystalline shield icon. Dark background with bright highlights of Primary Green and Accent Light Green. Modern and authoritative look." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-hukU9S_ev2UaSkx604NlKdV2v06TuooEe5-QyhgeW9o84URUsFNxt-z8Nbn24Xb7KURk7QHxAdW9xLD8cY8XP79k_HefkrA8PkUV1TFAZL9aJnJ8zzaduqQVh71iNIaPhZhLfxiwC0rDVs6AyKJWW9CHi1Y9UaLVl4PR_BDkhPi76J4Llqeva6eNh_aq0c-semJtZw1-8cazaz7xVB2jgSmrH_SLsYCDRzaQGb1PrTfmrbYgTzKa3Q">
+<div class="absolute top-md left-md bg-secondary text-on-secondary px-sm py-xs rounded text-label-md font-label-md">Ciberseguridad</div>
+</div>
+<div class="p-md flex flex-col flex-grow">
+<div class="flex items-center gap-sm text-on-surface-variant mb-xs">
+<span class="material-symbols-outlined text-[18px]">schedule</span>
+<span class="text-body-sm font-body-sm">60 hrs / 6 Semanas</span>
+</div>
+<h4 class="font-headline-md text-headline-md text-on-surface mb-md">Ciberseguridad Institucional</h4>
+<div class="mt-auto pt-md border-t border-outline-variant/10">
+<div class="flex items-center justify-between mb-md">
+<img class="w-10 h-10" data-alt="Cybersecurity professional digital badge with a stylized lock and shield in silver and emerald green. High-quality corporate award aesthetic on a clean white background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqL2XdZ_X_CZtzxHvIsbrMa9IDwQAkzFp5uWE_AdONtRj80iDz40VJm2zvQ9FhjBJdRd7AE5MfK9pypODqO3zvDbY9HO15bm-nvChb8ZSBWKozoE6NjZ80wUZYUL1reOkX45_bpE2gLe1sSOEMHIQMh2oVbrOFWIg0B8j7imcU0JEmhyXzPBb2Mtfw6H6yYpnG1SFFHXy6OI3gHnyevKwgqdKzESwFp7GKy8GPn3X_ExvL7p3w8S6RDA">
+<div class="bg-surface-container px-sm py-xs rounded-full flex items-center gap-xs">
+<span class="material-symbols-outlined text-secondary text-[16px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase">Verificable en Credly</span>
+</div>
+</div>
+<button class="w-full bg-primary text-on-primary py-sm rounded-lg font-button text-button hover:bg-primary-container active:scale-95 transition-all">Ver Detalles / Inscribirse</button>
+</div>
+</div>
+</div>
+<!-- Course Card 3 -->
+<div class="bg-surface-container-lowest border border-outline-variant/20 rounded-xl overflow-hidden card-hover flex flex-col h-full">
+<div class="relative h-48">
+<img class="w-full h-full object-cover" data-alt="AI visualization: A glowing neural network brain map with light nodes connecting across a business dashboard with charts and graphs. Professional palette of Primary Green and Slate Gray. Clean, futuristic, and business-focused." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYHF-JN4V5nBpyN2CyTTiZOhmk7GBGxYzVoayGzqs_eYkZJX--akF6bHWim6OGaJhw9l-1PMA6e1oKzxpUyvyg2GWfYxLwpw90YWH206vJD409i34x86-CKDD3RvadeAT7AYHy5kYQEquqikmuEOIXf11fm7MWWyWyaQCy64S_N5ptEVIZj2E0CdPjdvKwgfndY2IwgVvmEVdy52miYKDHvK0--f46DYu5GD0-iO1afEE_kZBH9y8DSQ">
+<div class="absolute top-md left-md bg-tertiary-container text-on-tertiary-container px-sm py-xs rounded text-label-md font-label-md">Inteligencia Artificial</div>
+</div>
+<div class="p-md flex flex-col flex-grow">
+<div class="flex items-center gap-sm text-on-surface-variant mb-xs">
+<span class="material-symbols-outlined text-[18px]">schedule</span>
+<span class="text-body-sm font-body-sm">32 hrs / 3 Semanas</span>
+</div>
+<h4 class="font-headline-md text-headline-md text-on-surface mb-md">IA Aplicada a Negocios</h4>
+<div class="mt-auto pt-md border-t border-outline-variant/10">
+<div class="flex items-center justify-between mb-md">
+<img class="w-10 h-10" data-alt="Artificial Intelligence specialist digital badge icon, featuring a brain-chip hybrid design in vibrant green and polished steel. Professional and futuristic, high-contrast digital art." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCS31xi8x-DLsipMXnbUj_aVKswEU4xRpjQlLaiBX-e4JtRf01fcXHyUToCGKU-qwU1EPJrY3q69qQy5kldSoY6pcxvmyDfARmYbUNRk6gg3REehU7DiR_s0RDokvFpr3eyWqc4KYp7b-P6JwbmSJkLBcPj6bY0NyvPmNN0GnLjNBOFGJj5Le78E3BAFjs4Dq_-lDsR-lTWrRjizlGOGf4uSVME6yA41m18tBkwthGUzgmhvrGsOxU8LQ">
+<div class="bg-surface-container px-sm py-xs rounded-full flex items-center gap-xs">
+<span class="material-symbols-outlined text-secondary text-[16px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase">Verificable en Credly</span>
+</div>
+</div>
+<button class="w-full bg-primary text-on-primary py-sm rounded-lg font-button text-button hover:bg-primary-container active:scale-95 transition-all">Ver Detalles / Inscribirse</button>
+</div>
+</div>
+</div>
+<!-- Course Card 4 -->
+<div class="bg-surface-container-lowest border border-outline-variant/20 rounded-xl overflow-hidden card-hover flex flex-col h-full">
+<div class="relative h-48">
+<img class="w-full h-full object-cover" data-alt="Cloud architecture diagram rendered in 3D with glowing pathways and translucent server blocks. Minimalist design with a focus on structure and scalability. Primary Green and Slate Gray color scheme." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXRbQfSmVeCVKdzU_9BObb7oD3873Kw-BQExtxQqO2WGup0mHeOI08DDxP3I-BPpWaHYrjspUa1DldfRWj_aG4dlZtIET0_Ni4rCDfc38D_fXgMrJsl35oM059mnFsArzMjWb1uG-94f2m3P_ZbUzoH-mpk7krxnGdufoF9sZX9x9nBdTmEk-Ei4K8TKL4kTWInt-YFxvt9CFmRirP18wnfdEaJsEMEZIgzN6SNfJjyFgJFkBoBtqbRA">
+<div class="absolute top-md left-md bg-outline text-on-primary px-sm py-xs rounded text-label-md font-label-md">Arquitectura IT</div>
+</div>
+<div class="p-md flex flex-col flex-grow">
+<div class="flex items-center gap-sm text-on-surface-variant mb-xs">
+<span class="material-symbols-outlined text-[18px]">schedule</span>
+<span class="text-body-sm font-body-sm">48 hrs / 5 Semanas</span>
+</div>
+<h4 class="font-headline-md text-headline-md text-on-surface mb-md">Arquitectura de Software</h4>
+<div class="mt-auto pt-md border-t border-outline-variant/10">
+<div class="flex items-center justify-between mb-md">
+<img class="w-10 h-10" data-alt="Software Architect professional digital badge icon with an interlocking cube structure in green and silver. Symbolizes structural integrity and high-level design. Minimalist corporate style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDwn25P9AjIUSdvs0snawCpG7VKz8TGNaQhfonPjHiieOUsc-3H6Ruymr7ZaZDutYMXjPRAu8F76sUndd9_hujG-fJsOLuJcnzhRLk6DL09Yc_Mkj_V6Ge4muXD2oD5tQf5es0F68z-7urTTTos47ViKAtcFk_KFlKhrHEhiXb6e7GBAjZp88rmCQfKGCzivpFpQw6pZP_V0E4fVW7CsOGoP59-Goq19FNdv7adlrhOJ-Jh8rQHjxD0TA">
+<div class="bg-surface-container px-sm py-xs rounded-full flex items-center gap-xs">
+<span class="material-symbols-outlined text-secondary text-[16px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase">Verificable en Credly</span>
+</div>
+</div>
+<button class="w-full bg-primary text-on-primary py-sm rounded-lg font-button text-button hover:bg-primary-container active:scale-95 transition-all">Ver Detalles / Inscribirse</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Stats Counter Section -->
+<section class="py-xl bg-primary text-on-primary">
+<div class="container mx-auto px-margin-mobile md:px-margin-desktop">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-lg text-center"><div class="p-lg bg-white/10 rounded-xl flex flex-col items-center gap-sm text-center"><span class="material-symbols-outlined text-headline-lg">workspace_premium</span><h4 class="font-headline-sm text-headline-sm">Open Badges v2.0</h4><p class="text-body-sm opacity-80">Metadata estándar 100% compatible con Credly</p></div><div class="p-lg bg-white/10 rounded-xl flex flex-col items-center gap-sm text-center"><span class="material-symbols-outlined text-headline-lg">psychology</span><h4 class="font-headline-sm text-headline-sm">Modelo por Competencias</h4><p class="text-body-sm opacity-80">Evaluaciones prácticas integradas en Moodle</p></div><div class="p-lg bg-white/10 rounded-xl flex flex-col items-center gap-sm text-center"><span class="material-symbols-outlined text-headline-lg">school</span><h4 class="font-headline-sm text-headline-sm">Acreditación Oficial</h4><p class="text-body-sm opacity-80">Respaldo académico de la Universidad Politécnica de Texcoco</p></div><div class="p-lg bg-white/10 rounded-xl flex flex-col items-center gap-sm text-center"><span class="material-symbols-outlined text-headline-lg">account_tree</span><h4 class="font-headline-sm text-headline-sm">Rutas Formativas</h4><p class="text-body-sm opacity-80">Micro-aprendizaje estructurado y modular</p></div></div>
+</div>
+</section>
+<!-- CTA Institutional Section -->
+
+</main>
+<!-- Footer (JSON Managed) -->
+<footer class="w-full py-xl px-lg flex flex-col md:flex-row justify-between items-center gap-lg border-t border-outline-variant/20 dark:bg-inverse-surface mt-xl bg-primary">
+<div class="flex flex-col items-center md:items-start gap-xs">
+<span class="font-headline-sm text-headline-sm font-bold dark:text-primary-fixed text-on-primary">UPTex Moodle</span>
+<p class="font-body-sm text-body-sm text-on-surface dark:text-on-surface-variant opacity-70 text-on-primary">© 2024 UPTex Moodle. All rights reserved.</p>
+</div>
+<div class="flex gap-lg">
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors font-body-sm text-body-sm text-on-primary" href="#">Privacy</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors font-body-sm text-body-sm text-on-primary" href="#">Terms</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors font-body-sm text-body-sm text-on-primary" href="#">Accessibility</a>
+
+</div>
+</footer>
+<script>
+        // Micro-interactions
+        document.querySelectorAll('.card-hover').forEach(card => {
+            card.addEventListener('mousedown', () => {
+                card.style.transform = 'scale(0.98) translateY(-4px)';
+            });
+            card.addEventListener('mouseup', () => {
+                card.style.transform = 'translateY(-4px)';
+            });
+        });
+    </script>
+
+
+</body></html>

@@ -1,0 +1,35 @@
+{{!
+    @template theme_saec/components/metric_card
+
+    Bento-style KPI card (.uptex-metric-card, custom.scss Phase 1). Used for
+    the summary rows on the Calificador, Asistencia, Rendimiento Académico
+    and Estudiantes y Progreso dashboards. Icon HTML is expected pre-rendered
+    (e.g. via $OUTPUT->pix_icon()) and passed in as-is.
+
+    Example context (json):
+    {
+        "icon": "<img src=\"https://example.org/pix/i/grades.svg\" alt=\"\">",
+        "iconvariant": "accent",
+        "label": "Promedio Grupal",
+        "value": "8.4",
+        "hasvaluesuffix": true,
+        "valuesuffix": "/ 10",
+        "hasfootnote": true,
+        "footnote": "+4% vs parcial anterior"
+    }
+}}
+<div class="uptex-metric-card">
+    <div class="uptex-metric-card__icon {{#iconvariant}}uptex-metric-card__icon--{{ iconvariant }}{{/iconvariant}}" aria-hidden="true">
+        {{{ icon }}}
+    </div>
+    <div>
+        <p class="uptex-metric-card__label">{{ label }}</p>
+        <p class="uptex-metric-card__value">
+            {{ value }}
+            {{#hasvaluesuffix}}<small>{{ valuesuffix }}</small>{{/hasvaluesuffix}}
+        </p>
+        {{#hasfootnote}}
+            <p class="small text-muted mb-0 mt-1">{{ footnote }}</p>
+        {{/hasfootnote}}
+    </div>
+</div>

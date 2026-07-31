@@ -1,0 +1,217 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template core/loginform (theme_saec override)
+
+    UPTex/SAEC restyle of Moodle's native login form. Every field, hidden
+    input, JS hook and conditional block from lib/templates/loginform.mustache
+    is preserved (logintoken, username, password, error/info alerts,
+    forgotpasswordurl, recaptcha, hasidentityproviders/identityproviders,
+    hasinstructions, cansignup, languagemenu, cookies notice, autofocus/
+    error-focus/togglepassword/double-submit-protection JS) — only markup/
+    classes changed, plus two DISABLED decorative SSO buttons (visual only,
+    per design brief; no real identity provider is wired to them, so
+    they're inert rather than misleading) above a divider. Real, admin-
+    configured identity providers still render further down, guarded by
+    hasidentityproviders exactly as in core, unchanged.
+
+    Deliberately DROPPED by design decision: the guest-login block core
+    normally renders when canloginasguest is true (heading, hidden
+    guest/guest form, submit button, and its paired JS submit-guard) — the
+    guest-access entry point is intentionally absent from this theme's
+    login page, not a bug. The context variable is still accepted (Moodle
+    always supplies it) but no longer used.
+
+    Context variables: see lib/templates/loginform.mustache — identical,
+    minus the guest-login usage noted above.
+
+    Example context (json):
+    {
+        "autofocusform": false,
+        "canloginbyemail": false,
+        "cansignup": true,
+        "error": "",
+        "info": "",
+        "forgotpasswordurl": "https://example.org/login/forgot_password.php",
+        "hasidentityproviders": false,
+        "hasinstructions": true,
+        "identityproviders": [],
+        "instructions": "For full access to this site, you first need to create an account.",
+        "loginurl": "https://example.org/login/index.php",
+        "signupurl": "https://example.org/login/signup.php",
+        "logourl": false,
+        "sitename": "UPTex Moodle",
+        "logintoken": "randomstring",
+        "languagemenu": "Choose language",
+        "togglepassword": true,
+        "smallscreensonly": true
+    }
+}}
+
+<div class="uptex-login-card__form-inner">
+    {{#logourl}}
+        <div id="loginlogo" class="text-center mb-4">
+            <img id="logoimage" src="{{logourl}}" class="img-fluid uptex-login-card__form-logo" alt="{{sitename}}"/>
+            <h1 class="login-heading sr-only">{{#str}} loginto, core, {{sitename}} {{/str}}</h1>
+        </div>
+    {{/logourl}}
+    {{^logourl}}
+        <h1 class="login-heading h3 mb-1">{{#str}} loginwelcometitle, theme_saec {{/str}}</h1>
+    {{/logourl}}
+    <p class="text-muted mb-4">{{#str}} loginwelcomesubtitle, theme_saec {{/str}}</p>
+
+    {{#maintenance}}
+        <div class="alert alert-danger login-maintenance mb-4">
+            {{{maintenance}}}
+        </div>
+    {{/maintenance}}
+    {{#error}}
+        <a href="#" id="loginerrormessage" class="sr-only">{{error}}</a>
+        <div class="alert alert-danger mb-4" role="alert">{{error}}</div>
+    {{/error}}
+    {{#info}}
+        <a href="#" id="logininfomessage" class="sr-only">{{info}}</a>
+        <div class="alert alert-info mb-4" role="alert">{{info}}</div>
+    {{/info}}
+    {{#cansignup}}
+        <a href="{{signupurl}}" class="sr-only">{{#str}} tocreatenewaccount {{/str}}</a>
+    {{/cansignup}}
+
+    <div class="uptex-login-sso mb-4">
+        <button type="button" class="btn btn-outline-secondary btn-block uptex-login-sso__btn" disabled aria-disabled="true">
+            <i class="icon fa fa-google" aria-hidden="true"></i>
+            {{#str}} ssogoogle, theme_saec {{/str}}
+        </button>
+        <button type="button" class="btn btn-outline-secondary btn-block uptex-login-sso__btn" disabled aria-disabled="true">
+            <i class="icon fa fa-university" aria-hidden="true"></i>
+            {{#str}} ssoinstitutional, theme_saec {{/str}}
+        </button>
+    </div>
+    <div class="uptex-login-divider">
+        <span>{{#str}} ssodivider, theme_saec {{/str}}</span>
+    </div>
+
+    <form class="login-form" action="{{loginurl}}" method="post" id="login">
+        <input id="anchor" type="hidden" name="anchor" value="">
+        <script>document.getElementById('anchor').value = location.hash;</script>
+        <input type="hidden" name="logintoken" value="{{logintoken}}">
+        <div class="login-form-username mb-3">
+            <label for="username" class="uptex-login-label">
+                {{^canloginbyemail}}
+                    {{#str}} username {{/str}}
+                {{/canloginbyemail}}
+                {{#canloginbyemail}}
+                    {{#str}} usernameemail {{/str}}
+                {{/canloginbyemail}}
+            </label>
+            <input type="text" name="username" id="username" {{!
+                !}}class="form-control form-control-lg" {{!
+                !}}value="{{username}}" {{!
+                !}}placeholder="{{#cleanstr}} usernameplaceholder, theme_saec {{/cleanstr}}" {{!
+                !}}autocomplete="username">
+        </div>
+        <div class="login-form-password mb-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <label for="password" class="uptex-login-label mb-0">{{#str}} password {{/str}}</label>
+                <a class="small" href="{{forgotpasswordurl}}">{{#str}}forgotaccount{{/str}}</a>
+            </div>
+            <input type="password" name="password" id="password" value="" {{!
+                !}}class="form-control form-control-lg" {{!
+                !}}placeholder="••••••••" {{!
+                !}}autocomplete="current-password">
+        </div>
+        {{#recaptcha}}
+            <div class="login-form-recaptcha mb-3">
+                {{{recaptcha}}}
+            </div>
+        {{/recaptcha}}
+        <div class="login-form-submit mb-3">
+            <button class="btn btn-primary btn-lg btn-block" type="submit" id="loginbtn">{{#str}}login{{/str}}</button>
+        </div>
+    </form>
+
+    {{#hasidentityproviders}}
+        <hr class="my-4">
+        <div class="login-identityproviders">
+            <h2 class="login-heading h5">{{#str}} potentialidps, auth {{/str}}</h2>
+            {{#identityproviders}}
+                <a class="btn login-identityprovider-btn btn-block border" href="{{url}}">
+                    {{#iconurl}}
+                        <img src="{{iconurl}}" alt="" width="24" height="24"/>
+                    {{/iconurl}}
+                    {{name}}
+                </a>
+            {{/identityproviders}}
+        </div>
+    {{/hasidentityproviders}}
+    {{#hasinstructions}}
+        <hr class="my-4">
+        <div class="login-instructions {{#cansignup}}mb-3{{/cansignup}}">
+            <h2 class="login-heading h5">{{#str}}firsttime{{/str}}</h2>
+            {{{instructions}}}
+        </div>
+    {{/hasinstructions}}
+    {{#cansignup}}
+        <p class="text-center mt-4 mb-0">
+            {{#str}} nosignupaccount, theme_saec {{/str}} <a class="font-weight-bold" href="{{signupurl}}">{{#str}}startsignup{{/str}}</a>
+        </p>
+    {{/cansignup}}
+    <hr class="my-4">
+    <div class="d-flex align-items-center justify-content-center">
+        {{#languagemenu}}
+            <div class="login-languagemenu">
+                {{>core/action_menu}}
+            </div>
+            <div class="divider border-left align-self-center mx-3"></div>
+        {{/languagemenu}}
+        <button type="button" class="btn btn-link btn-sm text-muted" {{!
+        }} data-modal="alert"{{!
+        }} data-modal-title-str='["cookiesenabled", "core"]' {{!
+        }} data-modal-content-str='["cookiesenabled_help_html", "core"]'{{!
+        }}>{{#str}}cookiesnotice{{/str}}</button>
+    </div>
+</div>
+
+{{#js}}
+    {{^error}}
+        {{#autofocusform}}
+            require(['core_form/events'], function(FormEvent) {
+                function autoFocus() {
+                    const userNameField = document.getElementById('username');
+                    if (userNameField.value.length == 0) {
+                        userNameField.focus();
+                    } else {
+                        document.getElementById('password').focus();
+                    }
+                }
+                autoFocus();
+                window.addEventListener(FormEvent.eventTypes.fieldStructureChanged, autoFocus);
+            });
+        {{/autofocusform}}
+    {{/error}}
+    {{#error}}
+        document.getElementById('loginerrormessage').focus();
+    {{/error}}
+    {{#togglepassword}}
+        require(['core/togglesensitive'], function(ToggleSensitive) {
+            ToggleSensitive.init("password", {{smallscreensonly}});
+        });
+    {{/togglepassword}}
+    require(['core_form/submit'], function(Submit) {
+        Submit.init("loginbtn");
+    });
+{{/js}}

@@ -1,0 +1,86 @@
+{{!
+    @template theme_saec/components/course_grid
+
+    Responsive UPTex course grid, 4 cards per row on desktop
+    (col-lg-3 col-md-6 col-12). Each card is a .uptex-course-showcase-card
+    (scss/custom.scss section 5): image + category tag overlay, a clock/
+    duration meta row, title, instructor, an optional Credly verification
+    chip, and a full-width CTA button.
+
+    duration and isverifiable are OPTIONAL — the current frontpage
+    course loop (layout/frontpage.php) does not supply them, so those bits
+    simply do not render; the card still degrades cleanly to image + title
+    + instructor + CTA.
+
+    Example context (json):
+    {
+        "hascourses": true,
+        "courses": [
+            {
+                "id": 2,
+                "fullname": "Curso demo",
+                "url": "https://example.org/course/view.php?id=2",
+                "image": "https://example.org/theme/saec/pix/img1.png",
+                "hasimage": true,
+                "instructor": "Jane Doe",
+                "categoryname": "Salud",
+                "duration": "40 hrs / 4 Semanas",
+                "isverifiable": false
+            }
+        ]
+    }
+}}
+<section class="saec-course-grid">
+    <div class="container">
+        <h2 class="saec-course-grid__heading">{{#str}} coursesheading, theme_saec {{/str}}</h2>
+        <p class="saec-course-grid__subheading">{{#str}} coursessubheading, theme_saec {{/str}}</p>
+
+        {{#hascourses}}
+            <div class="row">
+                {{#courses}}
+                    <div class="col-lg-3 col-md-6 col-12 mb-4">
+                        <div class="uptex-course-showcase-card">
+                            <div class="uptex-course-showcase-card__media">
+                                {{#categoryname}}
+                                    <span class="uptex-course-showcase-card__tag uptex-course-showcase-card__tag--green">{{ categoryname }}</span>
+                                {{/categoryname}}
+                                {{#hasimage}}
+                                    <img src="{{{ image }}}" alt="" loading="lazy">
+                                {{/hasimage}}
+                                {{^hasimage}}
+                                    <div class="saec-card-img__placeholder">{{#str}} placeholderinitial, theme_saec {{/str}}</div>
+                                {{/hasimage}}
+                            </div>
+                            <div class="uptex-course-showcase-card__body">
+                                {{#duration}}
+                                    <div class="uptex-course-showcase-card__meta">
+                                        <i class="icon fa fa-clock" aria-hidden="true"></i>
+                                        <span>{{ duration }}</span>
+                                    </div>
+                                {{/duration}}
+                                <p class="uptex-course-showcase-card__title">
+                                    <a href="{{{ url }}}" class="text-reset">{{ fullname }}</a>
+                                </p>
+                                {{#instructor}}
+                                    <p class="uptex-course-showcase-card__instructor">{{ instructor }}</p>
+                                {{/instructor}}
+                                <div class="uptex-course-showcase-card__footer">
+                                    {{#isverifiable}}
+                                        <span class="uptex-chip uptex-chip--success">
+                                            <i class="icon fa fa-check-circle" aria-hidden="true"></i>
+                                            {{#str}} credlyverifiable, theme_saec {{/str}}
+                                        </span>
+                                    {{/isverifiable}}
+                                    <a href="{{{ url }}}" class="btn btn-primary btn-block">{{#str}} view, moodle {{/str}}</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {{/courses}}
+            </div>
+        {{/hascourses}}
+        {{^hascourses}}
+            <div class="saec-course-grid__empty">{{#str}} nocoursesavailable, theme_saec {{/str}}</div>
+        {{/hascourses}}
+    </div>
+</section>

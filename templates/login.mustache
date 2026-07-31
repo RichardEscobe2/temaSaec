@@ -1,0 +1,85 @@
+{{!
+    @template theme_saec/login
+
+    UPTex/SAEC login page shell (layout/login.php's target — NOT boost's
+    theme_boost/login: that page-shell wraps output.main_content in
+    .login-wrapper/.login-container, and Boost's own SCSS hard-caps
+    .login-container at 500px width with !important, which would clip this
+    2-column layout. This template avoids that wrapper entirely instead of
+    fighting it.
+
+    Left column: static UPTex brand/hero panel (this file). Right column:
+    output.main_content, Moodle's real, unmodified login pipeline, which
+    resolves to theme_saec's override of core/loginform (see
+    templates/core/loginform.mustache) via the normal theme template
+    override lookup. Every native auth field/hook (logintoken, username,
+    password, error alerts, CSRF, JS double-submit protection, password
+    show/hide) lives there, untouched by this file.
+
+    Example context (json):
+    {
+        "sitename": "UPTex Moodle",
+        "bodyattributes": "",
+        "output": {
+            "standard_top_of_body_html": "",
+            "standard_footer_html": "",
+            "standard_end_of_body_html": "",
+            "main_content": ""
+        },
+        "logourl": "https://example.org/theme/saec/pix/logo1.png",
+        "heroimage": "https://example.org/theme/saec/pix/img1.png",
+        "currentyear": "2026"
+    }
+}}
+{{> theme_boost/head }}
+
+<body {{{ bodyattributes }}}>
+{{> core/local/toast/wrapper}}
+
+{{{ output.standard_top_of_body_html }}}
+
+<div class="uptex-login-wrapper">
+    <div class="uptex-login-card">
+        <div class="row no-gutters">
+            <div class="col-lg-5 d-none d-lg-flex">
+                <div class="uptex-login-card__hero">
+                    <div class="uptex-login-card__hero-badge" aria-hidden="true">
+                        <i class="icon fa fa-award" aria-hidden="true"></i>
+                    </div>
+                    <h1 class="uptex-login-card__hero-title">{{#str}} loginherotitle, theme_saec {{/str}}</h1>
+                    <p class="uptex-login-card__hero-subtitle">{{#str}} loginherosubtitle, theme_saec {{/str}}</p>
+                    <div class="uptex-login-card__hero-media">
+                        <img src="{{{ heroimage }}}" alt="" class="uptex-login-hero-img">
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-7">
+                <div class="uptex-login-card__form">
+                    {{{ output.main_content }}}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="uptex-login-footer">
+        <p class="mb-1">{{#str}} loginfootercopyright, theme_saec, {{ currentyear }} {{/str}}</p>
+        <div>
+            <a href="#">{{#str}} legalprivacy, theme_saec {{/str}}</a>
+            <span aria-hidden="true">&middot;</span>
+            <a href="#">{{#str}} legalterms, theme_saec {{/str}}</a>
+            <span aria-hidden="true">&middot;</span>
+            <a href="#">{{#str}} legalaccessibility, theme_saec {{/str}}</a>
+        </div>
+    </footer>
+</div>
+
+{{{ output.standard_footer_html }}}
+{{{ output.standard_end_of_body_html }}}
+</body>
+</html>
+{{#js}}
+M.util.js_pending('theme_boost/loader');
+require(['theme_boost/loader'], function() {
+  M.util.js_complete('theme_boost/loader');
+});
+{{/js}}

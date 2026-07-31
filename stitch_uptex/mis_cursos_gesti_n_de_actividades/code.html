@@ -1,0 +1,403 @@
+<!DOCTYPE html><html class="light" lang="es"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Mis Cursos - Gestión de Actividades | UPTex Moodle</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=Hanken+Grotesk:wght@600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@100..900&amp;family=Inter:wght@100..900&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-container": "#d42c2b",
+                    "on-primary-fixed": "#00210c",
+                    "primary-container": "#0b8043",
+                    "surface-container": "#ebeef4",
+                    "on-secondary-fixed-variant": "#2c5000",
+                    "error": "#ba1a1a",
+                    "surface-container-highest": "#dfe3e8",
+                    "on-primary-fixed-variant": "#005228",
+                    "inverse-on-surface": "#eef1f7",
+                    "outline-variant": "#becabd",
+                    "on-surface": "#181c20",
+                    "outline": "#6f7a6f",
+                    "on-secondary-container": "#407100",
+                    "tertiary-fixed-dim": "#ffb4ac",
+                    "surface-tint": "#006d37",
+                    "inverse-primary": "#77db93",
+                    "surface-container-low": "#f1f4fa",
+                    "on-tertiary": "#ffffff",
+                    "secondary-container": "#b8f47a",
+                    "surface": "#f7f9ff",
+                    "surface-container-lowest": "#ffffff",
+                    "inverse-surface": "#2d3135",
+                    "on-tertiary-container": "#fff1ef",
+                    "on-tertiary-fixed": "#410002",
+                    "on-error": "#ffffff",
+                    "primary": "#006532",
+                    "secondary-fixed": "#b8f47a",
+                    "on-error-container": "#93000a",
+                    "primary-fixed": "#93f8ae",
+                    "on-primary": "#ffffff",
+                    "tertiary-fixed": "#ffdad6",
+                    "on-secondary-fixed": "#0e2000",
+                    "surface-container-high": "#e5e8ee",
+                    "surface-dim": "#d7dae0",
+                    "secondary": "#3c6a00",
+                    "on-primary-container": "#d1ffd8",
+                    "background": "#f7f9ff",
+                    "on-surface-variant": "#3f4940",
+                    "error-container": "#ffdad6",
+                    "secondary-fixed-dim": "#9dd761",
+                    "on-background": "#181c20",
+                    "surface-variant": "#dfe3e8",
+                    "on-tertiary-fixed-variant": "#93000d",
+                    "surface-bright": "#f7f9ff",
+                    "primary-fixed-dim": "#77db93",
+                    "tertiary": "#b00a16",
+                    "on-secondary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "margin-desktop": "48px",
+                    "gutter": "24px",
+                    "lg": "24px",
+                    "md": "16px",
+                    "margin-mobile": "16px",
+                    "sm": "8px",
+                    "xs": "4px",
+                    "xl": "32px",
+                    "base": "4px",
+                    "xxl": "48px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Hanken Grotesk"],
+                    "body-md": ["Inter"],
+                    "headline-lg": ["Hanken Grotesk"],
+                    "body-lg": ["Inter"],
+                    "button": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "label-md": ["Inter"],
+                    "headline-lg-mobile": ["Hanken Grotesk"],
+                    "display": ["Hanken Grotesk"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "button": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "display": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .accordion-active .accordion-content {
+            max-height: 1000px;
+        }
+        .accordion-active .accordion-icon {
+            transform: rotate(180deg);
+        }
+        body {
+            background-color: #f7f9ff;
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-surface">
+<!-- TopNavBar -->
+<header class="sticky top-0 z-50 flex justify-between items-center px-lg py-sm w-full bg-surface-container-lowest border-b border-outline-variant/20 h-16">
+<div class="flex items-center gap-md">
+<span class="font-display text-headline-md font-bold text-primary">UPTex Moodle</span>
+</div>
+<div class="flex-grow"></div> <!-- Empty Center -->
+<div class="flex items-center gap-md">
+<button class="p-2 hover:bg-surface-container rounded-lg transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="flex items-center gap-sm pl-md border-l border-outline-variant/20">
+<div class="text-right hidden sm:block">
+<p class="font-label-md text-on-surface">Dr. Ricardo Pérez</p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-wider">Profesor Titular</p>
+</div>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary-container">
+<img class="w-full h-full object-cover" data-alt="A professional studio portrait of a university professor in his late 40s, wearing a charcoal grey blazer over a crisp white shirt. He has a friendly, intelligent expression with short-cropped salt-and-pepper hair. The lighting is soft and directional, typical of corporate photography, against a clean, neutral institutional office background that maintains the minimalist, high-end professional aesthetic of the UPTex brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAojJlBus2rMcsnuXmYiAxkgnPGBrILGp6sGOhQ8R_IepoptL5cN7kyWCBxILhF95mP8XSB2grlx4PA0csfepPC3gb2hzeOreaaT2ZS_PTTEVWugPX8qzAUD4fs4Lr_kgjzAXF2q0DGFn7KAOp8yl7FLpQYJymcQNe1mtgN4K3oQVn0c0m5R1I85gFEJzIo3w0_T1zftHHoDwn6JOl0yWdZuYhDTLUv-iv-3H2z6tL5U8y_J9JakZR3Pw">
+</div>
+</div>
+</div>
+</header>
+<div class="flex min-h-screen">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col h-[calc(100vh-64px)] fixed left-0 top-16 border-r border-outline-variant/20 w-64 z-40 bg-surface-container">
+<nav class="flex-grow pt-md">
+<!-- Dashboard -->
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-full mx-md my-xs px-md py-sm flex items-center gap-md transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md">Dashboard</span>
+</a>
+<!-- Mis Cursos (ACTIVE) -->
+<a class="bg-primary-container text-on-primary-container rounded-full mx-md my-xs px-md py-sm flex items-center gap-md" href="#">
+<span class="material-symbols-outlined">school</span>
+<span class="font-label-md">Mis Cursos</span>
+</a>
+<!-- Calificador -->
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-full mx-md my-xs px-md py-sm flex items-center gap-md transition-all" href="#">
+<span class="material-symbols-outlined">verified</span>
+<span class="font-label-md">Calificador</span>
+</a>
+<!-- Asistencia -->
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-full mx-md my-xs px-md py-sm flex items-center gap-md transition-all" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-md">Asistencia</span>
+</a>
+<!-- Estudiantes y Progreso -->
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-full mx-md my-xs px-md py-sm flex items-center gap-md transition-all" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-label-md">Estudiantes y Progreso</span>
+</a>
+</nav>
+<div class="p-md border-t border-outline-variant/20">
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-full px-md py-sm flex items-center gap-md transition-all mb-xs" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-md text-label-md">Help Center</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-variant rounded-full px-md py-sm flex items-center gap-md transition-all" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-md text-label-md">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-grow md:ml-64 p-lg md:p-xxl bg-surface">
+<!-- Content Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-lg mb-xl">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-xs">Mis Cursos Asignados</h1>
+<p class="text-on-surface-variant font-body-md">Gestión y administración de actividades académicas.</p>
+</div>
+<div class="w-full md:w-80">
+<label class="block text-label-md font-label-md text-on-surface-variant mb-xs">Seleccionar Curso</label>
+<div class="relative">
+<select class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-lg px-md py-sm appearance-none focus:ring-2 focus:ring-primary focus:border-primary outline-none text-on-surface">
+<option>Ingeniería de Software II - Grupo A</option>
+<option>Arquitectura de Sistemas - Grupo B</option>
+<option>Base de Datos Avanzadas - Grupo C</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Notice Banner -->
+<div class="bg-surface-container-high rounded-xl p-md mb-xl flex items-center gap-md border-l-4 border-primary shadow-sm">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">info</span>
+<p class="font-body-sm text-on-surface-variant">
+<span class="font-bold text-on-surface">Aviso importante:</span> Los cursos son creados y asignados por la Jefatura de Carrera. Si no visualiza un curso, contacte a coordinación.
+                </p>
+</div>
+<!-- Bento-style Units Grid/Stack -->
+<div class="flex flex-col gap-lg">
+<!-- Unit 1 Accordion -->
+<div class="accordion-item bg-surface-container-lowest rounded-xl border border-outline-variant/15 overflow-hidden shadow-sm hover:shadow-md transition-shadow accordion-active" id="unit1">
+<button class="w-full flex items-center justify-between p-lg text-left bg-white transition-colors border-b border-outline-variant/10" onclick="toggleAccordion('unit1')">
+<div class="flex items-center gap-lg">
+<div class="w-12 h-12 rounded-lg bg-primary-container/10 flex items-center justify-center text-primary">
+<span class="font-display font-bold text-headline-md">01</span>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Unidad 1: Fundamentos</h3>
+<p class="text-label-md text-on-surface-variant uppercase tracking-wider">4 Actividades • 2 Recursos</p>
+</div>
+</div>
+<span class="material-symbols-outlined accordion-icon transition-transform text-on-surface-variant">expand_more</span>
+</button>
+<div class="accordion-content">
+<div class="p-lg space-y-md">
+<!-- List of Activities -->
+<div class="grid grid-cols-1 gap-sm">
+<!-- PDF Item -->
+<div class="flex items-center justify-between p-md bg-surface-container-low/40 rounded-lg group hover:bg-white transition-all border border-transparent hover:border-outline-variant/30">
+<div class="flex items-center gap-md">
+<div class="p-2 rounded bg-tertiary/10 text-tertiary">
+<span class="material-symbols-outlined">picture_as_pdf</span>
+</div>
+<div>
+<p class="font-button text-on-surface">Guía de Introducción al Desarrollo Ágil.pdf</p>
+<p class="text-[12px] text-on-surface-variant">Recurso de Lectura • 4.2 MB</p>
+</div>
+</div>
+<div class="flex items-center gap-xs opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-primary-container/10 rounded-lg transition-colors" title="Editar"><span class="material-symbols-outlined text-[20px]">edit</span></button>
+<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-primary-container/10 rounded-lg transition-colors" title="Ver"><span class="material-symbols-outlined text-[20px]">visibility</span></button>
+<button class="p-2 text-on-surface-variant hover:text-error hover:bg-error/10 rounded-lg transition-colors" title="Eliminar"><span class="material-symbols-outlined text-[20px]">delete</span></button>
+</div>
+</div>
+<!-- Quiz Item -->
+<div class="flex items-center justify-between p-md bg-surface-container-low/40 rounded-lg group hover:bg-white transition-all border border-transparent hover:border-outline-variant/30">
+<div class="flex items-center gap-md">
+<div class="p-2 rounded bg-secondary-container/30 text-secondary">
+<span class="material-symbols-outlined">quiz</span>
+</div>
+<div>
+<p class="font-button text-on-surface">Cuestionario: Conceptos Básicos</p>
+<p class="text-[12px] text-on-surface-variant">Tarea Evaluativa • 10 Preguntas • Vence en 3 días</p>
+</div>
+</div>
+<div class="flex items-center gap-xs opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-primary-container/10 rounded-lg transition-colors" title="Editar"><span class="material-symbols-outlined text-[20px]">edit</span></button>
+<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-primary-container/10 rounded-lg transition-colors" title="Ver"><span class="material-symbols-outlined text-[20px]">visibility</span></button>
+<button class="p-2 text-on-surface-variant hover:text-error hover:bg-error/10 rounded-lg transition-colors" title="Eliminar"><span class="material-symbols-outlined text-[20px]">delete</span></button>
+</div>
+</div>
+<!-- Forum Item -->
+<div class="flex items-center justify-between p-md bg-surface-container-low/40 rounded-lg group hover:bg-white transition-all border border-transparent hover:border-outline-variant/30">
+<div class="flex items-center gap-md">
+<div class="p-2 rounded bg-primary-container/10 text-primary">
+<span class="material-symbols-outlined">forum</span>
+</div>
+<div>
+<p class="font-button text-on-surface">Foro de Debate: Metodologías en Cascada</p>
+<p class="text-[12px] text-on-surface-variant">Actividad Social • 12 Participantes</p>
+</div>
+</div>
+<div class="flex items-center gap-xs opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-primary-container/10 rounded-lg transition-colors" title="Editar"><span class="material-symbols-outlined text-[20px]">edit</span></button>
+<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-primary-container/10 rounded-lg transition-colors" title="Ver"><span class="material-symbols-outlined text-[20px]">visibility</span></button>
+<button class="p-2 text-on-surface-variant hover:text-error hover:bg-error/10 rounded-lg transition-colors" title="Eliminar"><span class="material-symbols-outlined text-[20px]">delete</span></button>
+</div>
+</div>
+<!-- Task Item -->
+<div class="flex items-center justify-between p-md bg-surface-container-low/40 rounded-lg group hover:bg-white transition-all border border-transparent hover:border-outline-variant/30">
+<div class="flex items-center gap-md">
+<div class="p-2 rounded bg-primary-container/10 text-primary">
+<span class="material-symbols-outlined">task</span>
+</div>
+<div>
+<p class="font-button text-on-surface">Tarea: Diagrama de Clases Inicial</p>
+<p class="text-[12px] text-on-surface-variant">Entrega de Archivo • 24/45 entregados</p>
+</div>
+</div>
+<div class="flex items-center gap-xs opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-primary-container/10 rounded-lg transition-colors" title="Editar"><span class="material-symbols-outlined text-[20px]">edit</span></button>
+<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-primary-container/10 rounded-lg transition-colors" title="Ver"><span class="material-symbols-outlined text-[20px]">visibility</span></button>
+<button class="p-2 text-on-surface-variant hover:text-error hover:bg-error/10 rounded-lg transition-colors" title="Eliminar"><span class="material-symbols-outlined text-[20px]">delete</span></button>
+</div>
+</div>
+</div>
+<button class="w-full mt-md py-sm border-2 border-dashed border-outline-variant rounded-xl text-on-surface-variant hover:bg-surface-container transition-all flex items-center justify-center gap-sm">
+<span class="material-symbols-outlined">add_circle</span>
+<span class="font-button">Añadir Actividad o Recurso</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Unit 2 Accordion -->
+<div class="accordion-item bg-surface-container-lowest rounded-xl border border-outline-variant/15 overflow-hidden shadow-sm hover:shadow-md transition-shadow" id="unit2">
+<button class="w-full flex items-center justify-between p-lg text-left bg-white transition-colors border-b border-outline-variant/10" onclick="toggleAccordion('unit2')">
+<div class="flex items-center gap-lg">
+<div class="w-12 h-12 rounded-lg bg-primary-container/10 flex items-center justify-center text-primary">
+<span class="font-display font-bold text-headline-md">02</span>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Unidad 2: Backend</h3>
+<p class="text-label-md text-on-surface-variant uppercase tracking-wider">2 Actividades • 1 Recurso</p>
+</div>
+</div>
+<span class="material-symbols-outlined accordion-icon transition-transform text-on-surface-variant">expand_more</span>
+</button>
+<div class="accordion-content">
+<div class="p-lg">
+<div class="flex items-center justify-center py-xl bg-surface-container-low/20 rounded-lg border-2 border-dashed border-outline-variant/40">
+<div class="text-center">
+<span class="material-symbols-outlined text-outline text-display opacity-20 mb-md">inventory_2</span>
+<p class="text-on-surface-variant font-body-sm mb-lg">Esta unidad aún no contiene actividades activas.</p>
+<button class="bg-primary text-on-primary px-lg py-sm rounded-full font-button hover:bg-surface-tint active:scale-95 transition-all">
+                                        Crear Actividad Initial
+                                    </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Stats/Insights (Asymmetric addition for high-end UI feel) -->
+<div class="mt-xxl grid grid-cols-1 lg:grid-cols-3 gap-lg">
+<div class="lg:col-span-2 bg-surface-container-lowest p-lg rounded-xl border border-outline-variant/15 shadow-sm">
+<div class="flex items-center justify-between mb-lg">
+<h4 class="font-headline-md text-headline-md text-on-surface">Resumen de Participación</h4>
+<button class="text-primary font-label-md hover:underline">Ver Reporte Detallado</button>
+</div>
+<div class="flex items-end gap-md h-40">
+<div class="flex-grow bg-primary-container/20 rounded-t-lg relative group h-[40%]" title="Unidad 1">
+<div class="absolute inset-x-0 bottom-0 bg-primary h-[85%] rounded-t-lg"></div>
+</div>
+<div class="flex-grow bg-primary-container/20 rounded-t-lg relative group h-[60%]" title="Unidad 2">
+<div class="absolute inset-x-0 bottom-0 bg-primary h-[25%] rounded-t-lg"></div>
+</div>
+<div class="flex-grow bg-primary-container/20 rounded-t-lg relative group h-[80%]" title="Unidad 3">
+<div class="absolute inset-x-0 bottom-0 bg-primary h-[0%] rounded-t-lg"></div>
+</div>
+<div class="flex-grow bg-primary-container/20 rounded-t-lg relative group h-[50%]" title="Unidad 4">
+<div class="absolute inset-x-0 bottom-0 bg-primary h-[0%] rounded-t-lg"></div>
+</div>
+</div>
+<div class="flex justify-between mt-sm text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">
+<span>U1</span><span>U2</span><span>U3</span><span>U4</span>
+</div>
+</div>
+<div class="bg-primary-container text-on-primary-container p-lg rounded-xl flex flex-col justify-between overflow-hidden relative">
+<span class="material-symbols-outlined absolute -right-4 -bottom-4 text-[120px] opacity-10">trending_up</span>
+<div>
+<h4 class="font-label-md uppercase tracking-wider mb-sm opacity-80">Promedio del Grupo</h4>
+<p class="text-display font-bold">84.2</p>
+</div>
+<p class="font-body-sm">+4.3% respecto al periodo anterior</p>
+</div>
+</div>
+</main>
+</div>
+<!-- Footer -->
+<footer class="w-full py-xl px-lg flex flex-col md:flex-row justify-between items-center gap-lg border-t border-outline-variant/20 bg-surface-container-highest md:ml-64 w-[calc(100%-16rem)]">
+<div class="text-on-surface font-body-sm">
+            © 2024 UPTex Moodle. All rights reserved.
+        </div>
+<div class="flex gap-md">
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-sm" href="#">Privacy</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-sm" href="#">Terms</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-sm" href="#">Accessibility</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-sm" href="#">Contact</a>
+</div>
+</footer>
+<script>
+        function toggleAccordion(id) {
+            const el = document.getElementById(id);
+            if (el.classList.contains('accordion-active')) {
+                el.classList.remove('accordion-active');
+            } else {
+                // Optional: Close others
+                // document.querySelectorAll('.accordion-item').forEach(item => item.classList.remove('accordion-active'));
+                el.classList.add('accordion-active');
+            }
+        }
+    </script>
+</body></html>

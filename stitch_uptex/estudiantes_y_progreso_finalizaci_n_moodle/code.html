@@ -1,0 +1,433 @@
+<!DOCTYPE html><html class="light" lang="es"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Estudiantes y Progreso - UPTex Moodle</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=Hanken+Grotesk:wght@600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@100..900&amp;family=Inter:wght@100..900&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed": "#b8f47a",
+                        "outline-variant": "#becabd",
+                        "on-primary-container": "#d1ffd8",
+                        "surface-bright": "#f7f9ff",
+                        "on-tertiary-container": "#fff1ef",
+                        "outline": "#6f7a6f",
+                        "secondary-container": "#b8f47a",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-primary": "#77db93",
+                        "on-secondary-fixed-variant": "#2c5000",
+                        "background": "#f7f9ff",
+                        "surface-container-highest": "#dfe3e8",
+                        "on-surface-variant": "#3f4940",
+                        "primary-container": "#0b8043",
+                        "on-tertiary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#93000d",
+                        "on-error-container": "#93000a",
+                        "surface-tint": "#006d37",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#e5e8ee",
+                        "on-primary-fixed-variant": "#005228",
+                        "surface-variant": "#dfe3e8",
+                        "on-primary-fixed": "#00210c",
+                        "on-secondary": "#ffffff",
+                        "on-background": "#181c20",
+                        "tertiary": "#b00a16",
+                        "surface-container": "#ebeef4",
+                        "surface": "#f7f9ff",
+                        "tertiary-fixed": "#ffdad6",
+                        "on-tertiary-fixed": "#410002",
+                        "secondary-fixed-dim": "#9dd761",
+                        "secondary": "#3c6a00",
+                        "on-error": "#ffffff",
+                        "inverse-surface": "#2d3135",
+                        "primary-fixed": "#93f8ae",
+                        "primary-fixed-dim": "#77db93",
+                        "tertiary-container": "#d42c2b",
+                        "on-secondary-container": "#407100",
+                        "on-secondary-fixed": "#0e2000",
+                        "primary": "#006532",
+                        "surface-container-low": "#f1f4fa",
+                        "surface-dim": "#d7dae0",
+                        "on-surface": "#181c20",
+                        "inverse-on-surface": "#eef1f7",
+                        "tertiary-fixed-dim": "#ffb4ac",
+                        "error": "#ba1a1a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "xxl": "48px",
+                        "xl": "32px",
+                        "xs": "4px",
+                        "base": "4px",
+                        "sm": "8px",
+                        "margin-mobile": "16px",
+                        "lg": "24px",
+                        "gutter": "24px",
+                        "md": "16px",
+                        "margin-desktop": "48px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "button": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "body-sm": ["Inter"],
+                        "headline-lg-mobile": ["Hanken Grotesk"],
+                        "body-lg": ["Inter"],
+                        "display": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "button": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "display": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body { font-family: 'Inter', sans-serif; background-color: #f7f9ff; }
+        .sidebar-active { background-color: #0b8043; color: #ffffff !important; }
+        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(95, 99, 104, 0.15); }
+        .table-row-hover:hover { background-color: #f1f4fa; }
+    </style>
+</head>
+<body class="text-on-surface">
+<!-- TopNavBar Shell -->
+<nav class="sticky top-0 z-50 flex justify-between items-center px-lg py-sm w-full bg-surface-container-lowest dark:bg-inverse-surface border-b border-outline-variant/20">
+<div class="flex items-center gap-md">
+<div class="font-display text-headline-md font-bold text-primary dark:text-primary-fixed">UPTex Moodle</div>
+</div>
+<div><!-- CENTER EMPTY --></div>
+<div class="flex items-center gap-md">
+<button class="material-symbols-outlined text-on-surface-variant p-sm hover:bg-surface-container rounded-lg">notifications</button>
+<div class="flex items-center gap-sm bg-surface-container-low p-xs pr-md rounded-full border border-outline-variant/20">
+<img class="w-8 h-8 rounded-full border border-primary" data-alt="A professional headshot of Dr. Alberto Ramos, a senior university professor with a warm, approachable smile, wearing a charcoal blazer over a crisp light blue shirt. The background is a soft-focus academic library with hints of dark wood and classic books. High-quality lighting highlights his professional demeanor and expertise." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdz8Kc9n_RqO3TaGu7j3zOm2JO0BrRqUxeuF7c4qGG7UN54yn89Q2okkzEmq-MwAwkeLoeyA6jtKA7RB8FDOjA-KSAiEwvtR14QQcE6zojJGYE0FATLKduaOK_fsdzBTQmrdN6SRWM-ZXwiSnifaU2yI4GA4lGtpS4KFRB_L2LG6t_BeQk8z_lKwTGpj3CfATrpk43I5nsFJobdZs4Z6KHl2E2M44R_Wof2zo6XWjr2rooL9hdhbBjUw">
+<span class="font-label-md text-label-md text-on-surface">Dr. Alberto Ramos</span>
+</div>
+</div>
+</nav>
+<!-- Sidebar & Content Wrapper -->
+<div class="flex min-h-screen">
+<!-- SideNavBar Shell -->
+<aside class="hidden md:flex flex-col h-screen sticky left-0 top-16 border-r border-outline-variant/20 w-64 z-40 bg-surface-container">
+<div class="flex flex-col py-md h-full">
+<nav class="flex-1 space-y-1">
+<a class="text-on-surface-variant hover:bg-surface-variant/50 rounded-full mx-md my-xs px-md py-sm flex items-center gap-md transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md">Dashboard</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-variant/50 rounded-full mx-md my-xs px-md py-sm flex items-center gap-md transition-all" href="#">
+<span class="material-symbols-outlined">school</span>
+<span class="font-label-md">Mis Cursos</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-variant/50 rounded-full mx-md my-xs px-md py-sm flex items-center gap-md transition-all" href="#">
+<span class="material-symbols-outlined">grade</span>
+<span class="font-label-md">Calificador</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-variant/50 rounded-full mx-md my-xs px-md py-sm flex items-center gap-md transition-all" href="#">
+<span class="material-symbols-outlined">checklist</span>
+<span class="font-label-md">Asistencia</span>
+</a>
+<a class="sidebar-active rounded-full mx-md my-xs px-md py-sm flex items-center gap-md transition-all" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-md">Estudiantes y Progreso</span>
+</a>
+</nav>
+<div class="mt-auto border-t border-outline-variant/10 pt-md">
+<a class="text-on-surface-variant hover:bg-surface-variant/50 rounded-full mx-md my-xs px-md py-sm flex items-center gap-md" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-md">Help Center</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-variant/50 rounded-full mx-md my-xs px-md py-sm flex items-center gap-md" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-md">Logout</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 p-lg md:p-xxl bg-surface">
+<!-- Breadcrumbs -->
+<nav class="mb-lg flex items-center gap-sm text-on-surface-variant">
+<a class="hover:text-primary transition-colors font-body-sm text-body-sm" href="#">Cursos</a>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="font-bold font-body-sm text-body-sm text-primary">Ingeniería de Software II</span>
+</nav>
+<!-- Header Section -->
+<div class="mb-xl">
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-xs">Reporte de Finalización de Actividades</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Monitoreo en tiempo real del desempeño y elegibilidad para insignias digitales.</p>
+</div>
+<!-- Summary Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-lg mb-xl">
+<!-- Card 1 -->
+<div class="glass-card p-lg rounded-xl flex flex-col justify-between">
+<div>
+<p class="font-label-md text-on-surface-variant mb-xs">Estudiantes Totales</p>
+<h3 class="font-headline-md text-headline-md text-on-surface">32</h3>
+</div>
+<div class="mt-md pt-md border-t border-outline-variant/10">
+<span class="text-primary font-bold">+2</span> <span class="text-on-surface-variant text-body-sm">esta semana</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="glass-card p-lg rounded-xl flex flex-col justify-between">
+<div>
+<p class="font-label-md text-on-surface-variant mb-xs">Promedio de Avance</p>
+<h3 class="font-headline-md text-headline-md text-on-surface">78.4%</h3>
+</div>
+<div class="mt-md w-full bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full" style="width: 78.4%"></div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="glass-card p-lg rounded-xl flex flex-col justify-between">
+<div>
+<p class="font-label-md text-on-surface-variant mb-xs">Elegibles Credly</p>
+<h3 class="font-headline-md text-headline-md text-on-surface">14 <span class="text-on-surface-variant text-body-md font-normal">de 32</span></h3>
+</div>
+<div class="mt-md flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">verified</span>
+<span class="text-primary font-label-md">Registrados en Credly</span>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="glass-card p-lg rounded-xl flex flex-col justify-between">
+<div>
+<p class="font-label-md text-on-surface-variant mb-xs">Tareas Pendientes</p>
+<h3 class="font-headline-md text-headline-md text-tertiary">08</h3>
+</div>
+<div class="mt-md pt-md border-t border-outline-variant/10">
+<span class="text-on-surface-variant text-body-sm">Por calificar</span>
+</div>
+</div>
+</div>
+<!-- Primary Action Bar -->
+<div class="flex flex-col lg:flex-row gap-md justify-between items-center mb-lg">
+<div class="flex flex-1 gap-md w-full">
+<div class="relative flex-1 max-w-md">
+<span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full pl-xl pr-md py-sm rounded-lg border border-outline-variant bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:border-primary transition-all" placeholder="Buscar estudiante..." type="text">
+</div>
+<select class="px-lg py-sm rounded-lg border border-outline-variant bg-surface-container-lowest font-body-sm focus:ring-2 focus:ring-primary">
+<option>Todos los grupos</option>
+<option>Grupo A</option>
+<option>Grupo B</option>
+</select>
+</div>
+<div class="flex gap-md w-full lg:w-auto">
+<button class="flex-1 lg:flex-none flex items-center justify-center gap-sm px-lg py-sm rounded-lg border border-primary text-primary hover:bg-on-primary-container transition-colors font-button">
+<span class="material-symbols-outlined">download</span>
+                        Exportar CSV
+                    </button>
+<button class="flex-1 lg:flex-none flex items-center justify-center gap-sm px-lg py-sm rounded-lg bg-primary text-on-primary hover:brightness-110 transition-colors font-button">
+<span class="material-symbols-outlined">mail</span>
+                        Contactar Elegibles
+                    </button>
+</div>
+</div>
+<!-- Completion Matrix Table -->
+<div class="glass-card rounded-xl overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant/20">
+<th class="px-lg py-md font-label-md text-label-md text-on-surface-variant">ESTUDIANTE</th>
+<th class="px-lg py-md font-label-md text-label-md text-on-surface-variant">% TOTAL PROGRESO</th>
+<th class="px-lg py-md font-label-md text-label-md text-on-surface-variant text-center">EXAMEN</th>
+<th class="px-lg py-md font-label-md text-label-md text-on-surface-variant text-center">TAREA</th>
+<th class="px-lg py-md font-label-md text-label-md text-on-surface-variant text-center">FORO</th>
+<th class="px-lg py-md font-label-md text-label-md text-on-surface-variant">ELEGIBILIDAD CREDLY</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10">
+<!-- Row 1: Mariana Arteaga -->
+<tr class="table-row-hover transition-colors">
+<td class="px-lg py-md">
+<div class="flex items-center gap-md">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="A portrait of Mariana Arteaga, a software engineering student. She has a bright, intelligent expression with long dark hair, wearing a casual mustard yellow sweater. The background is a modern, brightly lit university tech lab with clean lines and soft blue tones, embodying a studious and ambitious academic atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAU9__YV6wNUFzePvHbVr6PBS9JvBQgSTM_yjewYmYAo0k0LUKn-wAL9f7sH82AZY3bbXLCwNdGnhXCEuUHLULzbmWlPCTe-LfMtW0laGUsdG5Guw2ADGrRqfwkL0HtepZuSO7bp0e-Uj1mxZ9D7buf5lz4NPBq5dJ1ZgB_8dyVqq15tIEUhCLUcQe-f1hrQsOv0Zh2J1-Ij6EaKGkmbcOcOW9Q1jyQb2Y_IPSo826G4hotBQGUGizy9g">
+<div>
+<p class="font-body-md text-on-surface font-bold">Mariana Arteaga</p>
+<p class="font-body-sm text-on-surface-variant">ID: 2024-0012</p>
+</div>
+</div>
+</td>
+<td class="px-lg py-md">
+<div class="flex items-center gap-md">
+<div class="flex-1 bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full" style="width: 100%"></div>
+</div>
+<span class="font-label-md text-primary font-bold">100%</span>
+</div>
+</td>
+<td class="px-lg py-md text-center"><span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span></td>
+<td class="px-lg py-md text-center"><span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span></td>
+<td class="px-lg py-md text-center"><span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span></td>
+<td class="px-lg py-md">
+<span class="px-md py-xs rounded-full bg-on-primary-container text-primary text-label-md font-bold uppercase tracking-wider">ELEGIBLE</span>
+</td>
+</tr>
+<!-- Row 2: Javier Luna -->
+<tr class="table-row-hover transition-colors">
+<td class="px-lg py-md">
+<div class="flex items-center gap-md">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="A professional student headshot of Javier Luna. He has short curly black hair and wears glasses, dressed in a navy blue polo shirt. He looks focused and determined. The setting is a bright university foyer with subtle green architecture and modern glass walls, reflecting a clean, corporate academic style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOhrlumzn7nzFNRDBsNFh0_eC1L7kgGcyQWqPo9JpK113pwWkDB_QoqW2eqGgJMiBMgrH3ewO4amHr0CY_SJu5iX6MFLKk8EsibfN-a67JAwlJEGAnMg0-S35u228JLfro8MfTSSu7vOCtox2QKDRhuL9sHDPqjESSQ1NmWKjtrC5Em_S2Hb364b9lD6jcValMzOcqAeyNpesG-4vXqH4mCuu6nsMX54T6AtFM5_yYIs6gsKIPGyxQGw">
+<div>
+<p class="font-body-md text-on-surface font-bold">Javier Luna</p>
+<p class="font-body-sm text-on-surface-variant">ID: 2024-0045</p>
+</div>
+</div>
+</td>
+<td class="px-lg py-md">
+<div class="flex items-center gap-md">
+<div class="flex-1 bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full" style="width: 85%"></div>
+</div>
+<span class="font-label-md text-on-surface font-bold">85%</span>
+</div>
+</td>
+<td class="px-lg py-md text-center"><span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span></td>
+<td class="px-lg py-md text-center"><span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span></td>
+<td class="px-lg py-md text-center"><span class="material-symbols-outlined text-on-surface-variant/30">radio_button_unchecked</span></td>
+<td class="px-lg py-md">
+<span class="px-md py-xs rounded-full bg-surface-container-highest text-on-surface-variant text-label-md font-bold uppercase tracking-wider">EN PROCESO</span>
+</td>
+</tr>
+<!-- Row 3: Roberto Salazar -->
+<tr class="table-row-hover transition-colors">
+<td class="px-lg py-md">
+<div class="flex items-center gap-md">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="A portrait of Roberto Salazar, a young male student with a cheerful smile. He has short light brown hair and is wearing a white T-shirt under a denim jacket. He is standing in a brightly lit campus park with soft greenery in the background, creating a fresh, daylight-balanced institutional feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHfCwWcAbsmd094DP6VaMVeeZ-AXHqn1x1_Xz30NQTe7hcfMD2XKxMlD3dB9n_yRsLCsy_JGqgYkEkbYfSEDAbhKfnpoyZzkVHOCWK7yPiQIopqudp9kb_fnIPuGLCY3z7Amu7eiFAES1tLFBi_HD_7DB7lreN5fwHPdcY1UrGOGiZz8Fh3x7ruU5ol_rbhQtc-wxfjlbQan-a5FLs66QI2-DS0_mar9UX_8sVGLqTKJHVZdnI4F-w_Q">
+<div>
+<p class="font-body-md text-on-surface font-bold">Roberto Salazar</p>
+<p class="font-body-sm text-on-surface-variant">ID: 2024-0021</p>
+</div>
+</div>
+</td>
+<td class="px-lg py-md">
+<div class="flex items-center gap-md">
+<div class="flex-1 bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full" style="width: 92%"></div>
+</div>
+<span class="font-label-md text-on-surface font-bold">92%</span>
+</div>
+</td>
+<td class="px-lg py-md text-center"><span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span></td>
+<td class="px-lg py-md text-center"><span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span></td>
+<td class="px-lg py-md text-center"><span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span></td>
+<td class="px-lg py-md">
+<span class="px-md py-xs rounded-full bg-on-primary-container text-primary text-label-md font-bold uppercase tracking-wider">ELEGIBLE</span>
+</td>
+</tr>
+<!-- Row 4: Claudia Díaz -->
+<tr class="table-row-hover transition-colors">
+<td class="px-lg py-md">
+<div class="flex items-center gap-md">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="Claudia Díaz portrait, a female student with a serious yet engaged expression. She wears a cream-colored professional blouse and has her hair pulled back neatly. The background is a clean, white-walled lecture hall with soft architectural shadows, reflecting a high-quality corporate educational environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFoGLYIfvpRZ3926psdc_FPrlxMmnt1PcMUFo7AOZdSClQTYjF1o_AIndhqYhpKd1kK9cnPeH7Xui0zc82NRio3wkrHTnB3iJxLILTnKXS_TdXcUMIQzvfc9DjMN6kOnMDupzAi9exR8L4SNUHtzAPqkPY3bZ3JDX8Tjp1IVDlZONoQjvAMMmqmDFubUOXvlUeUlN6K1uWGMbmQKlZJLlIrWcaJhuM0eTauNpRb95tCqPnlA2KTAd2VA">
+<div>
+<p class="font-body-md text-on-surface font-bold">Claudia Díaz</p>
+<p class="font-body-sm text-on-surface-variant">ID: 2024-0089</p>
+</div>
+</div>
+</td>
+<td class="px-lg py-md">
+<div class="flex items-center gap-md">
+<div class="flex-1 bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full" style="width: 45%"></div>
+</div>
+<span class="font-label-md text-on-surface font-bold">45%</span>
+</div>
+</td>
+<td class="px-lg py-md text-center"><span class="material-symbols-outlined text-on-surface-variant/30">radio_button_unchecked</span></td>
+<td class="px-lg py-md text-center"><span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span></td>
+<td class="px-lg py-md text-center"><span class="material-symbols-outlined text-on-surface-variant/30">radio_button_unchecked</span></td>
+<td class="px-lg py-md">
+<span class="px-md py-xs rounded-full bg-surface-container-highest text-on-surface-variant text-label-md font-bold uppercase tracking-wider">EN PROCESO</span>
+</td>
+</tr>
+<!-- Row 5: Fernando Maza -->
+<tr class="table-row-hover transition-colors">
+<td class="px-lg py-md">
+<div class="flex items-center gap-md">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="A portrait of Fernando Maza, a male student with a calm, analytical expression. He has short black hair and is wearing a grey zip-up hoodie. The background is a minimalist coworking space with light wood textures and soft, warm lighting, emphasizing a modern and collaborative student experience." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJBHiZUXBdAip6C3yBU6ijIuddtOnPiMEq53-ETQlXDZA7Ekj4zPOy3qcq_IaPuaKDD-hZdlPO7YKuUabXP0VT9J3mfKhL4ROYK_wqVvQc_2vgMA5-5vim_AcoKhWSsM18EXLGfEVMdtUvlouZ_0iIdj6SNOLj9CODT2txx0PNB_CO3h8tYJtWr5ygK_2pFz_I_7HE5i2omaybzUKCBy-dUgWj9IFHy_NfZ9ayt3ipa0JdXcLblSVkRw">
+<div>
+<p class="font-body-md text-on-surface font-bold">Fernando Maza</p>
+<p class="font-body-sm text-on-surface-variant">ID: 2024-0102</p>
+</div>
+</div>
+</td>
+<td class="px-lg py-md">
+<div class="flex items-center gap-md">
+<div class="flex-1 bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full" style="width: 100%"></div>
+</div>
+<span class="font-label-md text-primary font-bold">100%</span>
+</div>
+</td>
+<td class="px-lg py-md text-center"><span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span></td>
+<td class="px-lg py-md text-center"><span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span></td>
+<td class="px-lg py-md text-center"><span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span></td>
+<td class="px-lg py-md">
+<span class="px-md py-xs rounded-full bg-on-primary-container text-primary text-label-md font-bold uppercase tracking-wider">ELEGIBLE</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="px-lg py-md bg-surface-container-low flex justify-between items-center">
+<p class="font-body-sm text-on-surface-variant">Mostrando 5 de 32 estudiantes registrados</p>
+<div class="flex gap-sm">
+<button class="p-sm hover:bg-surface-variant rounded-lg transition-colors"><span class="material-symbols-outlined">chevron_left</span></button>
+<button class="p-sm hover:bg-surface-variant rounded-lg transition-colors"><span class="material-symbols-outlined">chevron_right</span></button>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Institutional Footer Shell -->
+<footer class="w-full py-xl px-lg flex flex-col md:flex-row justify-between items-center gap-lg border-t border-outline-variant/20 bg-surface-container-highest">
+<div class="flex flex-col items-center md:items-start gap-xs">
+<div class="font-headline-sm text-headline-sm font-bold text-primary">UPTex Moodle</div>
+<p class="font-body-sm text-on-surface-variant">© 2024 UPTex Moodle. All rights reserved.</p>
+</div>
+<div class="flex gap-lg flex-wrap justify-center">
+<a class="font-body-sm text-on-surface-variant hover:text-primary transition-colors underline decoration-transparent hover:decoration-primary" href="#">Privacy</a>
+<a class="font-body-sm text-on-surface-variant hover:text-primary transition-colors underline decoration-transparent hover:decoration-primary" href="#">Terms</a>
+<a class="font-body-sm text-on-surface-variant hover:text-primary transition-colors underline decoration-transparent hover:decoration-primary" href="#">Accessibility</a>
+<a class="font-body-sm text-on-surface-variant hover:text-primary transition-colors underline decoration-transparent hover:decoration-primary" href="#">Contact</a>
+</div>
+</footer>
+<script>
+        // Simple micro-interaction for rows
+        document.querySelectorAll('tr.table-row-hover').forEach(row => {
+            row.addEventListener('click', () => {
+                // In a real app, this would navigate to student detail
+                console.log('Fila clickeada');
+            });
+        });
+    </script>
+</body></html>

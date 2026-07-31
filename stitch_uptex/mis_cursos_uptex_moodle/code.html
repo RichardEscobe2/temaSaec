@@ -1,0 +1,373 @@
+<!DOCTYPE html><html class="light" lang="es"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Mis Cursos - UPTex Moodle</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700&amp;family=Inter:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed": "#93f8ae",
+                        "secondary-container": "#b8f47a",
+                        "on-secondary-fixed-variant": "#2c5000",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-fixed": "#410002",
+                        "secondary": "#3c6a00",
+                        "surface-container": "#ebeef4",
+                        "on-primary": "#ffffff",
+                        "outline": "#6f7a6f",
+                        "on-secondary-container": "#407100",
+                        "surface": "#f7f9ff",
+                        "on-secondary-fixed": "#0e2000",
+                        "outline-variant": "#becabd",
+                        "inverse-surface": "#2d3135",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#ffdad6",
+                        "primary-container": "#0b8043",
+                        "surface-dim": "#d7dae0",
+                        "inverse-on-surface": "#eef1f7",
+                        "surface-container-low": "#f1f4fa",
+                        "surface-bright": "#f7f9ff",
+                        "primary": "#006532",
+                        "tertiary": "#b00a16",
+                        "surface-variant": "#dfe3e8",
+                        "on-background": "#181c20",
+                        "primary-fixed-dim": "#77db93",
+                        "tertiary-container": "#d42c2b",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-tint": "#006d37",
+                        "on-surface-variant": "#3f4940",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-highest": "#dfe3e8",
+                        "secondary-fixed-dim": "#9dd761",
+                        "on-surface": "#181c20",
+                        "on-primary-container": "#d1ffd8",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#ffb4ac",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#005228",
+                        "background": "#f7f9ff",
+                        "surface-container-high": "#e5e8ee",
+                        "secondary-fixed": "#b8f47a",
+                        "on-tertiary-fixed-variant": "#93000d",
+                        "on-primary-fixed": "#00210c",
+                        "inverse-primary": "#77db93",
+                        "on-tertiary-container": "#fff1ef",
+                        "on-error": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "sm": "8px",
+                        "xxl": "48px",
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "base": "4px",
+                        "margin-desktop": "48px",
+                        "xs": "4px",
+                        "xl": "32px",
+                        "lg": "24px",
+                        "md": "16px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Hanken Grotesk"],
+                        "label-md": ["Inter"],
+                        "button": ["Inter"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "display": ["Hanken Grotesk"],
+                        "body-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "button": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "display": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-nav-shadow {
+            box-shadow: 0 4px 12px rgba(11, 128, 67, 0.15);
+        }
+        .card-transition {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-transition:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(95, 99, 104, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TopNavBar -->
+<header class="sticky top-0 z-50 flex justify-between items-center px-lg py-sm w-full bg-surface-container-lowest dark:bg-inverse-surface border-b border-outline-variant/20">
+<div class="font-display text-headline-md font-bold text-primary dark:text-primary-fixed">UPTex Moodle</div>
+<div class="flex items-center gap-md">
+
+<div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant/30">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A professional studio portrait of a woman with a confident smile, wearing minimalist academic attire. The background is a clean, out-of-focus modern office space with soft daylight filtering through. The overall lighting is bright and high-key, reflecting a light-mode corporate aesthetic with subtle forest green accents in the environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAefb3E2Bs2PnKfe0iLUD053wztkCfbI2v18Vsl5kdXaAH_wvatppsZK6j5694s2TSzutpZO6qdc3HswUnS1Qj9ieEgzH4Y8mwIvUWs09kHheAa122S_6TnGhSP1UvSVxD0RC4F0m74rRn8TW3sqk565-Wgde5MB3qKB-wfPwfuhYJ9gulCLzu7Rwe8zCrc280MpSwlkVozU1PIjWu8Ua4UKUAfpZzcXHIeMMTmIPkJfFXDEVFdEAN54A">
+</div>
+</div>
+</header>
+<div class="flex">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col h-[calc(100vh-64px)] fixed left-0 top-16 border-r border-outline-variant/20 w-64 z-40 bg-surface-container dark:bg-surface-dim">
+<div class="p-md flex flex-col gap-xs flex-grow">
+<!-- Dashboard -->
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant dark:hover:bg-inverse-surface rounded-full px-md py-sm flex items-center gap-md transition-all font-label-md" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Dashboard</span>
+</a>
+<!-- Courses (Active) -->
+<a class="bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary rounded-full px-md py-sm flex items-center gap-md active-nav-shadow font-label-md" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">school</span>
+<span>Courses</span>
+</a>
+<!-- Credentials -->
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant dark:hover:bg-inverse-surface rounded-full px-md py-sm flex items-center gap-md transition-all font-label-md" href="#">
+<span class="material-symbols-outlined">verified</span>
+<span>Credentials</span>
+</a>
+<!-- Analytics -->
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant dark:hover:bg-inverse-surface rounded-full px-md py-sm flex items-center gap-md transition-all font-label-md" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span>Analytics</span>
+</a>
+<!-- Settings -->
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant dark:hover:bg-inverse-surface rounded-full px-md py-sm flex items-center gap-md transition-all font-label-md" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Settings</span>
+</a>
+</div>
+<!-- Footer Tabs -->
+<div class="p-md border-t border-outline-variant/20 flex flex-col gap-xs">
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant dark:hover:bg-inverse-surface rounded-full px-md py-sm flex items-center gap-md transition-all font-label-md" href="#">
+<span class="material-symbols-outlined">help</span>
+<span>Help Center</span>
+</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant dark:hover:bg-inverse-surface rounded-full px-md py-sm flex items-center gap-md transition-all font-label-md" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span>Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-grow md:ml-64 min-h-screen">
+<div class="max-w-7xl mx-auto px-lg py-xl">
+<!-- Header & Search -->
+<div class="flex flex-col gap-lg mb-xl">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-md">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-xs">Mis Cursos y Microcredenciales</h1>
+<p class="text-on-surface-variant font-body-md">Gestiona tu progreso académico y certificaciones institucionales.</p>
+</div>
+<div class="relative w-full md:w-80">
+<span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full pl-xl pr-md py-sm bg-surface-container-lowest border border-outline-variant/50 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none font-body-sm" placeholder="Buscar cursos..." type="text">
+</div>
+</div>
+<!-- Filter Tabs -->
+<div class="flex border-b border-outline-variant/20 overflow-x-auto scrollbar-hide">
+<button class="px-lg py-sm font-bold text-primary border-b-2 border-primary whitespace-nowrap">En Curso</button>
+<button class="px-lg py-sm text-on-surface-variant hover:text-primary transition-colors whitespace-nowrap">Completados</button>
+<button class="px-lg py-sm text-on-surface-variant hover:text-primary transition-colors whitespace-nowrap">Disponibles</button>
+</div>
+</div>
+<!-- Course Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
+<!-- Card 1: Fundamentos de Robótica Industrial -->
+<div class="bg-surface-container-lowest border border-outline-variant/20 rounded-xl overflow-hidden card-transition flex flex-col">
+<div class="relative h-48 bg-slate-200">
+<img class="w-full h-full object-cover" data-alt="A futuristic industrial robotics facility featuring advanced robotic arms working on a production line. The scene is captured with a shallow depth of field, highlighting the metallic textures and precision sensors. The lighting is cool and professional, dominated by soft whites and sharp forest green status indicators, reflecting a high-tech corporate mood." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzgKEKtytu1BgSJDfQEV9XSfz8Eior677h73PuSgrjPE-V3sR2276KIT2SHDzSDJgiUKmaGb2smWVeAdtAOTyzlJZgpTmy4wSR7wjAB4D-MlzGeBsGfKjqVttMwVP9HxKaqhlw9jtXvH--X0HZg76BFb-zHbDC_aMznPDz9Cpmewfz6yETxZYKHjQLi8i1i3NdZ71TQQwcIwxrFeeK5BL_Ut4D5RnCtqm2_91xVgTtMlkCNk69fg0jGQ">
+<span class="absolute top-sm left-sm bg-primary-fixed text-on-primary-fixed px-sm py-xs rounded text-[10px] font-bold uppercase tracking-wider">Ingeniería</span>
+</div>
+<div class="p-md flex flex-col flex-grow">
+<h3 class="font-headline-md text-body-lg text-on-surface mb-md">Fundamentos de Robótica Industrial</h3>
+<div class="mt-auto">
+<div class="flex justify-between items-center mb-xs">
+<span class="text-body-sm font-label-md text-on-surface-variant">65% completado</span>
+<span class="text-body-sm font-label-md text-on-surface-variant">13 de 20 módulos</span>
+</div>
+<div class="w-full h-2 bg-surface-variant rounded-full mb-md overflow-hidden">
+<div class="h-full bg-primary-container" style="width: 65%"></div>
+</div>
+<button class="w-full bg-primary-container text-on-primary-container py-sm rounded-lg font-button hover:opacity-90 active:scale-95 transition-all">Continuar Curso</button>
+</div>
+</div>
+</div>
+<!-- Card 2: Seguridad en Redes Empresariales -->
+<div class="bg-surface-container-lowest border border-outline-variant/20 rounded-xl overflow-hidden card-transition flex flex-col">
+<div class="relative h-48 bg-slate-200">
+<img class="w-full h-full object-cover" data-alt="A clean, abstract representation of cyber security with glowing data streams and network nodes connecting across a dark, polished glass surface. The primary color palette consists of deep forest greens and bright emerald highlights. The aesthetic is ultra-modern and corporate, evoking a sense of trust, precision, and institutional safety." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2C24r8A0l3sOkX2SmlAkwcMJB0t6QjfyqFNb_YdCaxfKj_8e4JRohca76dzQoNkSNL--NlzgtsNwq113RR1FVJvlBzX5Ke9t5zDmNtz7IKlglXlufah5UDMcPiRpHvZnMIkNEuCyHOE4OEb9G0570UdpBbylBl4VebzIw6yVCH1gYDHuA65H_8CCqn9kRGqsVCGyeKt-UXYAul_gNRbyEPIuYizxm0A3XC7-buAZtg4V95B8stdvk8g">
+<span class="absolute top-sm left-sm bg-secondary-fixed text-on-secondary-fixed px-sm py-xs rounded text-[10px] font-bold uppercase tracking-wider">Ciberseguridad</span>
+<div class="absolute bottom-sm right-sm bg-white/90 backdrop-blur rounded-full p-xs flex items-center shadow-sm">
+<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</div>
+<div class="p-md flex flex-col flex-grow">
+<h3 class="font-headline-md text-body-lg text-on-surface mb-md">Seguridad en Redes Empresariales</h3>
+<div class="mt-auto">
+<div class="flex items-center gap-xs text-secondary mb-md">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+<span class="text-body-sm font-bold">Curso Finalizado</span>
+</div>
+<div class="flex gap-sm">
+<button class="flex-1 border border-primary-container text-primary-container py-sm rounded-lg font-button hover:bg-primary-container/5 transition-all">Ver Insignia</button>
+<button class="flex-1 border border-primary-container text-primary-container py-sm rounded-lg font-button hover:bg-primary-container/5 transition-all">Certificado</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 3: Visualización de Datos con Python -->
+<div class="bg-surface-container-lowest border border-outline-variant/20 rounded-xl overflow-hidden card-transition flex flex-col">
+<div class="relative h-48 bg-slate-200">
+<img class="w-full h-full object-cover" data-alt="Sophisticated data visualization charts and graphs displayed on a minimalist computer screen. Soft-focus lighting highlights glowing green line charts and clean typography. The background is a crisp white workspace with subtle technological elements. The vibe is analytical and professional, using a corporate color palette of Slate Gray and Primary Green." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmhWe12BCsq8q0no0b4ZtmSa2WevAu-b0Wz5CXVgT0Wf862FZF6LcH30VfAF62EjdYKbG4Lwn1nS2X12syJ1Ac7AXD_h8MBWH3dgjKF3v6sGsMy-0fBwTG0I1CZjlfRa12wwWqxSP0DQLMHcyK2AO6I-m63wIVTkfIXft0CnsHA2uYKa1gtb8yp1Kd2Opyz8SHowpAdQ9TyiSUVU9pSZ2_9xmGvcdSTp6eGNBUesPZSp17Dtp3km6evg">
+<span class="absolute top-sm left-sm bg-primary-fixed text-on-primary-fixed px-sm py-xs rounded text-[10px] font-bold uppercase tracking-wider">IA Aplicada</span>
+</div>
+<div class="p-md flex flex-col flex-grow">
+<h3 class="font-headline-md text-body-lg text-on-surface mb-md">Visualización de Datos con Python</h3>
+<div class="mt-auto">
+<div class="flex justify-between items-center mb-xs">
+<span class="text-body-sm font-label-md text-on-surface-variant">12% completado</span>
+<span class="text-body-sm font-label-md text-on-surface-variant">2 de 16 módulos</span>
+</div>
+<div class="w-full h-2 bg-surface-variant rounded-full mb-md overflow-hidden">
+<div class="h-full bg-primary-container" style="width: 12%"></div>
+</div>
+<button class="w-full bg-primary-container text-on-primary-container py-sm rounded-lg font-button hover:opacity-90 transition-all">Continuar Curso</button>
+</div>
+</div>
+</div>
+<!-- Card 4: Arquitectura Bioclimática y LEED -->
+<div class="bg-surface-container-lowest border border-outline-variant/20 rounded-xl overflow-hidden card-transition flex flex-col">
+<div class="relative h-48 bg-slate-200">
+<img class="w-full h-full object-cover" data-alt="A modern architectural render of a sustainable building featuring vertical gardens and glass facades. The lighting is warm and natural, suggesting an afternoon sun. The design emphasizes green spaces and ecological harmony within a corporate setting. The colors are earthy neutrals mixed with vibrant architectural greenery, evoking an institutional commitment to sustainability." src="https://lh3.googleusercontent.com/aida-public/AB6AXuASuWro-xcLKldqAKfScq2is2ThpcPB5x5I7o9vYKt-2rjQdwj9SOyhjJreXH7rq1su0WlZr58yQ_51QfFwRYdvdjLP5CQ8RUTrHHRxmvmFtWrlucrh2aL9runv0D4bUjQyF20kgbUX7gcy-WOVBLcSQ4a9icPN27tNSk7UsuSOA8_9jtAvB0krAXiiymg3WCkPyYwjsd8AYBphB7r6VyiAjURVb65q0fLBrFEILjkOdDudcBRk8q2UhA">
+<span class="absolute top-sm left-sm bg-secondary-fixed text-on-secondary-fixed px-sm py-xs rounded text-[10px] font-bold uppercase tracking-wider">Arquitectura</span>
+</div>
+<div class="p-md flex flex-col flex-grow">
+<h3 class="font-headline-md text-body-lg text-on-surface mb-md">Arquitectura Bioclimática y LEED</h3>
+<div class="mt-auto">
+<div class="flex items-center gap-xs text-on-surface-variant mb-md">
+<span class="material-symbols-outlined text-[18px]">info</span>
+<span class="text-body-sm">Disponible - Matrícula Abierta</span>
+</div>
+<button class="w-full border-2 border-primary-container text-primary-container py-sm rounded-lg font-button hover:bg-primary-container text-on-primary hover:text-on-primary-container transition-all">Inscribirse ahora</button>
+</div>
+</div>
+</div>
+<!-- Card 5: Ética en la Inteligencia Artificial -->
+<div class="bg-surface-container-lowest border border-outline-variant/20 rounded-xl overflow-hidden card-transition flex flex-col">
+<div class="relative h-48 bg-slate-200">
+<img class="w-full h-full object-cover" data-alt="An artistic representation of digital ethics, featuring a stylized glowing human brain interconnected with glowing geometric circuit patterns. The aesthetic is clean and thoughtful, with soft emerald green lighting and high-contrast blacks and whites. The mood is philosophical yet technologically grounded, fitting a high-level corporate educational course." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBP1HonYzM7Hwkp0IRtcK0mPBB97M_nglHIeyhVc_BJfXxG18Jv24UctLqjL91ZZ1dfVCiivicglpKn3BMHlgFzxoIt-Q4XZabyLdhVb3Tjx6xZIMteJMhpt7plelpNwLB7RfX9UWgZFbrmdt7k0mnoXSkxvZpigsX5-T0ou59SOgGfRiARPZytXcKSVVGhgx50nKzqEx_u24xkwXoL6xD9l8SbHy2HXM84B0L8V072QxriARwb2V79bQ">
+<span class="absolute top-sm left-sm bg-primary-fixed text-on-primary-fixed px-sm py-xs rounded text-[10px] font-bold uppercase tracking-wider">IA Aplicada</span>
+</div>
+<div class="p-md flex flex-col flex-grow">
+<h3 class="font-headline-md text-body-lg text-on-surface mb-md">Ética en la Inteligencia Artificial</h3>
+<div class="mt-auto">
+<div class="flex justify-between items-center mb-xs">
+<span class="text-body-sm font-label-md text-on-surface-variant">48% completado</span>
+<span class="text-body-sm font-label-md text-on-surface-variant">6 de 12 módulos</span>
+</div>
+<div class="w-full h-2 bg-surface-variant rounded-full mb-md overflow-hidden">
+<div class="h-full bg-primary-container" style="width: 48%"></div>
+</div>
+<button class="w-full bg-primary-container text-on-primary-container py-sm rounded-lg font-button hover:opacity-90 transition-all">Continuar Curso</button>
+</div>
+</div>
+</div>
+<!-- Card 6: Liderazgo Estratégico en Organizaciones -->
+<div class="bg-surface-container-lowest border border-outline-variant/20 rounded-xl overflow-hidden card-transition flex flex-col">
+<div class="relative h-48 bg-slate-200">
+<img class="w-full h-full object-cover" data-alt="A professional boardroom setting with high-quality wooden textures and minimalist modern furniture. A subtle digital projection of a global network map is on the background wall. The lighting is professional and soft, with a palette of deep mahogany, clean whites, and institutional forest green accents. The mood is authoritative, strategic, and calm." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVJBGx8w93cvsXRoe3VS0Qv1ZpMV9c12vZv_o67C9ehEXaR3eI2V-bTh8icNyyBuZLRiOtODKNAcCHxrJMWKpF-is4Qwyjpz5w7tW_-D65rhQfBksLpj2MH6UAYSx1Rkb6hJTg5vR4gEVZUv-DhLh76x30d5OUl_jmxK5U8wJZT1iSDR-gFFfwE1kM_roTRN15eUbpp85rLSxZVR__Qmsr5zldgUgDdgeFjQOGPixc3K6-n8CVA-jabQ">
+<span class="absolute top-sm left-sm bg-secondary-fixed text-on-secondary-fixed px-sm py-xs rounded text-[10px] font-bold uppercase tracking-wider">Liderazgo</span>
+<div class="absolute bottom-sm right-sm bg-white/90 backdrop-blur rounded-full p-xs flex items-center shadow-sm">
+<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</div>
+<div class="p-md flex flex-col flex-grow">
+<h3 class="font-headline-md text-body-lg text-on-surface mb-md">Liderazgo Estratégico en Organizaciones</h3>
+<div class="mt-auto">
+<div class="flex items-center gap-xs text-secondary mb-md">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+<span class="text-body-sm font-bold">Curso Finalizado</span>
+</div>
+<div class="flex gap-sm">
+<button class="flex-1 border border-primary-container text-primary-container py-sm rounded-lg font-button hover:bg-primary-container/5 transition-all">Ver Insignia</button>
+<button class="flex-1 border border-primary-container text-primary-container py-sm rounded-lg font-button hover:bg-primary-container/5 transition-all">Certificado</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Institutional Footer -->
+<footer class="w-full py-xl px-lg flex flex-col md:flex-row justify-between items-center gap-lg border-t border-outline-variant/20 bg-surface-container-highest dark:bg-inverse-surface mt-xl">
+<div class="flex flex-col items-center md:items-start gap-xs">
+<div class="font-headline-sm text-headline-sm font-bold text-primary dark:text-primary-fixed">UPTex Moodle</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">© 2024 UPTex Moodle. All rights reserved.</p>
+</div>
+<div class="flex gap-lg">
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Terms</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Accessibility</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Contact</a>
+</div>
+</footer>
+</main>
+</div>
+<!-- Mobile Navigation (Bottom Bar) -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-surface-container-lowest border-t border-outline-variant/20 flex justify-around py-sm z-50">
+<button class="flex flex-col items-center gap-xs text-on-surface-variant">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px] font-label-md">Home</span>
+</button>
+<button class="flex flex-col items-center gap-xs text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">school</span>
+<span class="text-[10px] font-label-md">Cursos</span>
+</button>
+<button class="flex flex-col items-center gap-xs text-on-surface-variant">
+<span class="material-symbols-outlined">verified</span>
+<span class="text-[10px] font-label-md">Insignias</span>
+</button>
+<button class="flex flex-col items-center gap-xs text-on-surface-variant">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-label-md">Perfil</span>
+</button>
+</nav>
+<script>
+        // Micro-interaction for filter tabs
+        const tabs = document.querySelectorAll('.flex.border-b button');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => {
+                    t.classList.remove('font-bold', 'text-primary', 'border-b-2', 'border-primary');
+                    t.classList.add('text-on-surface-variant');
+                });
+                tab.classList.add('font-bold', 'text-primary', 'border-b-2', 'border-primary');
+                tab.classList.remove('text-on-surface-variant');
+            });
+        });
+    </script>
+
+
+</body></html>

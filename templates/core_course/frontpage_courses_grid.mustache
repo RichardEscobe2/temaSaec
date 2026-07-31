@@ -1,0 +1,81 @@
+{{!
+    @template theme_saec/core_course/frontpage_courses_grid
+
+    UPTex/SAEC dynamic course grid — fed exclusively by
+    theme_saec_core_course_renderer::uptex_render_course_grid()
+    (theme/saec/renderers.php), which overrides
+    core_course_renderer::frontpage_available_courses()/frontpage_my_courses().
+    No static course data lives in this file. Reuses the
+    .uptex-course-showcase-card family (scss/custom.scss section 5).
+
+    row-cols-xl-4 is Bootstrap 4.6.2-compatible (this Moodle install's real
+    bundled version — verified in theme/boost/scss/bootstrap/bootstrap.scss);
+    Bootstrap 5's `g-*` gap utilities do not exist here, so gutters use a
+    plain `mb-4` on each `.col` instead.
+
+    Example context (json):
+    {
+        "hascourses": true,
+        "courses": [
+            {
+                "id": 2,
+                "fullname": "Curso demo",
+                "viewurl": "https://example.org/course/view.php?id=2",
+                "courseimage": "https://example.org/pluginfile.php/1/course/overviewfiles/1/f1.jpg",
+                "categoryname": "Desarrollo Web",
+                "tagcolor": "green",
+                "hasduration": true,
+                "duration": "4 Semanas",
+                "hasinstructor": true,
+                "instructor": "Jane Doe"
+            }
+        ],
+        "hasmore": true,
+        "catalogueurl": "https://example.org/course/index.php"
+    }
+}}
+{{#hascourses}}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4">
+        {{#courses}}
+            <div class="col mb-4">
+                <div class="uptex-course-showcase-card">
+                    <div class="uptex-course-showcase-card__media">
+                        {{#categoryname}}
+                            <span class="uptex-course-showcase-card__tag uptex-course-showcase-card__tag--{{ tagcolor }}">{{ categoryname }}</span>
+                        {{/categoryname}}
+                        <img src="{{{ courseimage }}}" alt="" loading="lazy">
+                    </div>
+                    <div class="uptex-course-showcase-card__body">
+                        {{#hasduration}}
+                            <div class="uptex-course-showcase-card__meta">
+                                <i class="icon fa fa-clock" aria-hidden="true"></i>
+                                <span>{{ duration }}</span>
+                            </div>
+                        {{/hasduration}}
+                        <p class="uptex-course-showcase-card__title">
+                            <a href="{{{ viewurl }}}" class="text-reset">{{ fullname }}</a>
+                        </p>
+                        {{#hasinstructor}}
+                            <p class="uptex-course-showcase-card__instructor">{{ instructor }}</p>
+                        {{/hasinstructor}}
+                        <div class="uptex-course-showcase-card__footer">
+                            <span class="uptex-chip uptex-chip--success">
+                                <i class="icon fa fa-check-circle" aria-hidden="true"></i>
+                                {{#str}} credlyverifiable, theme_saec {{/str}}
+                            </span>
+                            <a href="{{{ viewurl }}}" class="btn btn-primary btn-block">{{#str}} viewenrolbutton, theme_saec {{/str}}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {{/courses}}
+    </div>
+    {{#hasmore}}
+        <div class="text-center mt-2">
+            <a href="{{{ catalogueurl }}}" class="btn btn-outline-primary">{{#str}} fulllistofcourses, moodle {{/str}}</a>
+        </div>
+    {{/hasmore}}
+{{/hascourses}}
+{{^hascourses}}
+    <div class="text-center text-muted p-4">{{#str}} nocoursesyet, moodle {{/str}}</div>
+{{/hascourses}}

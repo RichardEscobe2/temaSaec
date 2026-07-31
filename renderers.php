@@ -1,0 +1,210 @@
+<?php
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->dirroot . '/course/renderer.php');
+
+/**
+ * theme_saec course renderer override.
+ *
+ * Wired automatically by Moodle's theme_overridden_renderer_factory (already
+ * set as $THEME->rendererfactory in config.php): a legacy-named class
+ * `theme_saec_core_course_renderer` extending `core_course_renderer`, loaded
+ * from this file, transparently replaces the core renderer for every call to
+ * $PAGE->get_renderer('core', 'course') while this theme is active.
+ *
+ * Overrides frontpage_available_courses()/frontpage_my_courses() — the two
+ * entry points core_course_renderer::frontpage() dispatches to based on
+ * $CFG->frontpage / $CFG->frontpageloggedin — to render the UPTex Stitch
+ * course grid (theme_saec/core_course/frontpage_courses_grid) instead of the
+ * legacy html_writer-built .coursebox markup. Course fetching, capability
+ * checks (moodle/course:create fallback) and enrolment logic are reused
+ * unchanged from core; only the final HTML assembly step is replaced.
+ */
+class theme_saec_core_course_renderer extends core_course_renderer {
+
+    /** @var string[] Category keyword => curated Unsplash fallback image (verified reachable). */
+    private const CATEGORY_FALLBACK_IMAGES = [
+        'web' => 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=600&q=80',
+        'desarrollo' => 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=600&q=80',
+        'seguridad' => 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=600&q=80',
+        'cyber' => 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=600&q=80',
+        'inteligencia' => 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80',
+        'datos' => 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80',
+        'arquitectura' => 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=600&q=80',
+        'redes' => 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=600&q=80',
+    ];
+
+    /** @var string[] Deterministic (per course id) fallback pool for categories matching no keyword. */
+    private const DEFAULT_FALLBACK_IMAGES = [
+        'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=600&q=80',
+        'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=600&q=80',
+        'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80',
+        'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=600&q=80',
+    ];
+
+    /** @var string[] Category keyword => .uptex-course-showcase-card__tag colour modifier (custom.scss). */
+    private const CATEGORY_TAG_COLORS = [
+        'web' => 'green', 'desarrollo' => 'green',
+        'seguridad' => 'darkgreen', 'cyber' => 'darkgreen',
+        'inteligencia' => 'red', 'datos' => 'red',
+        'arquitectura' => 'gray', 'redes' => 'gray',
+    ];
+
+    /**
+     * Returns HTML to print list of available courses for the frontpage.
+     *
+     * @return string
+     */
+    public function frontpage_available_courses() {
+        global $CFG;
+
+        $chelper = new coursecat_helper();
+        $chelper->set_show_courses(self::COURSECAT_SHOW_COURSES_EXPANDED)->
+                set_courses_display_options([
+                    'recursive' => true,
+                    'limit' => $CFG->frontpagecourselimit,
+                ]);
+
+        $courses = core_course_category::top()->get_courses($chelper->get_courses_display_options());
+        $totalcount = core_course_category::top()->get_courses_count($chelper->get_courses_display_options());
+
+        if (!$totalcount && !$this->page->user_is_editing()
+                && has_capability('moodle/course:create', context_system::instance())) {
+            // Preserva el comportamiento nativo: enlace para crear el primer curso.
+            return $this->add_new_course_button();
+        }
+
+        return $this->uptex_render_course_grid($courses, $totalcount);
+    }
+
+    /**
+     * Returns HTML to print list of courses the user is enrolled in, for the frontpage.
+     *
+     * @return string
+     */
+    public function frontpage_my_courses() {
+        if (!isloggedin() || isguestuser()) {
+            return '';
+        }
+
+        global $CFG;
+        $courses = enrol_get_my_courses('summary, summaryformat, startdate, enddate, category');
+        if (empty($courses)) {
+            return '';
+        }
+
+        $totalcount = count($courses);
+        if ($totalcount > $CFG->frontpagecourselimit) {
+            $courses = array_slice($courses, 0, $CFG->frontpagecourselimit, true);
+        }
+
+        return $this->uptex_render_course_grid($courses, $totalcount);
+    }
+
+    /**
+     * Builds the enriched Stitch-styled course grid shared by both frontpage entry points.
+     *
+     * Every field is real course data (title, link, category, teachers, computed duration);
+     * the only non-database content is the Unsplash fallback image used when a course has no
+     * uploaded overview image, and the static "Verificable en Credly" badge, which is design-
+     * brief UI chrome rather than a real Credly integration check.
+     *
+     * @param array $courses stdClass or core_course_list_element records
+     * @param int $totalcount total course count before any limit was applied
+     * @return string
+     */
+    protected function uptex_render_course_grid($courses, int $totalcount): string {
+        $carddata = [];
+        foreach ($courses as $course) {
+            $listcourse = ($course instanceof core_course_list_element)
+                ? $course
+                : new core_course_list_element($course);
+            $carddata[] = $this->uptex_export_course_card($listcourse);
+        }
+
+        return $this->render_from_template('theme_saec/core_course/frontpage_courses_grid', [
+            'hascourses' => !empty($carddata),
+            'courses' => $carddata,
+            'hasmore' => $totalcount > count($carddata),
+            'catalogueurl' => (new moodle_url('/course/index.php'))->out(false),
+        ]);
+    }
+
+    /**
+     * Exports one course into the exact context theme_saec/core_course/frontpage_courses_grid expects.
+     *
+     * @param core_course_list_element $course
+     * @return array
+     */
+    protected function uptex_export_course_card(core_course_list_element $course): array {
+        $courseimage = null;
+        foreach ($course->get_course_overviewfiles() as $file) {
+            if ($file->is_valid_image()) {
+                $courseimage = moodle_url::make_pluginfile_url(
+                    $file->get_contextid(),
+                    $file->get_component(),
+                    $file->get_filearea(),
+                    $file->get_itemid(),
+                    $file->get_filepath(),
+                    $file->get_filename()
+                )->out(false);
+                break;
+            }
+        }
+
+        $category = core_course_category::get($course->category, IGNORE_MISSING);
+        $categoryname = $category ? format_string($category->name) : '';
+        $categorykey = $this->uptex_match_category_key($categoryname);
+        $tagcolor = self::CATEGORY_TAG_COLORS[$categorykey] ?? 'green';
+
+        if (!$courseimage) {
+            $courseimage = self::CATEGORY_FALLBACK_IMAGES[$categorykey]
+                ?? self::DEFAULT_FALLBACK_IMAGES[$course->id % count(self::DEFAULT_FALLBACK_IMAGES)];
+        }
+
+        // Duración: calculada de start/end date reales del curso; si no están
+        // configurados, se omite el renglón de meta en vez de inventar un valor.
+        $duration = null;
+        if (!empty($course->startdate) && !empty($course->enddate) && $course->enddate > $course->startdate) {
+            $weeks = max(1, (int) round(($course->enddate - $course->startdate) / WEEKSECS));
+            $duration = get_string('courseduration', 'theme_saec', $weeks);
+        }
+
+        $teachers = [];
+        foreach ($course->get_course_contacts() as $contact) {
+            $teachers[] = $contact['username'];
+        }
+        $instructor = implode(', ', $teachers);
+
+        return [
+            'id' => $course->id,
+            'fullname' => format_string($course->fullname, true, ['context' => context_course::instance($course->id)]),
+            'viewurl' => (new moodle_url('/course/view.php', ['id' => $course->id]))->out(false),
+            'courseimage' => $courseimage,
+            'categoryname' => $categoryname,
+            'tagcolor' => $tagcolor,
+            'hasduration' => !empty($duration),
+            'duration' => $duration,
+            'hasinstructor' => !empty($instructor),
+            'instructor' => $instructor,
+        ];
+    }
+
+    /**
+     * Matches a category name against a small keyword table used for both the fallback image
+     * and the tag colour. Falls back to the empty string (green tag, id-rotated image) when
+     * nothing matches — never fabricates a category that is not really the course's own.
+     *
+     * @param string $categoryname
+     * @return string
+     */
+    protected function uptex_match_category_key(string $categoryname): string {
+        $name = core_text::strtolower($categoryname);
+        foreach (array_keys(self::CATEGORY_TAG_COLORS) as $keyword) {
+            if (strpos($name, $keyword) !== false) {
+                return $keyword;
+            }
+        }
+        return '';
+    }
+}

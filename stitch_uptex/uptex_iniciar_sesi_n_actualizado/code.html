@@ -1,0 +1,258 @@
+<!DOCTYPE html><html class="light" lang="es"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>UPTex - Inicio de Sesión</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Google Fonts: Inter (Maintaining Inter as requested, but system says HANKEN_GROTESK, I will prioritize user specific color requests and structure) -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "primary": "#0B8043",
+                      "secondary": "#7CB342",
+                      "tertiary": "#E53935",
+                      "neutral-slate": "#5F6368",
+                      "surface-container-high": "#dee8ff",
+                      "surface": "#f9f9ff",
+                      "inverse-surface": "#263143",
+                      "primary-fixed": "#b1f1c3",
+                      "primary-fixed-dim": "#96d5a9",
+                      "surface-container-low": "#f0f3ff",
+                      "on-surface-variant": "#5F6368",
+                      "inverse-primary": "#96d5a9",
+                      "on-secondary": "#ffffff",
+                      "on-surface": "#111c2d",
+                      "secondary-container": "#7CB342",
+                      "outline-variant": "#c0c9bf",
+                      "on-tertiary-fixed": "#2a1700",
+                      "on-tertiary-fixed-variant": "#653e00",
+                      "on-secondary-fixed": "#002113",
+                      "outline": "#5F6368",
+                      "on-background": "#111c2d",
+                      "surface-dim": "#cfdaf2",
+                      "on-error-container": "#93000a",
+                      "on-secondary-container": "#ffffff",
+                      "surface-container-highest": "#d8e3fb",
+                      "surface-variant": "#d8e3fb",
+                      "on-primary-fixed": "#00210f",
+                      "on-primary-container": "#80bd93",
+                      "on-primary-fixed-variant": "#115130",
+                      "tertiary-fixed": "#ffddb8",
+                      "error-container": "#ffdad6",
+                      "error": "#ba1a1a",
+                      "background": "#f9f9ff",
+                      "secondary-fixed-dim": "#4edea3",
+                      "on-secondary-fixed-variant": "#005236",
+                      "on-error": "#ffffff",
+                      "primary-container": "#0B8043",
+                      "surface-bright": "#f9f9ff",
+                      "surface-container": "#e7eeff",
+                      "inverse-on-surface": "#ecf1ff",
+                      "surface-container-lowest": "#ffffff",
+                      "tertiary-fixed-dim": "#ffb95f",
+                      "on-primary": "#ffffff",
+                      "surface-tint": "#0B8043",
+                      "on-tertiary": "#ffffff",
+                      "tertiary-container": "#603b00",
+                      "on-tertiary-container": "#f49d09",
+                      "secondary-fixed": "#7CB342"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "stack-sm": "0.5rem",
+                      "container-max": "1280px",
+                      "stack-lg": "2rem",
+                      "stack-md": "1rem",
+                      "gutter": "1.5rem",
+                      "margin-mobile": "1rem",
+                      "margin-desktop": "2.5rem"
+              },
+              "fontFamily": {
+                      "label-md": ["Inter"],
+                      "body-md": ["Inter"],
+                      "display-lg": ["Inter"],
+                      "title-md": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "headline-lg-mobile": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "label-sm": ["Inter"]
+              },
+              "fontSize": {
+                      "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "title-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+        }
+        .login-card-shadow {
+            box-shadow: 0 4px 6px -1px rgba(11, 128, 67, 0.05), 0 2px 4px -2px rgba(11, 128, 67, 0.1);
+        }
+        .mesh-bg {
+            background-color: #f9f9ff;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(11, 128, 67, 0.05) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(124, 179, 66, 0.05) 0px, transparent 50%);
+        }
+        /* Custom border focus glow */
+        .focus-primary-glow:focus {
+            border-color: #0B8043 !important;
+            box-shadow: 0 0 0 2px rgba(11, 128, 67, 0.1);
+            outline: none;
+        }
+    </style>
+</head>
+<body class="bg-surface font-body-md text-on-surface mesh-bg min-h-screen flex flex-col items-center justify-center p-4">
+<!-- Top Navigation (Reduced version for Login) -->
+<nav class="fixed top-0 left-0 w-full flex justify-between items-center px-margin-desktop py-4 bg-transparent">
+<div class="text-title-md font-title-md font-bold text-primary">UPTex</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-2 text-neutral-slate hover:text-primary transition-colors font-label-md text-label-md">
+<span class="material-symbols-outlined">language</span>
+                ES
+            </button>
+<button class="flex items-center gap-2 text-neutral-slate hover:text-primary transition-colors font-label-md text-label-md">
+<span class="material-symbols-outlined">help</span>
+                Ayuda
+            </button>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="w-full max-w-[1000px] grid md:grid-cols-2 bg-surface-container-lowest rounded-xl overflow-hidden login-card-shadow border border-outline-variant">
+<!-- Left Side: Visual/Branding Banner -->
+<div class="relative hidden md:flex flex-col justify-center p-stack-lg bg-[#0B8043] overflow-hidden">
+<!-- Background Texture/Pattern -->
+<div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: url('https://www.transparenttextures.com/patterns/cubes.png');"></div>
+<div class="relative z-10 space-y-stack-md">
+<div class="inline-block p-3 rounded-xl bg-[#7CB342] text-white mb-stack-sm">
+<span class="material-symbols-outlined" style="font-size: 32px;">workspace_premium</span>
+</div>
+<h1 class="text-on-primary font-headline-lg text-headline-lg leading-tight">
+                    Accede a tus Insignias Acreditadas y Certificaciones Digitales
+                </h1>
+<p class="text-white/80 font-body-md text-body-md max-w-[320px]">
+                    Tu portafolio profesional, validado por la tecnología de micro-credenciales de UPTex.
+                </p>
+<!-- Abstract Graphic Placeholder -->
+<div class="mt-stack-lg pt-stack-lg">
+<div class="relative w-full aspect-square max-w-[280px]">
+<img class="w-full h-full object-cover rounded-xl shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500" data-alt="A professional digital dashboard interface showing circular micro-credential badges with warm gold accents. The visual style is sleek and academic, featuring high-contrast dark green and emerald tones. Minimalist data visualizations and progress bars are visible in the background, creating a sense of professional achievement and digital innovation." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKD3skQsnHm8LDyklj1LQDvftLn3oc-SFoo6Ep7sHK5EsSGE1GXyys1Gb3okPrsZgpDrUdKVMaYMS8-qpzPCiFHl79Js36Ya50b6amrPaeu0DpzWyMNN_-eIq2BEyUcqs9E512z75mc280w6vRprAzXHPv389B-n4psQD4m_WMi8wdY_V8lOZUseOaFVQJn2sve6EemlwnZLAaZnbY0e-8ZJeZJ0gVV1CawKF2KxOijMlvj0FIpMyJ_A">
+</div>
+</div>
+</div>
+</div>
+<!-- Right Side: Login Form -->
+<div class="p-8 md:p-12 flex flex-col justify-center bg-white">
+<div class="mb-stack-lg">
+<h2 class="text-on-surface font-headline-lg text-headline-lg mb-2">Bienvenido</h2>
+<p class="text-neutral-slate font-body-md text-body-md">Inicia sesión para gestionar tus logros académicos.</p>
+</div>
+<!-- SSO Options -->
+<div class="space-y-3 mb-stack-lg">
+<button class="w-full flex items-center justify-center gap-3 px-4 py-3 border border-neutral-slate rounded-lg text-on-surface font-label-md text-label-md hover:bg-surface-container-low transition-colors group">
+<img class="w-5 h-5 object-contain" data-alt="A clean, minimalist Google search engine logo isolated on a white background, symbolizing secure Single Sign-On authentication for institutional platforms. The lighting is neutral and even, maintaining professional corporate standards for UI design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqQWTGK_7ikjhLxwOWEDbs3rH1wO3QFfk8L2u4-qR8FWgx30E1981vZl3BH-fswURo-3pzPQDdbTd97wpzwEZpKfkMlbABEwaVAXuMelRwujX0QcKLz38OzPvYTrM5GB5xmvCi-sTUa4ZbpB8jw7Y_VLYkRzS6-_zj8lGuzrMiRms8jnYBM-4CPIKRBfMgm19g-EbKNxBtdxoInjSN7SOags5LoE7qK-TLi04bbtHRfv4jXd5oXCnYxg" style="filter: grayscale(0);">
+                    Continuar con Google
+                </button>
+<button class="w-full flex items-center justify-center gap-3 px-4 py-3 border border-neutral-slate rounded-lg text-on-surface font-label-md text-label-md hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">account_balance</span>
+                    Portal Institucional (SSO)
+                </button>
+</div>
+<div class="relative flex items-center gap-4 mb-stack-lg">
+<div class="h-px bg-outline-variant flex-1"></div>
+<span class="text-neutral-slate font-label-sm text-label-sm uppercase tracking-wider">o usa tu correo</span>
+<div class="h-px bg-outline-variant flex-1"></div>
+</div>
+<!-- Standard Login Form -->
+<form class="space-y-stack-md" onsubmit="return false;">
+<div class="space-y-2">
+<label class="block font-label-md text-label-md text-neutral-slate" for="email">Correo Electrónico</label>
+<input class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg focus-primary-glow transition-all text-on-surface" id="email" placeholder="nombre@institucion.edu" type="email">
+</div>
+<div class="space-y-2">
+<div class="flex justify-between items-center">
+<label class="block font-label-md text-label-md text-neutral-slate" for="password">Contraseña</label>
+<a class="text-[#0B8043] font-label-sm text-label-sm hover:underline" href="#">¿Olvidaste tu contraseña?</a>
+</div>
+<div class="relative">
+<input class="w-full px-4 py-3 bg-white border border-outline-variant rounded-lg focus-primary-glow transition-all text-on-surface" id="password" placeholder="••••••••" type="password">
+<button class="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-slate hover:text-primary" type="button">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</div>
+</div>
+<div class="flex items-center gap-2 py-2">
+<input class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary" id="remember" type="checkbox">
+<label class="font-body-md text-body-md text-neutral-slate" for="remember">Mantener sesión iniciada</label>
+</div>
+<button class="w-full bg-[#0B8043] hover:bg-[#7CB342] text-on-primary font-label-md text-label-md py-4 rounded-lg active:scale-[0.98] transition-all shadow-md" type="submit">
+                    Iniciar Sesión
+                </button>
+</form>
+<p class="mt-stack-lg text-center font-body-md text-body-md text-neutral-slate">
+                ¿No tienes una cuenta? <a class="text-[#E53935] font-bold hover:underline" href="#">Solicitar acceso</a>
+</p>
+</div>
+</main>
+<!-- Simple Footer -->
+<footer class="mt-stack-lg text-center space-y-2">
+<p class="text-neutral-slate font-label-sm text-label-sm opacity-70">
+            © 2024 UPTex. Plataforma de Micro-credenciales Institucionales.
+        </p>
+<div class="flex justify-center gap-4 text-neutral-slate font-label-sm text-label-sm">
+<a class="hover:text-primary transition-colors" href="#">Privacidad</a>
+<span class="opacity-30">•</span>
+<a class="hover:text-primary transition-colors" href="#">Términos</a>
+<span class="opacity-30">•</span>
+<a class="hover:text-primary transition-colors" href="#">Accesibilidad</a>
+</div>
+</footer>
+<!-- Simple Micro-interactions Script -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('focus', () => {
+                    input.parentElement.querySelector('label')?.classList.replace('text-neutral-slate', 'text-primary');
+                });
+                input.addEventListener('blur', () => {
+                    input.parentElement.querySelector('label')?.classList.replace('text-primary', 'text-neutral-slate');
+                });
+            });
+
+            // Password visibility toggle simulation
+            const passBtn = document.querySelector('button[type="button"]');
+            const passInput = document.querySelector('#password');
+            if (passBtn && passInput) {
+                passBtn.addEventListener('click', () => {
+                    const type = passInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passInput.setAttribute('type', type);
+                    passBtn.querySelector('span').innerText = type === 'password' ? 'visibility' : 'visibility_off';
+                });
+            }
+        });
+    </script>
+</body></html>

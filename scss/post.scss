@@ -1,0 +1,549 @@
+// theme_saec — post.scss
+// Loaded after Boost core styles. Holds the SAEC design tokens and every
+// `.saec-*` component style. Do not hardcode hex/rgb values below this
+// point — add a token (or derive one with darken()/rgba()) instead.
+
+// ---------------------------------------------------------------------
+// UPTEX COMPONENT LIBRARY (Phase 1)
+// Pulls in the data/UI-component layer (cards, badges, tables, progress —
+// $uptex-* namespace) generated from stitch_uptex/ so its tokens (e.g.
+// $uptex-primary, #0B8043) are available to the shell components below.
+// Imported first/standalone: custom.scss has no dependency on $saec-*.
+// ---------------------------------------------------------------------
+@import "custom";
+
+// ---------------------------------------------------------------------
+// DESIGN TOKENS
+// ---------------------------------------------------------------------
+$saec-primary:        #1b5e3b; // SAEC Green — primary actions, active states, brand highlights.
+$saec-primary-hover:  darken($saec-primary, 8%);
+$saec-primary-light:  rgba($saec-primary, 0.08);
+$saec-dark:           #212529; // Charcoal — controls, indicators, headings, outline borders.
+$saec-border:         #d1d5db; // Neutral border — card borders, dividers, structural outlines.
+$saec-surface:        #ffffff; // Cards / footer surface.
+$saec-img-bg:         #f8f9fa; // Off-white image container background.
+$saec-text-dark:      #111827; // Primary text.
+$saec-text-muted:     #6b7280; // Secondary / muted text.
+$saec-radius:         10px;
+$saec-radius-lg:      12px; // Hero carousel image stage.
+$saec-shadow-md:      0 4px 12px rgba(0, 0, 0, 0.08);
+$saec-shadow-elevated: 0 10px 25px -5px rgba(0, 0, 0, 0.1); // Hero carousel container shadow.
+
+// ---------------------------------------------------------------------
+// SHARED BUTTON — .saec-btn
+// ---------------------------------------------------------------------
+.saec-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.45rem 1.1rem;
+    border-radius: $saec-radius;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+
+    &--outline {
+        color: $saec-dark;
+        border: 2px solid $saec-dark;
+        background-color: transparent;
+
+        &:hover,
+        &:focus {
+            color: $saec-surface;
+            background-color: $saec-dark;
+            text-decoration: none;
+        }
+    }
+}
+
+// ---------------------------------------------------------------------
+// NAVBAR — .saec-navbar
+// ---------------------------------------------------------------------
+.saec-navbar {
+    background-color: $saec-surface;
+    border-bottom: 1px solid $saec-border;
+
+    .saec-navbar__row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 64px;
+    }
+
+    .saec-navbar__brand {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        .saec-navbar__logo {
+            height: 40px;
+            width: auto;
+        }
+    }
+
+    .saec-navbar__actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+}
+
+// ---------------------------------------------------------------------
+// PAGE ACTIONS BAR (heading button / breadcrumb hook row on the frontpage)
+// ---------------------------------------------------------------------
+.saec-page-actions {
+    background-color: $saec-img-bg;
+
+    &:empty {
+        display: none;
+    }
+}
+
+// ---------------------------------------------------------------------
+// NATIVE FRONTPAGE CONTENT (output.main_content)
+// Hides Moodle's built-in course-listing blocks so they don't duplicate
+// the custom .saec-course-grid below them; frontpage news/announcements
+// (#frontpage-news) still renders normally.
+// ---------------------------------------------------------------------
+.saec-frontpage-native {
+    #frontpage-course-list,
+    #frontpage-available-course-list {
+        display: none;
+    }
+}
+
+// ---------------------------------------------------------------------
+// CAROUSEL — .saec-carousel
+// ---------------------------------------------------------------------
+.saec-carousel {
+    .saec-carousel__stage {
+        border-radius: $saec-radius-lg;
+        overflow: hidden;
+        box-shadow: $saec-shadow-elevated;
+    }
+
+    .saec-carousel__slide {
+        position: relative;
+    }
+
+    .saec-carousel__img {
+        width: 100%;
+        height: 380px;
+        object-fit: cover;
+
+        @media (max-width: 767.98px) {
+            height: 260px;
+        }
+    }
+
+    .saec-carousel__overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(17, 24, 39, 0.45) 0%, rgba(17, 24, 39, 0.7) 100%);
+        display: flex;
+        align-items: center;
+    }
+
+    .saec-carousel__caption {
+        text-align: left;
+        max-width: 640px;
+        padding: 1.5rem 2.5rem;
+
+        @media (max-width: 767.98px) {
+            padding: 1rem 1.5rem;
+        }
+    }
+
+    .saec-carousel__title {
+        color: $saec-surface;
+        font-weight: 800;
+        font-size: 2.25rem;
+
+        @media (max-width: 767.98px) {
+            font-size: 1.5rem;
+        }
+    }
+
+    .saec-carousel__subtitle {
+        color: $saec-surface;
+        font-size: 1.1rem;
+        opacity: 0.92;
+
+        @media (max-width: 767.98px) {
+            font-size: 0.95rem;
+        }
+    }
+
+    // Controls live BELOW the image stage, centered as: [arrow] [dots] [arrow].
+    .saec-carousel__controls {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1.25rem;
+        margin-top: 1.25rem;
+    }
+
+    // Subtle "ghost" arrow by default; a soft rounded tint + blur appears on
+    // hover/focus instead of a permanent solid circle.
+    .saec-carousel__arrow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: none;
+        background-color: transparent;
+        color: $saec-dark;
+        font-size: 1.1rem;
+        line-height: 1;
+        position: static;
+        opacity: 1;
+        transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out,
+            box-shadow 0.2s ease-in-out;
+
+        &:hover,
+        &:focus {
+            background-color: rgba($saec-dark, 0.08);
+            backdrop-filter: blur(4px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transform: scale(1.05);
+        }
+
+        &:active {
+            transform: scale(0.97);
+        }
+    }
+
+    // Also carries Bootstrap's native `.carousel-indicators` class so its
+    // carousel.js can find and sync the active dot on slide/slid — but that
+    // class defaults to `position: absolute` (overlaid on the image), so we
+    // pull it back into our in-flow control bar below the image stage.
+    .saec-carousel__dots {
+        position: static;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        margin: 0;
+        padding: 0;
+    }
+
+    // Modern pill indicators: small circles at rest, the active one stretches
+    // into a rounded pill. All dimensions animate on the 0.3s transition.
+    .saec-carousel__dot {
+        width: 8px;
+        height: 8px;
+        padding: 0;
+        border: none;
+        border-radius: 50%;
+        background-color: $saec-border;
+        text-indent: -9999px;
+        position: static;
+        opacity: 1;
+        transition: all 0.3s ease;
+
+        &:hover {
+            background-color: rgba($saec-dark, 0.6);
+        }
+
+        &.active {
+            width: 24px;
+            height: 8px;
+            border-radius: 4px;
+            background-color: $saec-dark;
+        }
+    }
+}
+
+// ---------------------------------------------------------------------
+// COURSE GRID — .saec-course-grid
+// ---------------------------------------------------------------------
+.saec-course-grid {
+    background-color: $saec-img-bg;
+    padding: 3rem 0;
+
+    .saec-course-grid__heading {
+        color: $saec-text-dark;
+        font-weight: 800;
+        margin-bottom: 0.25rem;
+    }
+
+    .saec-course-grid__subheading {
+        color: $saec-text-muted;
+        margin-bottom: 2rem;
+    }
+
+    .saec-course-card {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        background-color: $saec-surface;
+        border: 2px solid $saec-border;
+        border-radius: $saec-radius;
+        overflow: hidden;
+        color: inherit;
+        text-decoration: none;
+        transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+        &:hover,
+        &:focus {
+            color: inherit;
+            text-decoration: none;
+            transform: translateY(-4px);
+            box-shadow: $saec-shadow-md;
+        }
+    }
+
+    .saec-card-img {
+        height: 180px;
+        background-color: $saec-img-bg;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+
+        &__photo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        &__placeholder {
+            color: $saec-primary;
+            font-weight: 800;
+            font-size: 1.1rem;
+            letter-spacing: 0.05em;
+        }
+    }
+
+    .saec-card-body {
+        padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        &__row {
+            display: flex;
+            align-items: baseline;
+            gap: 0.4rem;
+            margin: 0;
+        }
+
+        &__label {
+            flex-shrink: 0;
+            color: $saec-text-muted;
+            font-weight: 700;
+            font-size: 0.75rem;
+            letter-spacing: 0.03em;
+        }
+
+        &__value {
+            color: $saec-text-muted;
+            font-size: 0.9rem;
+
+            &--title {
+                color: $saec-text-dark;
+                font-weight: 700;
+                font-size: 1.05rem;
+            }
+        }
+    }
+
+    .saec-course-grid__empty {
+        color: $saec-text-muted;
+        background-color: $saec-primary-light;
+        border-radius: $saec-radius;
+        padding: 1.5rem;
+        text-align: center;
+    }
+}
+
+// ---------------------------------------------------------------------
+// FOOTER — .saec-footer
+// ---------------------------------------------------------------------
+.saec-footer {
+    background-color: $saec-surface;
+    border-top: 1px solid $saec-border;
+    padding: 1.5rem 0;
+
+    .saec-footer__row {
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .saec-footer__logo {
+        max-height: 50px;
+        width: auto;
+    }
+
+    .saec-footer__text {
+        flex: 1 1 auto;
+        text-align: center;
+    }
+
+    .saec-footer__tagline {
+        color: $saec-text-dark;
+        font-weight: 700;
+        font-size: 0.9rem;
+        margin: 0;
+    }
+
+    .saec-footer__copyright {
+        color: $saec-text-muted;
+        font-size: 0.8rem;
+        margin: 0;
+    }
+}
+
+// ---------------------------------------------------------------------
+// NAVBAR — center spacer + mobile drawer toggle (Phase 2)
+// ---------------------------------------------------------------------
+.saec-navbar {
+    .saec-navbar__center {
+        flex: 1 1 auto;
+    }
+
+    .saec-navbar__drawer-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        margin-right: 0.5rem;
+        border: none;
+        border-radius: 50%;
+        background-color: transparent;
+        color: $saec-dark;
+        flex-shrink: 0;
+
+        &:hover,
+        &:focus {
+            background-color: $saec-img-bg;
+        }
+    }
+}
+
+// ---------------------------------------------------------------------
+// SIDEBAR / MAIN NAV DRAWER — .saec-sidebar (Phase 2)
+// Rendered inside Boost's reusable drawer-left shell via
+// theme_saec/nav-drawer. The active link uses the UPTex institutional
+// green ($uptex-primary, imported from custom.scss above) as its
+// highlight color, per the design system handed off from Phase 1.
+// ---------------------------------------------------------------------
+#theme_saec-drawers-mainnav {
+    background-color: $uptex-bg-alt;
+
+    .drawercontent {
+        padding: 0;
+    }
+}
+
+.saec-sidebar {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 1rem 0;
+
+    &__brand {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0 1rem 1.5rem;
+        margin-bottom: 0.5rem;
+        border-bottom: 1px solid $saec-border;
+    }
+
+    &__brand-mark {
+        flex-shrink: 0;
+        width: 40px;
+        height: 40px;
+        border-radius: $saec-radius;
+        background-color: $uptex-primary;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        img, svg {
+            width: 20px;
+            height: 20px;
+            filter: brightness(0) invert(1);
+        }
+    }
+
+    &__brand-title {
+        margin: 0;
+        font-weight: 800;
+        font-size: 0.95rem;
+        color: $uptex-primary;
+    }
+
+    &__brand-subtitle {
+        margin: 0;
+        font-size: 0.75rem;
+        color: $saec-text-muted;
+    }
+
+    &__nav {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        padding: 0 0.75rem;
+        flex: 1 1 auto;
+    }
+
+    &__footer {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        padding: 0.75rem;
+        margin-top: auto;
+        border-top: 1px solid $saec-border;
+    }
+
+    &__link {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.6rem 0.85rem;
+        border-radius: $uptex-radius-pill;
+        color: $saec-text-muted;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-decoration: none;
+        transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+
+        &:hover,
+        &:focus {
+            background-color: $uptex-hover-tint;
+            color: $uptex-primary;
+            text-decoration: none;
+        }
+
+        &.active {
+            background-color: $uptex-primary;
+            color: $saec-surface;
+            box-shadow: 0 4px 12px rgba($uptex-primary, 0.25);
+        }
+
+        &--disabled {
+            opacity: 0.45;
+            pointer-events: none;
+        }
+    }
+
+    &__icon {
+        flex-shrink: 0;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        img, svg {
+            width: 100%;
+            height: 100%;
+        }
+    }
+}

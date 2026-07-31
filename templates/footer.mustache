@@ -1,0 +1,33 @@
+{{!
+    @template theme_saec/footer
+
+    Global SAEC footer: a single horizontal row — left logo, centered
+    two-line text, right logo.
+
+    Example context (json):
+    {
+        "logourl": "https://example.org/theme/saec/pix/logo1.png",
+        "logofooterurl": "https://example.org/theme/saec/pix/logo2.jpg",
+        "sitename": "SAEC",
+        "currentyear": "2026",
+        "output": {
+            "standard_footer_html": "",
+            "standard_end_of_body_html": ""
+        }
+    }
+}}
+<footer id="page-footer" class="saec-footer">
+    <div class="container saec-footer__row d-flex justify-content-between align-items-center">
+        <img src="{{{ logourl }}}" class="saec-footer__logo" alt="{{sitename}}">
+
+        <div class="saec-footer__text">
+            <p class="saec-footer__tagline">{{#str}} footertagline, theme_saec {{/str}}</p>
+            <p class="saec-footer__copyright">{{#str}} footercopyright, theme_saec, {{currentyear}} {{/str}}</p>
+        </div>
+
+        <img src="{{{ logofooterurl }}}" class="saec-footer__logo" alt="{{sitename}}">
+    </div>
+
+    {{{ output.standard_footer_html }}}
+    {{{ output.standard_end_of_body_html }}}
+</footer>

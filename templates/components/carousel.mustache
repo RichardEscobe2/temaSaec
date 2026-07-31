@@ -1,0 +1,49 @@
+{{!
+    @template theme_saec/components/carousel
+
+    Frontpage hero carousel: 3 slides, fixed height with object-fit cover
+    and a dark overlay caption. Prev/next arrows and dot indicators are
+    rendered BELOW the image stage, not overlaid on top of it.
+
+    Example context (json):
+    {
+        "slides": [
+            {"index": 0, "active": true, "image": "https://example.org/theme/saec/pix/img1.png", "title": "Bienvenido", "subtitle": "Educación continua"}
+        ]
+    }
+}}
+<div id="saecHeroCarousel" class="saec-carousel carousel slide" data-ride="carousel">
+    <div class="saec-carousel__stage carousel-inner">
+        {{#slides}}
+            <div class="carousel-item saec-carousel__slide {{#active}}active{{/active}}">
+                <img src="{{{ image }}}" class="saec-carousel__img" alt="{{ title }}">
+                <div class="saec-carousel__overlay">
+                    <div class="container">
+                        <div class="saec-carousel__caption">
+                            <h2 class="saec-carousel__title">{{ title }}</h2>
+                            <p class="saec-carousel__subtitle">{{ subtitle }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {{/slides}}
+    </div>
+
+    <div class="saec-carousel__controls">
+        <button class="saec-carousel__arrow" type="button" data-target="#saecHeroCarousel" data-slide="prev">
+            <span aria-hidden="true">&#10094;</span>
+            <span class="sr-only">{{#str}} previous, moodle {{/str}}</span>
+        </button>
+
+        <div class="saec-carousel__dots carousel-indicators">
+            {{#slides}}
+                <button type="button" class="saec-carousel__dot {{#active}}active{{/active}}" data-target="#saecHeroCarousel" data-slide-to="{{index}}" aria-label="Slide {{index}}"></button>
+            {{/slides}}
+        </div>
+
+        <button class="saec-carousel__arrow" type="button" data-target="#saecHeroCarousel" data-slide="next">
+            <span aria-hidden="true">&#10095;</span>
+            <span class="sr-only">{{#str}} next, moodle {{/str}}</span>
+        </button>
+    </div>
+</div>

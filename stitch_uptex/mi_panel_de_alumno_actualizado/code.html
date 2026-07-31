@@ -1,0 +1,424 @@
+<!DOCTYPE html><html class="light" lang="es"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>UPTex Moodle - Dashboard de Estudiante</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=Hanken+Grotesk:wght@600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@100..900&amp;family=Inter:wght@100..900&amp;display=swap" rel="stylesheet">
+<!-- Include Tailwind Config from prompt -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "error-container": "#ffdad6",
+                    "on-tertiary-fixed": "#410002",
+                    "surface-container": "#ebeef4",
+                    "outline": "#6f7a6f",
+                    "surface-container-high": "#e5e8ee",
+                    "secondary-fixed": "#b8f47a",
+                    "on-tertiary-container": "#fff1ef",
+                    "tertiary-container": "#d42c2b",
+                    "on-error-container": "#93000a",
+                    "secondary": "#3c6a00",
+                    "surface-bright": "#f7f9ff",
+                    "background": "#f7f9ff",
+                    "on-error": "#ffffff",
+                    "primary-fixed-dim": "#77db93",
+                    "inverse-on-surface": "#eef1f7",
+                    "surface-variant": "#dfe3e8",
+                    "outline-variant": "#becabd",
+                    "primary-container": "#0b8043",
+                    "surface-container-low": "#f1f4fa",
+                    "surface-dim": "#d7dae0",
+                    "on-surface-variant": "#3f4940",
+                    "surface": "#f7f9ff",
+                    "on-tertiary-fixed-variant": "#93000d",
+                    "surface-container-highest": "#dfe3e8",
+                    "tertiary-fixed-dim": "#ffb4ac",
+                    "tertiary-fixed": "#ffdad6",
+                    "on-background": "#181c20",
+                    "on-primary-container": "#d1ffd8",
+                    "tertiary": "#b00a16",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary-fixed-variant": "#005228",
+                    "on-primary": "#ffffff",
+                    "on-secondary-container": "#407100",
+                    "inverse-primary": "#77db93",
+                    "primary-fixed": "#93f8ae",
+                    "on-primary-fixed": "#00210c",
+                    "on-tertiary": "#ffffff",
+                    "inverse-surface": "#2d3135",
+                    "surface-tint": "#006d37",
+                    "secondary-container": "#b8f47a",
+                    "on-secondary-fixed-variant": "#2c5000",
+                    "on-secondary": "#ffffff",
+                    "on-secondary-fixed": "#0e2000",
+                    "error": "#ba1a1a",
+                    "primary": "#006532",
+                    "secondary-fixed-dim": "#9dd761",
+                    "on-surface": "#181c20"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "base": "4px",
+                    "lg": "24px",
+                    "sm": "8px",
+                    "md": "16px",
+                    "margin-desktop": "48px",
+                    "gutter": "24px",
+                    "xs": "4px",
+                    "xl": "32px",
+                    "margin-mobile": "16px",
+                    "xxl": "48px"
+            },
+            "fontFamily": {
+                    "body-md": ["Inter"],
+                    "headline-lg-mobile": ["Hanken Grotesk"],
+                    "headline-md": ["Hanken Grotesk"],
+                    "button": ["Inter"],
+                    "label-md": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "display": ["Hanken Grotesk"],
+                    "headline-lg": ["Hanken Grotesk"],
+                    "body-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "button": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "display": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-nav-item {
+            transform: translateX(4px);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body-md text-on-background min-h-screen">
+<!-- TopNavBar -->
+<nav class="sticky top-0 z-50 flex justify-between items-center px-lg py-sm w-full bg-surface-container-lowest dark:bg-inverse-surface border-b border-outline-variant/20">
+<div class="flex items-center gap-md">
+<span class="font-display text-headline-md font-bold text-primary dark:text-primary-fixed">UPTex Moodle</span>
+</div>
+<div class="hidden md:flex items-center gap-lg">
+<a class="text-primary dark:text-primary-fixed font-bold border-b-2 border-primary dark:border-primary-fixed pb-1 font-body-md text-body-md" href="#">Home</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors font-body-md text-body-md" href="#">Catalog</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors font-body-md text-body-md" href="#">Verify</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors font-body-md text-body-md" href="#">Campus Virtual</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors font-body-md text-body-md" href="#">Help</a>
+</div>
+<div class="flex items-center gap-md">
+<button class="p-xs rounded-lg hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+</button>
+<div class="flex items-center gap-sm p-xs rounded-lg hover:bg-surface-container transition-colors cursor-pointer">
+<img class="w-8 h-8 rounded-full border border-outline-variant/30" data-alt="A clean, professional headshot of a young university student in a minimalist studio setting. The lighting is soft and high-key, aligning with a bright institutional UI. The student wears a simple white shirt, representing a clean academic profile. The background is a soft, out-of-focus gray that complements the modern slate palette of the design system." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAo_Fen3e3g_v_oBVso6VvwA_WzKyJwxjHhTRfm45X7WkWV3oYoOr7Fpbi3xkp4RAOJ3q9MiMiX_d_Xil5eEZvG3TGlJFDVNHAh5lqg5DC3_q4ADhPwpI9XaSEtZ27lWy9SpTwWK1qjlJkQrVCf1q9UT3KgCcngrxzWSz7cXGBWB-6-douFELwVtJhfsP0be_YGD0fd9Ekz5o3Z3sW73U9Jedx7-GM-36iohq5Z2t2opxaqfWEorKDDMQ">
+<span class="material-symbols-outlined text-on-surface-variant">account_circle</span>
+</div>
+</div>
+</nav>
+<div class="flex">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col h-screen sticky left-0 top-0 border-r border-outline-variant/20 w-64 z-40 bg-surface-container dark:bg-surface-dim">
+<div class="p-lg">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined">school</span>
+</div>
+<div>
+<h2 class="font-headline-md text-label-md font-bold text-primary dark:text-primary-fixed">UPTex Dashboard</h2>
+<p class="text-on-surface-variant text-[10px] uppercase tracking-widest">Institutional Portal</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 mt-md">
+<!-- Dashboard Active -->
+<a class="bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary rounded-full mx-md my-xs px-md py-sm flex items-center gap-md active-nav-item transition-transform" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant dark:hover:bg-inverse-surface rounded-full mx-md my-xs px-md py-sm flex items-center gap-md transition-all" href="#">
+<span class="material-symbols-outlined">school</span>
+<span class="font-label-md text-label-md">Courses</span>
+</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant dark:hover:bg-inverse-surface rounded-full mx-md my-xs px-md py-sm flex items-center gap-md transition-all" href="#">
+<span class="material-symbols-outlined">verified</span>
+<span class="font-label-md text-label-md">Credentials</span>
+</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant dark:hover:bg-inverse-surface rounded-full mx-md my-xs px-md py-sm flex items-center gap-md transition-all" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-md text-label-md">Analytics</span>
+</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant dark:hover:bg-inverse-surface rounded-full mx-md my-xs px-md py-sm flex items-center gap-md transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</nav>
+<div class="p-md border-t border-outline-variant/20">
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant rounded-full px-md py-sm flex items-center gap-md transition-all" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-md text-label-md">Help Center</span>
+</a>
+<a class="text-error hover:bg-error-container rounded-full px-md py-sm flex items-center gap-md transition-all mt-xs" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-md text-label-md">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 p-md md:p-xl max-w-7xl mx-auto w-full">
+<header class="mb-xl">
+<h1 class="font-display text-headline-lg text-on-background mb-xs">Bienvenido de nuevo, Alex</h1>
+<p class="text-on-surface-variant font-body-md">Tienes 3 entregas pendientes para esta semana.</p>
+</header>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-lg">
+<!-- Mis Cursos Inscritos (Main Section) -->
+<section class="lg:col-span-8">
+<div class="flex justify-between items-end mb-md">
+<h2 class="font-headline-md text-on-background">Mis Cursos Inscritos</h2>
+<button class="text-primary font-button text-button hover:underline">Ver todo</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<!-- Course Card 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant/20 rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
+<div class="h-32 bg-primary-container relative">
+<div class="w-full h-full bg-cover bg-center" data-alt="A sophisticated digital pattern of interconnected green geometric nodes and light streaks on a dark background, representing advanced computer science and algorithms. The style is minimalist and corporate, using the brand primary green and secondary lime colors to create a high-tech academic feel." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB2DhGsEp4heAbWlAG3Cmqiw1nb2NYgM_CUAyAl3jqLFcvnJDtHOOFZlFRmKTc1aBM8iTwJiMBnz01kFa4iAKzj39XkKO_8lWnEvqteUoYubbGB8t6H4035FuSWvLkVzyB4_cWEXgTPc5VhB1VXZ6EisKHleUG-T62j4ReYT2T3dSqe-L4233MF0NcgYfsM_nEQf8VBrvRpi_PBQ9dNl6lqiC3xPdgdNnmnNoU61PSJnbR_v3NTSRRUGg')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+<span class="absolute bottom-md left-md text-white font-bold">Ingeniería de Software II</span>
+</div>
+<div class="p-md">
+<div class="flex justify-between text-label-md text-on-surface-variant mb-xs">
+<span>Progreso del curso</span>
+<span class="font-bold text-primary">12 de 14 módulos</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 85%"></div>
+</div>
+<div class="mt-md flex justify-between items-center">
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full border-2 border-white bg-surface-dim"></div>
+<div class="w-6 h-6 rounded-full border-2 border-white bg-surface-dim"></div>
+</div>
+<button class="bg-primary text-on-primary px-md py-xs rounded-full font-button text-button hover:bg-primary/90 transition-colors">Continuar</button>
+</div>
+</div>
+</div>
+<!-- Course Card 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant/20 rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
+<div class="h-32 bg-primary-container relative">
+<div class="w-full h-full bg-cover bg-center" data-alt="Abstract visualization of data streams and neural networks in shades of deep green and vibrant lime. The lighting is crisp and modern, featuring thin glowing lines that suggest connectivity and intelligent systems. Perfect for an institutional dashboard focused on data analytics and technology." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD5ik9PxLJE5BMnbf68e4Xxa9kYfvXz5petyLLEWfh1tlLOu8xBQpVW9v2YCzIYId6VH038RuJCj1wEowEuIvurXzGZPnFh5CdTb59wu4WuMNJU8TixEuiLxYIErulXQU4ejNNZkBgbYKKp7_qF-HNivyq6NgU1Y5D9B4GVhhP1xZqYJ4k31spWKIxD8iO7vRL0Jo2Y2_1hRPZbeyPAUDP2sROgFhvzpVN08XhDu9ml3PgppoVTw7SeYw')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+<span class="absolute bottom-md left-md text-white font-bold">Base de Datos Avanzadas</span>
+</div>
+<div class="p-md">
+<div class="flex justify-between text-label-md text-on-surface-variant mb-xs">
+<span>Progreso del curso</span>
+<span class="font-bold text-primary">5 de 10 módulos</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 50%"></div>
+</div>
+<div class="mt-md flex justify-between items-center">
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full border-2 border-white bg-surface-dim"></div>
+</div>
+<button class="bg-primary text-on-primary px-md py-xs rounded-full font-button text-button hover:bg-primary/90 transition-colors">Continuar</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Próximas Entregas (Sidebar widget) -->
+<section class="lg:col-span-4 flex flex-col gap-lg">
+<div class="bg-surface-container-low p-md rounded-xl border border-outline-variant/10">
+<div class="flex items-center gap-sm mb-md">
+<span class="material-symbols-outlined text-tertiary">calendar_month</span>
+<h2 class="font-headline-md text-body-lg font-bold">Próximas Entregas</h2>
+</div>
+<div class="space-y-md">
+<!-- Urgent Item -->
+<div class="flex gap-md p-sm bg-surface-container-lowest rounded-lg border-l-4 border-tertiary">
+<div class="flex flex-col items-center justify-center min-w-[48px] bg-error-container text-tertiary rounded-lg py-xs">
+<span class="text-label-md font-bold uppercase">Hoy</span>
+<span class="text-headline-md leading-none">24</span>
+</div>
+<div class="flex-1">
+<h3 class="font-bold text-body-sm text-on-background line-clamp-1">Proyecto Final: Fase 1</h3>
+<p class="text-[12px] text-on-surface-variant">Sistemas Operativos</p>
+<div class="flex items-center gap-xs mt-xs text-tertiary font-bold text-[11px]">
+<span class="material-symbols-outlined text-[14px]">priority_high</span>
+<span>Cierra en 4 horas</span>
+</div>
+</div>
+</div>
+<!-- Regular Item -->
+<div class="flex gap-md p-sm bg-surface-container-lowest rounded-lg border-l-4 border-outline-variant">
+<div class="flex flex-col items-center justify-center min-w-[48px] bg-surface-container-high text-on-surface-variant rounded-lg py-xs">
+<span class="text-label-md font-bold uppercase">Jue</span>
+<span class="text-headline-md leading-none">26</span>
+</div>
+<div class="flex-1">
+<h3 class="font-bold text-body-sm text-on-background line-clamp-1">Examen Parcial</h3>
+<p class="text-[12px] text-on-surface-variant">Arquitectura de Redes</p>
+<div class="flex items-center gap-xs mt-xs text-on-surface-variant text-[11px]">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+<span>10:00 AM</span>
+</div>
+</div>
+</div>
+<!-- Regular Item -->
+<div class="flex gap-md p-sm bg-surface-container-lowest rounded-lg border-l-4 border-outline-variant">
+<div class="flex flex-col items-center justify-center min-w-[48px] bg-surface-container-high text-on-surface-variant rounded-lg py-xs">
+<span class="text-label-md font-bold uppercase">Lun</span>
+<span class="text-headline-md leading-none">30</span>
+</div>
+<div class="flex-1">
+<h3 class="font-bold text-body-sm text-on-background line-clamp-1">Laboratorio 4</h3>
+<p class="text-[12px] text-on-surface-variant">Física Aplicada</p>
+<div class="flex items-center gap-xs mt-xs text-on-surface-variant text-[11px]">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+<span>11:59 PM</span>
+</div>
+</div>
+</div>
+</div>
+<button class="w-full mt-lg py-sm border border-outline-variant rounded-lg text-label-md font-bold hover:bg-surface-container transition-colors">
+                            Abrir Calendario Moodle
+                        </button>
+</div>
+<!-- Mi Mochila de Insignias -->
+<div class="bg-surface-container-highest p-md rounded-xl">
+<div class="flex justify-between items-center mb-md">
+<h2 class="font-headline-md text-body-lg font-bold flex items-center gap-sm">
+<span class="material-symbols-outlined text-secondary">workspace_premium</span>
+                                Mi Mochila
+                            </h2>
+<button class="text-primary font-label-md">Exportar</button>
+</div>
+<div class="flex flex-wrap gap-md justify-center mb-md">
+<!-- Badge 1 -->
+<div class="relative group cursor-pointer">
+<div class="w-16 h-16 bg-white rounded-full p-2 shadow-sm border border-outline-variant/30 group-hover:scale-110 transition-transform flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-4xl" style="font-variation-settings: 'FILL' 1">verified</span>
+</div>
+<div class="absolute -top-1 -right-1 w-4 h-4 bg-primary text-white text-[8px] flex items-center justify-center rounded-full font-bold">XP</div>
+</div>
+<!-- Badge 2 -->
+<div class="relative group cursor-pointer">
+<div class="w-16 h-16 bg-white rounded-full p-2 shadow-sm border border-outline-variant/30 group-hover:scale-110 transition-transform flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary text-4xl" style="font-variation-settings: 'FILL' 1">code</span>
+</div>
+</div>
+<!-- Badge 3 -->
+<div class="relative group cursor-pointer opacity-50 grayscale">
+<div class="w-16 h-16 bg-white rounded-full p-2 shadow-sm border border-outline-variant/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant text-4xl">lock</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-sm">
+<button class="flex items-center justify-center gap-md bg-secondary text-on-secondary py-sm rounded-lg font-button text-button hover:bg-secondary/90 transition-colors">
+<span class="material-symbols-outlined text-sm">cloud_upload</span>
+                                Exportar a Credly
+                            </button>
+<div class="flex justify-center gap-lg mt-sm">
+<button class="p-sm rounded-full bg-surface-container hover:bg-outline-variant/20 transition-colors">
+<img alt="LinkedIn" class="w-4 h-4 grayscale hover:grayscale-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAT23_qBP-iWop2Npsn-LZMKd8Ro_zh9UrMoIT4Z5MWAkzaRIPnIeyGWlf75YwY1IB5d3UhC7g5_GmC_9VTcdP_q55Eaotd7bl7-IY-gopwHFwzw97DT1vLdOCH3RIik-SsIFXiPxktftFy66aKEdRidrsWLLCbjwOQHfMwsf-m2CDtmxOqKWck69JjVIXO1H5kagNI7kY2C-0A-542QHEFwM28VEgbxOK03APQ6Qya3h--ztPhnfqiIw">
+</button>
+<button class="p-sm rounded-full bg-surface-container hover:bg-outline-variant/20 transition-colors">
+<img alt="Twitter" class="w-4 h-4 grayscale hover:grayscale-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZqtoRR-elUwOOPOKRmQMeMLMn3tDZ6CclQnM1YcdHX9U9p_YFPqCOaUKqhkUlP6FjiWhEDz6Y8itFVCAfXEJG3nc2_gbME11G9b9xTdEZuyxRZV09P8JPrJrd5SEi4yWdTF_Z6gE9InJ-LFcVRokL0hehTE6T_Aek4kn0717WDIIMP7f9qO5d_rd2_p1mJR04VLn7BNZe9POQkDxQIvX8wm5GeLB5FU8VBBwYk5Q8cKq_3YzaBWdUhQ">
+</button>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Dashboard Analytics / Recent Activity -->
+<section class="mt-xxl">
+<h2 class="font-headline-md text-on-background mb-lg">Resumen de Actividad Académica</h2>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-lg">
+<div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant/20">
+<p class="text-label-md text-on-surface-variant uppercase tracking-widest mb-sm">Promedio General</p>
+<div class="flex items-end gap-sm">
+<span class="text-display leading-none text-primary">9.4</span>
+<span class="text-secondary text-label-md font-bold mb-1">+0.2 vs mes ant.</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant/20">
+<p class="text-label-md text-on-surface-variant uppercase tracking-widest mb-sm">Asistencia</p>
+<div class="flex items-end gap-sm">
+<span class="text-display leading-none text-on-background">98%</span>
+<span class="text-secondary text-label-md font-bold mb-1">Óptimo</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant/20">
+<p class="text-label-md text-on-surface-variant uppercase tracking-widest mb-sm">Horas de Estudio</p>
+<div class="flex items-end gap-sm">
+<span class="text-display leading-none text-on-background">42h</span>
+<span class="text-on-surface-variant text-label-md mb-1">Esta semana</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant/20">
+<p class="text-label-md text-on-surface-variant uppercase tracking-widest mb-sm">Insignias</p>
+<div class="flex items-end gap-sm">
+<span class="text-display leading-none text-secondary">15</span>
+<span class="text-on-surface-variant text-label-md mb-1">Logradas</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- Footer -->
+<footer class="w-full py-xl px-lg flex flex-col md:flex-row justify-between items-center gap-lg border-t border-outline-variant/20 bg-surface-container-highest dark:bg-inverse-surface mt-xl">
+<div class="flex flex-col items-center md:items-start">
+<span class="font-headline-sm text-headline-sm font-bold text-primary dark:text-primary-fixed">UPTex Moodle</span>
+<p class="text-on-surface-variant dark:text-surface-variant font-body-sm mt-xs">© 2024 UPTex Moodle. All rights reserved.</p>
+</div>
+<div class="flex gap-lg">
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors font-body-sm" href="#">Privacy</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors font-body-sm" href="#">Terms</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors font-body-sm" href="#">Accessibility</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors font-body-sm" href="#">Contact</a>
+</div>
+</footer>
+<script>
+        // Micro-interaction for buttons
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('mousedown', () => {
+                btn.style.transform = 'scale(0.98)';
+            });
+            btn.addEventListener('mouseup', () => {
+                btn.style.transform = 'scale(1)';
+            });
+            btn.addEventListener('mouseleave', () => {
+                btn.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body></html>

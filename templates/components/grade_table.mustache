@@ -1,0 +1,91 @@
+{{!
+    @template theme_saec/components/grade_table
+
+    Gradebook-style report table (.uptex-table-container +
+    .uptex-grade-pill, custom.scss Phase 1): student identity, one column
+    per graded item and a final-grade pill (green when passing, red —
+    .uptex-grade-pill--fail — otherwise).
+
+    Assessment columns are data-driven: gradeitems supplies the header
+    labels and each student's items array must already be pre-ordered by
+    the caller to line up with gradeitems (Mustache cannot zip two lists
+    together) — that data-shaping belongs to whichever renderer/controller
+    eventually feeds this template.
+
+    Example context (json):
+    {
+        "gradeitems": [
+            {"name": "Quiz 1 (15%)"},
+            {"name": "Tarea 1 (25%)"},
+            {"name": "Examen (30%)"}
+        ],
+        "students": [
+            {
+                "hasavatar": false,
+                "avatarurl": "",
+                "initials": "AA",
+                "name": "Alonso Arriaga",
+                "email": "a.arriaga@uptex.edu.mx",
+                "matricula": "20210045",
+                "items": [{"score": "9.0"}, {"score": "8.5"}, {"score": "9.2"}],
+                "finalgrade": "8.9",
+                "ispassing": true,
+                "viewurl": "https://example.org/grade/report/user/index.php?id=2&user=5"
+            }
+        ]
+    }
+}}
+<div class="uptex-table-container">
+    <div class="table-responsive">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th>{{#str}} fullnameuser, moodle {{/str}}</th>
+                    <th>{{#str}} idnumber, moodle {{/str}}</th>
+                    {{#gradeitems}}
+                        <th class="text-center">{{ name }}</th>
+                    {{/gradeitems}}
+                    <th class="text-center">{{#str}} grades, moodle {{/str}}</th>
+                    <th class="text-right">{{#str}} actions, moodle {{/str}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#students}}
+                <tr>
+                    <td>
+                        <div class="uptex-table-student">
+                            <span class="uptex-avatar uptex-avatar--sm">
+                                {{#hasavatar}}
+                                    <img src="{{{ avatarurl }}}" alt="">
+                                {{/hasavatar}}
+                                {{^hasavatar}}
+                                    {{ initials }}
+                                {{/hasavatar}}
+                            </span>
+                            <div>
+                                <p class="uptex-table-student__name">{{ name }}</p>
+                                <p class="uptex-table-student__subtext">{{ email }}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td>{{ matricula }}</td>
+                    {{#items}}
+                        <td class="text-center">{{ score }}</td>
+                    {{/items}}
+                    <td class="text-center">
+                        <span class="uptex-grade-pill {{^ispassing}}uptex-grade-pill--fail{{/ispassing}}">{{ finalgrade }}</span>
+                    </td>
+                    <td class="text-right">
+                        {{#viewurl}}
+                            <a href="{{{ viewurl }}}" class="text-muted" title="{{#str}} view, moodle {{/str}}">{{#str}} view, moodle {{/str}}</a>
+                        {{/viewurl}}
+                    </td>
+                </tr>
+                {{/students}}
+            </tbody>
+        </table>
+    </div>
+    {{^students}}
+        <div class="text-center text-muted p-4">{{#str}} nothingtodisplay, moodle {{/str}}</div>
+    {{/students}}
+</div>

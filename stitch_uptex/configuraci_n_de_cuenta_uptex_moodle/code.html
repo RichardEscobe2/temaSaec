@@ -1,0 +1,336 @@
+<!DOCTYPE html><html class="light" lang="es"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Configuración de Cuenta - UPTex Moodle</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=Inter:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed-dim": "#ffb4ac",
+                        "tertiary-fixed": "#ffdad6",
+                        "surface-variant": "#dfe3e8",
+                        "inverse-on-surface": "#eef1f7",
+                        "error": "#ba1a1a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-container": "#fff1ef",
+                        "tertiary-container": "#d42c2b",
+                        "primary-fixed": "#93f8ae",
+                        "on-secondary": "#ffffff",
+                        "background": "#f7f9ff",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-fixed": "#410002",
+                        "primary": "#006532",
+                        "surface-container-high": "#e5e8ee",
+                        "surface-bright": "#f7f9ff",
+                        "primary-fixed-dim": "#77db93",
+                        "on-primary": "#ffffff",
+                        "on-primary-fixed-variant": "#005228",
+                        "on-background": "#181c20",
+                        "surface-dim": "#d7dae0",
+                        "on-tertiary-fixed-variant": "#93000d",
+                        "secondary-fixed": "#b8f47a",
+                        "on-primary-fixed": "#00210c",
+                        "secondary-container": "#b8f47a",
+                        "surface-tint": "#006d37",
+                        "on-secondary-fixed": "#0e2000",
+                        "tertiary": "#b00a16",
+                        "surface": "#f7f9ff",
+                        "secondary": "#3c6a00",
+                        "inverse-surface": "#2d3135",
+                        "primary-container": "#0b8043",
+                        "surface-container": "#ebeef4",
+                        "on-error-container": "#93000a",
+                        "inverse-primary": "#77db93",
+                        "surface-container-highest": "#dfe3e8",
+                        "on-secondary-fixed-variant": "#2c5000",
+                        "on-secondary-container": "#407100",
+                        "on-surface": "#181c20",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-low": "#f1f4fa",
+                        "outline-variant": "#becabd",
+                        "on-error": "#ffffff",
+                        "on-primary-container": "#d1ffd8",
+                        "on-surface-variant": "#3f4940",
+                        "outline": "#6f7a6f",
+                        "secondary-fixed-dim": "#9dd761"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "lg": "24px",
+                        "md": "16px",
+                        "margin-mobile": "16px",
+                        "sm": "8px",
+                        "xs": "4px",
+                        "xl": "32px",
+                        "base": "4px",
+                        "xxl": "48px",
+                        "margin-desktop": "48px"
+                    },
+                    "fontFamily": {
+                        "display": ["Hanken Grotesk"],
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "body-sm": ["Inter"],
+                        "label-md": ["Inter"],
+                        "button": ["Inter"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "body-md": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-tab-content { display: block !important; }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<!-- TopNavBar -->
+<header class="sticky top-0 z-50 flex justify-between items-center px-lg py-sm w-full bg-surface-container-lowest dark:bg-inverse-surface border-b border-outline-variant/20 dark:border-outline/20">
+<div class="flex items-center gap-md">
+<span class="font-display text-headline-md font-bold text-primary dark:text-primary-fixed">UPTex Moodle</span>
+</div>
+
+<div class="flex items-center gap-md">
+
+<div class="h-8 w-8 rounded-full overflow-hidden bg-surface-container">
+<img class="h-full w-full object-cover" data-alt="A professional headshot of a university student in business-casual attire, smiling warmly against a blurred academic background of a library and modern architecture. The lighting is soft and natural, emphasizing a professional yet approachable personality. The overall tone is consistent with the corporate academic aesthetic of the institution." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-NYis-DGxJgZ4AITWYD_whhgKk51RE25Tgxa8wGLFec-7JP2_1jdUb6zfp4pgY3pCXwmUykpUUK_BYC5tXE1HG-qLs_SI-5L2XshvbhRxUFjgigwopRKZM_rDvoHHnxTdfta7FQ-Lwtqz59AWqD0xdpCEPJrottJVwkFBANycC2rV472KYLZ7iodObTanpRr_MSMWU21cdXpiQ_I2gbdGz4buxV2BDZlGSckYKhFBxxK4LgvvOGtsEw">
+</div>
+</div>
+</header>
+<div class="flex">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col h-[calc(100vh-64px)] fixed left-0 top-16 border-r border-outline-variant/20 w-64 z-40 bg-surface-container dark:bg-surface-dim">
+<div class="p-lg flex flex-col items-center border-b border-outline-variant/10">
+<div class="w-16 h-16 rounded-xl bg-primary-container flex items-center justify-center mb-md shadow-sm">
+<span class="material-symbols-outlined text-on-primary-container text-4xl" style="font-variation-settings: 'FILL' 1;">school</span>
+</div>
+<h2 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed">UPTex Dashboard</h2>
+<p class="font-label-md text-label-md text-on-surface-variant">Institutional Portal</p>
+</div>
+<nav class="mt-md flex-grow overflow-y-auto">
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant dark:hover:bg-inverse-surface rounded-full mx-md my-xs px-md py-sm flex items-center gap-md transition-all font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant dark:hover:bg-inverse-surface rounded-full mx-md my-xs px-md py-sm flex items-center gap-md transition-all font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">school</span>
+<span>Courses</span>
+</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant dark:hover:bg-inverse-surface rounded-full mx-md my-xs px-md py-sm flex items-center gap-md transition-all font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">verified</span>
+<span>Credentials</span>
+</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant dark:hover:bg-inverse-surface rounded-full mx-md my-xs px-md py-sm flex items-center gap-md transition-all font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span>Analytics</span>
+</a>
+<a class="bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary rounded-full mx-md my-xs px-md py-sm flex items-center gap-md transition-all font-label-md text-label-md translate-x-1" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+<div class="mt-auto border-t border-outline-variant/10 py-md">
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-surface-variant rounded-full mx-md my-xs px-md py-sm flex items-center gap-md font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">help</span>
+<span>Help Center</span>
+</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:bg-error-container hover:text-error rounded-full mx-md my-xs px-md py-sm flex items-center gap-md font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span>Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Workspace -->
+<main class="flex-grow ml-0 md:ml-64 p-gutter min-h-screen">
+<div class="max-w-4xl mx-auto py-xl">
+<div class="mb-xxl">
+<h1 class="font-headline-lg text-headline-lg text-primary mb-xs">Configuración de Cuenta</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Administra tu información personal e integraciones externas.</p>
+</div>
+<!-- Tabbed Settings Card -->
+<div class="bg-white rounded-xl border border-outline-variant/20 shadow-sm overflow-hidden">
+<!-- Tab Header -->
+<div class="flex border-b border-outline-variant/15 bg-surface-container-low px-md">
+<button class="px-xl py-md font-button text-button border-b-2 border-primary text-primary transition-all" id="btn-perfil" onclick="switchTab('perfil')">
+                            Perfil
+                        </button>
+<button class="px-xl py-md font-button text-button border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-all" id="btn-integracion" onclick="switchTab('integracion')">
+                            Integración
+                        </button>
+<button class="px-xl py-md font-button text-button border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-all" id="btn-notificaciones" onclick="switchTab('notificaciones')">
+                            Notificaciones
+                        </button>
+</div>
+<!-- Tab Contents -->
+<div class="p-xxl">
+<!-- Tab 1: Perfil -->
+<div class="active-tab-content space-y-xl" id="tab-perfil">
+<div class="flex flex-col md:flex-row items-start gap-xl">
+<div class="relative group">
+<div class="w-32 h-32 rounded-full overflow-hidden border-2 border-primary/20 ring-4 ring-background">
+<img class="h-full w-full object-cover" data-alt="A professional studio portrait of a young adult student looking confident and academic. The lighting is clean and bright, using a high-key style to emphasize professional clarity and reliability. The background is a soft, solid neutral grey that makes the subject pop without being distracting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCTmLTCXHpC2dRaCwZnTrXHr7FJr42_RrDA-wbMqtArUaW8wDyj6XMcZCyPJJNlWZOEpJKLrITmte9XbPj3Bn9NA3FaFfFPrQGJAmt4PbztdL9bCzYQNUiONhH4MYG_Hbu_-weLxiAeVMxqQyQWU10LxH9M5GoyrtGSqHqn_igM0WKzRKel4YlhbA8VnjPJ9JYw583ArjpVMS3Ny6sfzxqwmpgf9Jnemr_sl7Ac0MoUtc2DIl_1SuyAxg">
+</div>
+<button class="absolute bottom-1 right-1 bg-primary text-on-primary p-2 rounded-full shadow-lg hover:scale-105 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-sm">edit</span>
+</button>
+</div>
+<div class="flex-grow space-y-lg w-full">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+<div class="space-y-xs">
+<label class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Nombre Completo</label>
+<input class="w-full bg-background border border-outline rounded-lg px-md py-sm focus:border-primary-container focus:ring-2 focus:ring-primary-container transition-all" type="text" value="Daniela Martínez Ruiz">
+</div>
+<div class="space-y-xs">
+<label class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Matricula</label>
+<input class="w-full bg-surface-container border border-outline-variant rounded-lg px-md py-sm text-on-surface-variant cursor-not-allowed" readonly="" type="text" value="UPT24-0892-XT">
+</div>
+</div>
+<div class="space-y-xs">
+<label class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Correo Electrónico Institucional</label>
+<input class="w-full bg-background border border-outline rounded-lg px-md py-sm focus:border-primary-container focus:ring-2 focus:ring-primary-container transition-all" type="email" value="d.martinez@uptmoodle.edu.mx">
+</div>
+</div>
+</div>
+</div>
+<!-- Tab 2: Integración -->
+<div class="hidden space-y-xl" id="tab-integracion">
+<div class="bg-surface-container-low p-xl rounded-xl border border-outline-variant/15 flex items-center gap-xl">
+<div class="p-md bg-white rounded-lg border border-outline-variant/20 shadow-sm">
+<span class="material-symbols-outlined text-primary text-4xl" style="font-variation-settings: 'FILL' 1;">badge</span>
+</div>
+<div class="flex-grow">
+<h3 class="font-headline-md text-headline-md text-primary">Credly API Connect</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Sincroniza tus insignias y certificaciones directamente con tu perfil global de Credly.</p>
+</div>
+<div class="px-md py-sm bg-secondary-container text-on-secondary-container rounded-full font-label-md text-label-md flex items-center gap-xs">
+<span class="material-symbols-outlined text-xs">check_circle</span>
+                                    Conectado
+                                </div>
+</div>
+<div class="space-y-lg pt-md">
+<div class="flex items-center justify-between py-md border-b border-outline-variant/10">
+<div>
+<h4 class="font-button text-button text-on-surface">Auto-Issue Badges</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Publicar automáticamente insignias logradas en tu perfil público.</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox">
+<div class="w-11 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex items-center justify-between py-md">
+<div>
+<h4 class="font-button text-button text-on-surface">API Key Refresh</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Actualizar las credenciales de conexión con el proveedor externo.</p>
+</div>
+<button class="bg-white border border-primary text-primary px-xl py-sm rounded-full font-button text-button hover:bg-primary/5 transition-colors">
+                                        Actualizar
+                                    </button>
+</div>
+</div>
+</div>
+<!-- Tab 3: Notificaciones -->
+<div class="hidden space-y-xl" id="tab-notificaciones">
+<h3 class="font-headline-md text-headline-md text-primary border-b border-outline-variant/20 pb-md">Alertas de Correo Electrónico</h3>
+<div class="space-y-md">
+<div class="flex items-start gap-md p-md hover:bg-surface-container-low rounded-lg transition-colors group">
+<div class="mt-xs">
+<input checked="" class="w-5 h-5 rounded border-outline text-primary focus:ring-primary-container" type="checkbox">
+</div>
+<div class="flex-grow">
+<h4 class="font-button text-button text-on-surface">Próximas fechas límite</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Recibe un recordatorio 48 horas antes del cierre de una actividad o entrega.</p>
+</div>
+</div>
+<div class="flex items-start gap-md p-md hover:bg-surface-container-low rounded-lg transition-colors group">
+<div class="mt-xs">
+<input checked="" class="w-5 h-5 rounded border-outline text-primary focus:ring-primary-container" type="checkbox">
+</div>
+<div class="flex-grow">
+<h4 class="font-button text-button text-on-surface">Emisión de insignias</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Notificar inmediatamente cuando se te otorgue una nueva credencial académica.</p>
+</div>
+</div>
+<div class="flex items-start gap-md p-md hover:bg-surface-container-low rounded-lg transition-colors group">
+<div class="mt-xs">
+<input class="w-5 h-5 rounded border-outline text-primary focus:ring-primary-container" type="checkbox">
+</div>
+<div class="flex-grow">
+<h4 class="font-button text-button text-on-surface">Anuncios de la Facultad</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Comunicaciones oficiales del departamento académico.</p>
+</div>
+</div>
+</div>
+<div class="pt-xl flex justify-end gap-md">
+<button class="px-xl py-sm font-button text-button text-on-surface-variant hover:bg-surface-container rounded-lg transition-colors">Descartar</button>
+<button class="px-xl py-sm font-button text-button bg-primary text-on-primary rounded-lg shadow-sm hover:brightness-110 active:scale-95 transition-all">Guardar Cambios</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Footer -->
+<footer class="w-full py-xl px-lg flex flex-col md:flex-row justify-between items-center gap-lg border-t border-outline-variant/20 bg-surface-container-highest dark:bg-inverse-surface mt-xl">
+<div class="flex items-center gap-md">
+<span class="font-headline-sm text-headline-sm font-bold text-primary dark:text-primary-fixed">UPTex Moodle</span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">© 2024 UPTex Moodle. All rights reserved.</span>
+</div>
+<div class="flex gap-xl">
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors font-body-sm text-body-sm" href="#">Privacy</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors font-body-sm text-body-sm" href="#">Terms</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors font-body-sm text-body-sm" href="#">Accessibility</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors font-body-sm text-body-sm" href="#">Contact</a>
+</div>
+</footer>
+<script>
+        function switchTab(tabId) {
+            // Hide all contents
+            document.getElementById('tab-perfil').classList.add('hidden');
+            document.getElementById('tab-integracion').classList.add('hidden');
+            document.getElementById('tab-notificaciones').classList.add('hidden');
+            
+            document.getElementById('tab-perfil').classList.remove('active-tab-content');
+            document.getElementById('tab-integracion').classList.remove('active-tab-content');
+            document.getElementById('tab-notificaciones').classList.remove('active-tab-content');
+
+            // Reset all buttons
+            const buttons = ['btn-perfil', 'btn-integracion', 'btn-notificaciones'];
+            buttons.forEach(id => {
+                const btn = document.getElementById(id);
+                btn.classList.remove('border-primary', 'text-primary');
+                btn.classList.add('border-transparent', 'text-on-surface-variant');
+            });
+
+            // Show selected content
+            const activeTab = document.getElementById('tab-' + tabId);
+            activeTab.classList.remove('hidden');
+            activeTab.classList.add('active-tab-content');
+
+            // Highlight selected button
+            const activeBtn = document.getElementById('btn-' + tabId);
+            activeBtn.classList.add('border-primary', 'text-primary');
+            activeBtn.classList.remove('border-transparent', 'text-on-surface-variant');
+        }
+    </script>
+
+
+</body></html>
