@@ -4,6 +4,89 @@
 // point — add a token (or derive one with darken()/rgba()) instead.
 
 // ---------------------------------------------------------------------
+// TYPOGRAPHY — Plus Jakarta Sans (replaces Bootstrap's system-ui stack)
+//
+// config.php's $THEME->scss assembles theme_boost_get_main_scss_content()
+// (Boost's full preset — variables, Bootstrap, moodle.scss) followed by
+// this file's content, with no pre.scss hook in between. By the time this
+// runs, Bootstrap has already consumed $font-family-sans-serif to emit its
+// own `body{font-family:...}` rule, so reassigning that Sass variable here
+// would be a no-op — only a plain CSS selector of equal-or-greater
+// specificity, compiled *after* Bootstrap's in the same stylesheet, can
+// win the cascade. That's what the html/body/h1-h6/form-control rule below
+// does.
+//
+// A `@import url(...)` for the Google Fonts stylesheet would suffer the
+// same ordering problem in the other direction: CSS only honours @import
+// when it precedes every other rule in the file, and this file's output
+// lands thousands of lines after Bootstrap's — Chrome silently drops an
+// @import there. @font-face has no such positional requirement, so the
+// four weights below are inlined directly (Latin-only subset — covers
+// Spanish diacritics/ñ/¿/¡, all within U+0000-00FF — instead of the full
+// multi-script bundle Google's link tag would otherwise ship).
+// ---------------------------------------------------------------------
+// NOTE: fetch each weight's stylesheet from Google individually
+// (?family=Plus+Jakarta+Sans:wght@NNN) if these ever need updating —
+// requesting all four weights in one semicolon-separated URL makes
+// Google's css2 endpoint alias them all to the same underlying file
+// (confirmed by diffing the responses), which would silently render
+// every weight below as regular.
+@font-face {
+    font-family: "Plus Jakarta Sans";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIbaomQNQcsA88c7O9yZ4KMCoOg4IA6-91aHEjcWuA_qU79TR_V.woff2) format("woff2");
+}
+
+@font-face {
+    font-family: "Plus Jakarta Sans";
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIbaomQNQcsA88c7O9yZ4KMCoOg4IA6-91aHEjcWuA_m079TR_V.woff2) format("woff2");
+}
+
+@font-face {
+    font-family: "Plus Jakarta Sans";
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIbaomQNQcsA88c7O9yZ4KMCoOg4IA6-91aHEjcWuA_d0n9TR_V.woff2) format("woff2");
+}
+
+@font-face {
+    font-family: "Plus Jakarta Sans";
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIbaomQNQcsA88c7O9yZ4KMCoOg4IA6-91aHEjcWuA_Tkn9TR_V.woff2) format("woff2");
+}
+
+$saec-font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+html,
+body,
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6,
+.btn, input, select, textarea,
+.form-control, .custom-select {
+    font-family: $saec-font-family;
+}
+
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+// Tighter tracking on large headline sizes only — h4-h6 keep whatever
+// letter-spacing custom.scss's typographic hierarchy already gives them
+// (e.g. h6's uppercase label tracking) rather than being reset here.
+h1, .h1, h2, .h2, h3, .h3 {
+    letter-spacing: -0.02em;
+}
+
+// ---------------------------------------------------------------------
 // UPTEX COMPONENT LIBRARY (Phase 1)
 // Pulls in the data/UI-component layer (cards, badges, tables, progress —
 // $uptex-* namespace) generated from stitch_uptex/ so its tokens (e.g.
@@ -11,6 +94,15 @@
 // Imported first/standalone: custom.scss has no dependency on $saec-*.
 // ---------------------------------------------------------------------
 @import "custom";
+
+// ---------------------------------------------------------------------
+// COURSE INNER VIEW (Fase 17) — /course/view.php SaaS overlay. Kept as its
+// own Sass partial (scss/saec/_course_view.scss) rather than appended to
+// custom.scss like earlier phases, per this phase's explicit file
+// structure — imported here (after custom.scss) so it can use the
+// $uptex-* tokens custom.scss defines.
+// ---------------------------------------------------------------------
+@import "saec/course_view";
 
 // ---------------------------------------------------------------------
 // DESIGN TOKENS
@@ -61,8 +153,13 @@ $saec-shadow-elevated: 0 10px 25px -5px rgba(0, 0, 0, 0.1); // Hero carousel con
 // NAVBAR — .saec-navbar
 // ---------------------------------------------------------------------
 .saec-navbar {
-    background-color: $saec-surface;
-    border-bottom: 1px solid $saec-border;
+    // Glassmorphism (Fase 4): la navbar es "fixed-top" (ver navbar.mustache),
+    // así que el contenido real se ve desenfocado a través de ella al hacer
+    // scroll — no un valor decorativo sin efecto visible.
+    background-color: rgba($saec-surface, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 
     .saec-navbar__row {
         display: flex;
@@ -434,6 +531,12 @@ $saec-shadow-elevated: 0 10px 25px -5px rgba(0, 0, 0, 0.1); // Hero carousel con
 // ---------------------------------------------------------------------
 #theme_saec-drawers-mainnav {
     background-color: $uptex-bg-alt;
+    // Fase 4: separación visual del contenido principal — antes 0px de
+    // borde/sombra, así que a $uptex-bg-alt (#F4F6F8) contra el canvas de
+    // página $uptex-bg-main (#F8FAFC) el sidebar era casi indistinguible
+    // (diferencia de ~2 puntos de luminosidad).
+    border-right: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 4px 0 24px -8px rgba(0, 0, 0, 0.04);
 
     .drawercontent {
         padding: 0;
@@ -545,5 +648,154 @@ $saec-shadow-elevated: 0 10px 25px -5px rgba(0, 0, 0, 0.1); // Hero carousel con
             width: 100%;
             height: 100%;
         }
+    }
+}
+
+// ---------------------------------------------------------------------
+// PERSISTENT DESKTOP SIDEBAR (Phase 4)
+// Below 992px the UPTex main nav stays Boost's normal collapsible
+// off-canvas drawer (hamburger in theme_saec/navbar toggles it, closed by
+// default on phones). At >=992px it's pinned permanently open instead —
+// collapsing your own primary navigation on every page read as broken on
+// a dashboard-style app, so the toggle is hidden and the drawer is forced
+// visible regardless of the show-drawer-left/drawer-open-index user
+// preference that normally controls it.
+//
+// $saec-sidebar-width intentionally mirrors Boost's own $drawer-left-width
+// (285px, theme/boost/scss/moodle/drawer.scss) as a hardcoded local value
+// rather than reusing that Sass variable — this file has no guaranteed
+// visibility into Boost's variable scope (see the typography note above:
+// config.php's $THEME->scss has no pre.scss hook), so a literal that's
+// provably equal to the compiled drawer width is safer than an assumption.
+// If Boost's drawer width ever changes, update both together.
+// ---------------------------------------------------------------------
+$saec-sidebar-width: 285px;
+
+@include media-breakpoint-up(lg) {
+    #theme_saec-drawers-mainnav.drawer-left {
+        left: 0 !important;
+        visibility: visible !important;
+        transform: none !important;
+    }
+
+    // Hides both toggles that could otherwise collapse the pinned sidebar:
+    // the hamburger in theme_saec/navbar and the drawer's own internal
+    // close ("X") button (theme_boost/drawer's .drawertoggle).
+    .saec-navbar__drawer-toggle,
+    #theme_saec-drawers-mainnav .drawertoggle {
+        display: none !important;
+    }
+
+    #page.drawers {
+        margin-left: $saec-sidebar-width !important;
+        padding-left: 1rem;
+    }
+}
+
+// ---------------------------------------------------------------------
+// FLUID DASHBOARD CONTENT WIDTH (/my/) — Phase 6
+// Boost caps every "limitedwidth" page's .main-inner at
+// $course-content-maxwidth (830px, theme/boost/scss/moodle/variables.scss)
+// via `body.limitedwidth #page.drawers .main-inner` (layout.scss:58-61).
+// On wide desktop viewports that left huge empty gutters either side of
+// the Panel del Alumno's KPI/course/timeline cards. Scoped to
+// body.pagelayout-mydashboard specifically — course pages, admin pages,
+// etc. keep Boost's normal reading-width cap untouched. Selector carries
+// one more class than Boost's (id + 4 classes vs. id + 3) so it wins on
+// specificity alone, no !important needed, regardless of source order.
+// $saec-dashboard-content-maxwidth is intentionally still capped (not
+// max-width: 100%) — at 1440p/4K a single flat 8/4-column Bootstrap grid
+// stretched edge-to-edge reads as broken, not spacious; 1600px keeps the
+// KPI/course/timeline cards at a comfortable width while still reclaiming
+// nearly all of the whitespace Boost's 830px cap wasted.
+// ---------------------------------------------------------------------
+$saec-dashboard-content-maxwidth: 1600px;
+
+// ---------------------------------------------------------------------
+// ASSIGNMENT SUBMISSION VIEW — /mod/assign/view.php SaaS restyle. Imported
+// here rather than alongside course_view above because its Fase 20 fluid-
+// width block reuses $saec-dashboard-content-maxwidth, which (like every
+// $saec-* token) is only defined further down this file, not hoisted —
+// Sass requires definition-before-use, so this partial must come after it.
+// ---------------------------------------------------------------------
+@import "saec/assign";
+
+@include media-breakpoint-up(md) {
+    body.pagelayout-mydashboard.limitedwidth #page.drawers .main-inner {
+        max-width: $saec-dashboard-content-maxwidth;
+    }
+}
+
+@include media-breakpoint-up(lg) {
+    body.pagelayout-mydashboard.limitedwidth #page.drawers {
+        // Boost's own md-breakpoint padding (3rem) stays on the right;
+        // this file's sidebar block above already narrowed the left side
+        // to 1rem to hug the pinned sidebar — balance the two here only
+        // for the dashboard so its wider canvas doesn't read lopsided.
+        padding-right: 2rem;
+    }
+
+    body.pagelayout-mydashboard.limitedwidth #page.drawers .main-inner {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+}
+
+// ---------------------------------------------------------------------
+// FLUID ANALYTICS CONTENT WIDTH (/grade/report/overview/index.php) — Phase 14
+// Same 830px whitespace problem as Phase 6, but a DIFFERENT Boost rule
+// causes it here: this page's own $PAGE->set_pagelayout('standard') call
+// means body carries pagelayout-standard, not limitedwidth (verified via
+// devtools — .limitedwidth is absent on this page), so the cap actually
+// comes from layout.scss's `.pagelayout-standard, body.limitedwidth {
+// #page.drawers .main-inner { max-width: ... } }` via its FIRST branch.
+// Scoped to body.page-analytics (added by layout/drawers.php only when this
+// page's own panel is shown) at equal class-specificity to Boost's
+// .pagelayout-standard rule — theme_saec's SCSS compiles after Boost's in
+// the same stylesheet (config.php's $THEME->scss), so the tie resolves in
+// our favour by source order alone, the same technique already documented
+// atop this file for the typography override. Dashboard/My Courses/Badges
+// each have their own scoping class (or none), so none of them are touched.
+// ---------------------------------------------------------------------
+@include media-breakpoint-up(md) {
+    body.page-analytics #page.drawers .main-inner {
+        max-width: $saec-dashboard-content-maxwidth;
+    }
+}
+
+@include media-breakpoint-up(lg) {
+    body.page-analytics #page.drawers {
+        padding-right: 2rem;
+    }
+
+    body.page-analytics #page.drawers .main-inner {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+}
+
+// ---------------------------------------------------------------------
+// FLUID SETTINGS CONTENT WIDTH (/user/preferences.php) — Phase 16
+// Same whitespace problem, a third different Boost trigger this time:
+// this page carries body.limitedwidth (verified via devtools — unlike the
+// analytics page, .pagelayout-standard doesn't even apply here since
+// $PAGE->set_pagelayout('admin')). Scoped to body.page-settings so the
+// Dashboard/My Courses/Badges/Analytics pages (each already scoped to
+// their own class) stay untouched.
+// ---------------------------------------------------------------------
+@include media-breakpoint-up(md) {
+    body.page-settings #page.drawers .main-inner {
+        max-width: $saec-dashboard-content-maxwidth;
+    }
+}
+
+@include media-breakpoint-up(lg) {
+    body.page-settings #page.drawers {
+        padding-right: 2rem;
+    }
+
+    body.page-settings #page.drawers .main-inner {
+        padding-left: 1rem;
+        padding-right: 1rem;
     }
 }

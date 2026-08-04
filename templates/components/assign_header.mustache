@@ -1,0 +1,59 @@
+{{!
+    @template theme_saec/components/assign_header
+
+    Status pill + due date + optional "Material de Apoyo" CTA for the
+    "Assignment View" SaaS overlay (/mod/assign/view.php — Fase 19).
+    Replaces the redundant duplicate activity title (hidden via SCSS, see
+    scss/saec/_assign.scss) with a compact, real-data status row. Context
+    comes from \theme_saec\dashboard\assign_view_page::get_context()['header'].
+
+    Native #page-header already renders the activity name once (breadcrumb
+    + H1) — this component deliberately does NOT repeat it, since that
+    exact repetition (title shown twice) is the bug this phase fixes.
+
+    Example context (json):
+    {
+        "ispendiente": false,
+        "isentregado": true,
+        "iscalificado": false,
+        "statuslabel": "Entregado",
+        "hasduedate": true,
+        "duedate": "20 de julio, 23:59",
+        "hassupportmaterial": true,
+        "supportmaterialurl": "https://example.org/pluginfile.php/1/mod_assign/introattachment/0/guia.pdf",
+        "hasinstructor": true,
+        "instructorname": "Carlos Gomez",
+        "instructoravatarurl": "https://example.org/pluginfile.php/1/user/icon/f1.jpg"
+    }
+}}
+<div class="saec-assign-header">
+    {{#hasinstructor}}
+        <div class="saec-assign-header__instructor">
+            <img src="{{{ instructoravatarurl }}}" alt="" class="saec-assign-header__instructor-avatar">
+            <div class="saec-assign-header__instructor-meta">
+                <span class="saec-teacher-role-label">{{#str}} teacherrolelabel, theme_saec {{/str}}</span>
+                <span class="saec-assign-header__instructor-name">{{ instructorname }}</span>
+            </div>
+        </div>
+    {{/hasinstructor}}
+    <div class="saec-assign-header__row">
+        <span class="saec-assign-status-pill
+            {{#ispendiente}}saec-assign-status-pill--pendiente{{/ispendiente}}
+            {{#isentregado}}saec-assign-status-pill--entregado{{/isentregado}}
+            {{#iscalificado}}saec-assign-status-pill--calificado{{/iscalificado}}">
+            {{ statuslabel }}
+        </span>
+        {{#hasduedate}}
+            <span class="saec-assign-header__duedate">
+                <i class="icon fa fa-clock-o" aria-hidden="true"></i>
+                {{#str}} assignduelabel, theme_saec {{/str}} {{ duedate }}
+            </span>
+        {{/hasduedate}}
+        {{#hassupportmaterial}}
+            <a href="{{{ supportmaterialurl }}}" class="btn btn-outline-primary btn-sm saec-assign-header__support" target="_blank" rel="noopener">
+                <i class="icon fa fa-paperclip" aria-hidden="true"></i>
+                {{#str}} assignsupportmaterial, theme_saec {{/str}}
+            </a>
+        {{/hassupportmaterial}}
+    </div>
+</div>

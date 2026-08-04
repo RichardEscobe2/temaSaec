@@ -1,0 +1,659 @@
+// theme_saec — scss/saec/_assign.scss
+// "Assignment Submission" SaaS restyle (/mod/assign/view.php). CSS-only —
+// same discipline as scss/saec/_course_view.scss: native mod_assign DOM/JS
+// (file upload widgets, edit/remove submission forms, AJAX grading) is never
+// touched, only paint. Everything below is scoped under body.path-mod-assign
+// — a body class Moodle core itself adds to every assignment activity page
+// (confirmed live via devtools), so no PHP wiring/body-class injection is
+// needed here, unlike the course_view overlay.
+//
+// Native hooks relied on (all core mod_assign/Boost markup, verified live):
+// - H2 activity title + .activity-header (Boost's shared core/activity_header
+//   template — completion badges + .activity-dates "Abrió/Cierre" rows +
+//   #intro instructions box) sit back-to-back in the DOM, so a shared
+//   top/bottom radius turns them into one visual "header card".
+// - .container-fluid.mb-4 .singlebutton — the Añadir/Editar/Quitar envío
+//   button row. Each button's own <form> carries a hidden
+//   name="action" input whose value (editsubmission | removesubmission) is
+//   how core distinguishes "primary" vs "destructive" — a stable hook,
+//   sturdier than guessing button position or label text.
+// - div.submissionstatustable > table.generaltable — two-cell
+//   (th.cell.c0 label / td.cell.c1 value) rows; core already stamps the two
+//   status rows with td.submissionstatus{new|draft|reopened|submitted} and
+//   td.submission{graded|notgraded} — real semantic hooks, not invented
+//   ones, so the colour-by-status logic below never has to guess from text.
+body.path-mod-assign {
+    // -------------------------------------------------------------------
+    // HEADER CARD — H2 title + .activity-header merged into one card via
+    // shared radius/border, no wrapper element added.
+    // -------------------------------------------------------------------
+    #region-main > h2 {
+        background-color: $uptex-surface;
+        border: 1px solid $uptex-border-color;
+        border-bottom: none;
+        border-radius: $uptex-radius-lg $uptex-radius-lg 0 0;
+        padding: 1.5rem 1.75rem 0.75rem;
+        margin-bottom: 0;
+        font-weight: 800;
+        color: $uptex-text-dark;
+    }
+
+    .activity-header {
+        background-color: $uptex-surface;
+        border: 1px solid $uptex-border-color;
+        border-top: none;
+        border-radius: 0 0 $uptex-radius-lg $uptex-radius-lg;
+        box-shadow: $uptex-shadow-elevation;
+        padding: 1rem 1.75rem 1.75rem;
+        margin-bottom: 1.5rem;
+    }
+
+    // Completion pills ("Hecho: Hacer un envío"...) — already Bootstrap
+    // badges natively; just re-tinted onto the SAEC palette.
+    .completion-info .badge.rounded-pill {
+        background-color: $uptex-primary-light !important;
+        color: $uptex-primary !important;
+        font-weight: 700;
+    }
+
+    // Due-date badges ("Abrió:"/"Cierre:") — plain text rows in core;
+    // reshaped into pills purely via display/background, no markup change.
+    .activity-dates {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-top: 0.75rem;
+
+        > div {
+            display: inline-flex;
+            align-items: center;
+            border-radius: $uptex-radius-pill;
+            padding: 0.35rem 0.9rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+
+            strong {
+                font-weight: 700;
+                margin-right: 0.35rem;
+            }
+
+            // Two rows always render in "Abrió, Cierre" order (core
+            // template order, not configurable) — first = open (green),
+            // last = close (red/orange). A lone date falls through to the
+            // last-child rule (declared after), reading as the more
+            // urgent "due" colour, which is the safer default either way.
+            &:first-child {
+                background-color: $uptex-primary-light;
+                color: $uptex-primary;
+            }
+
+            &:last-child {
+                background-color: $uptex-danger-light;
+                color: $uptex-danger;
+            }
+        }
+    }
+
+    // Instructions container — only styled when it actually has content,
+    // so assignments with no rich-text description don't show an empty
+    // padded box (confirmed live: #intro's inner box is empty by default).
+    #intro .box.generalbox:not(:empty) {
+        background-color: $uptex-bg-alt;
+        border-radius: $uptex-radius-sm;
+        padding: 1rem 1.25rem;
+        margin-top: 1rem;
+        color: $uptex-text-dark;
+    }
+
+    // -------------------------------------------------------------------
+    // ACTION BUTTONS — Añadir/Editar envío (primary, deep green) vs.
+    // Quitar envío (destructive, muted outline). Matched via each button's
+    // own form action, not position, so state changes (add ⇄ edit) can
+    // never point the green styling at the wrong button.
+    // -------------------------------------------------------------------
+    .container-fluid.mb-4 .singlebutton .btn {
+        border-radius: $uptex-radius-sm;
+        font-weight: 700;
+        padding: 0.5rem 1.25rem;
+        transition: $uptex-transition;
+    }
+
+    form:has(input[name="action"][value="editsubmission"]) .btn {
+        background-color: $uptex-primary;
+        border-color: $uptex-primary;
+        color: $uptex-surface;
+
+        &:hover,
+        &:focus {
+            background-color: $uptex-primary-hover;
+            border-color: $uptex-primary-hover;
+            color: $uptex-surface;
+        }
+    }
+
+    form:has(input[name="action"][value="removesubmission"]) .btn {
+        background-color: transparent;
+        border-color: $uptex-border-color;
+        color: $uptex-text-muted;
+
+        &:hover,
+        &:focus {
+            background-color: $uptex-danger-light;
+            border-color: $uptex-danger;
+            color: $uptex-danger;
+        }
+    }
+
+    // -------------------------------------------------------------------
+    // SUBMISSION / GRADING STATUS — native two-cell (label/value) table
+    // rows reflowed into a responsive card grid purely through `display`
+    // overrides; the <table> markup itself is untouched (assign's own
+    // renderer keeps emitting a real table, screen readers still get one).
+    // -------------------------------------------------------------------
+    #region-main table.generaltable {
+        display: block;
+        width: 100%;
+        background: transparent;
+        border: none;
+
+        thead {
+            display: none;
+        }
+
+        tbody {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            width: 100%;
+        }
+
+        tr {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            background-color: $uptex-surface;
+            border: 1px solid $uptex-border-color;
+            border-radius: $uptex-radius-lg;
+            box-shadow: $uptex-shadow-elevation;
+            padding: 1rem 1.25rem;
+        }
+
+        th.cell.c0 {
+            display: block;
+            text-align: left;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: $uptex-text-muted;
+            padding: 0;
+            border: none;
+            background: transparent;
+        }
+
+        td.cell.c1 {
+            display: block;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: $uptex-text-dark;
+            padding: 0;
+            border: none;
+            background: transparent;
+            overflow-wrap: break-word;
+        }
+
+        // Entregado / Calificado — green pill. Chained onto .cell.c1 (not
+        // just the bare status class) so specificity beats the generic
+        // td.cell.c1 block-value rule above — Bootstrap's own "cell c1"
+        // pair already carries two classes, so a single-class status
+        // selector alone would lose that tie and silently never apply.
+        td.cell.c1.submissionstatussubmitted,
+        td.cell.c1.submissiongraded {
+            display: inline-flex;
+            align-self: flex-start;
+            align-items: center;
+            border-radius: $uptex-radius-pill;
+            padding: 0.3rem 0.85rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            background-color: $uptex-accent-green-light;
+            color: darken($uptex-accent-green, 15%);
+        }
+
+        // Sin Entregar (new/draft/reopened, or no online-submission-plugin
+        // "submissionstatus" fallback text) / Sin calificar — orange-red pill.
+        td.cell.c1.submissionstatus,
+        td.cell.c1.submissionstatusnew,
+        td.cell.c1.submissionstatusdraft,
+        td.cell.c1.submissionstatusreopened,
+        td.cell.c1.submissionnotgraded {
+            display: inline-flex;
+            align-self: flex-start;
+            align-items: center;
+            border-radius: $uptex-radius-pill;
+            padding: 0.3rem 0.85rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            background-color: $uptex-danger-light;
+            color: $uptex-danger;
+        }
+
+        // "Tiempo restante" value — core stamps these classes based on real
+        // due-date math (not text-matched), and doubles as the only reliable
+        // colour signal for the "no submission at all" row above it: that
+        // row's own <td> carries no status class when nothing was ever
+        // submitted (core leaves $cell2attributes empty in that exact
+        // branch — verified in mod/assign/classes/output/renderer.php), so
+        // there is no safe CSS-only hook to pill-colour it directly without
+        // risking other plain value cells (e.g. "Última modificación", which
+        // shares the exact same bare "cell c1 lastcol" class list).
+        td.cell.c1.earlysubmission {
+            display: inline-flex;
+            align-self: flex-start;
+            align-items: center;
+            border-radius: $uptex-radius-pill;
+            padding: 0.3rem 0.85rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            background-color: $uptex-accent-green-light;
+            color: darken($uptex-accent-green, 15%);
+        }
+
+        td.cell.c1.latesubmission,
+        td.cell.c1.overdue,
+        td.cell.c1.duedatereached {
+            display: inline-flex;
+            align-self: flex-start;
+            align-items: center;
+            border-radius: $uptex-radius-pill;
+            padding: 0.3rem 0.85rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            background-color: $uptex-danger-light;
+            color: $uptex-danger;
+        }
+    }
+
+    .submissionstatustable h3,
+    #region-main h3 {
+        font-weight: 800;
+        color: $uptex-text-dark;
+        margin-bottom: 1rem;
+    }
+}
+
+// ---------------------------------------------------------------------
+// ASSIGNMENT VIEW — 2-COLUMN SaaS OVERLAY (Fase 19)
+// Only active when \theme_saec\dashboard\assign_view_page::get_context()
+// actually applies (a student, not editing, not a grader) — layout/drawers.php
+// stamps body.saec-assign-view-active in that exact case, and injects the
+// header/workspace HTML rendered by templates/components/assign_header and
+// assign_workspace. Graders/teachers never get this class, so they keep the
+// body.path-mod-assign styling above untouched (native duplicate title and
+// all).
+// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------
+// FLUID ASSIGNMENT VIEW WIDTH (Fase 20) — same whitespace problem/fix as
+// the dashboard/analytics/settings pages (see post.scss), a fourth
+// different Boost trigger: this page carries BOTH body.limitedwidth AND
+// pagelayout-incourse (confirmed live via devtools on /mod/assign/view.php),
+// so the 830px cap comes from layout.scss's
+// `.pagelayout-standard, body.limitedwidth { #page.drawers .main-inner {...} }`
+// second branch. Scoped to body.saec-assign-view-active — teachers/graders
+// (who never get that class) keep Boost's normal reading-width cap,
+// matching this phase's isolation requirement. Reuses
+// $saec-dashboard-content-maxwidth rather than a new one-off value, so the
+// assignment workspace reads as the same fluid SaaS shell as every other
+// overlay page instead of a fourth distinct width.
+// ---------------------------------------------------------------------
+@include media-breakpoint-up(md) {
+    body.saec-assign-view-active #page.drawers .main-inner {
+        max-width: $saec-dashboard-content-maxwidth;
+    }
+}
+
+@include media-breakpoint-up(lg) {
+    body.saec-assign-view-active #page.drawers {
+        padding-right: 2rem;
+    }
+
+    body.saec-assign-view-active #page.drawers .main-inner {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+}
+
+body.saec-assign-view-active {
+    // The new assign_header component fully replaces this real estate —
+    // hidden here (and ONLY here) rather than removed at the source, since
+    // core still needs to render them for accessibility/other body classes.
+    #region-main > h2,
+    .activity-header {
+        display: none;
+    }
+
+    // Native rubric preview ("Criterio para calificar" + Moodle's own
+    // cramped .gradingform_rubric grid) — assign_view_page::get_workspace()
+    // already surfaces the same criteria/weight/achievement-level data as a
+    // clean .saec-rubric-table in the left column, so this native duplicate
+    // (still rendered by mod_assign's own status renderer regardless of the
+    // theme) would otherwise show the identical information twice in two
+    // very different visual styles.
+    .submissionstatustable h4:has(+ .gradingform_rubric-description),
+    .gradingform_rubric-description,
+    .gradingform_rubric {
+        display: none;
+    }
+
+    // -------------------------------------------------------------------
+    // 65/35 GRID — injected workspace (left) beside output.main_content,
+    // i.e. Moodle's own native status table/buttons/submission form
+    // (right), reflowed in place exactly like saec-course-view-grid.
+    // -------------------------------------------------------------------
+    .saec-assign-view-grid {
+        display: grid;
+        grid-template-columns: 65fr 35fr;
+        gap: 1.75rem;
+        align-items: start;
+
+        @include media-breakpoint-down(md) {
+            grid-template-columns: 1fr;
+        }
+
+        &__workspace,
+        &__native {
+            min-width: 0;
+        }
+    }
+
+    // -------------------------------------------------------------------
+    // HEADER — status pill + due date + "Material de Apoyo" CTA.
+    // -------------------------------------------------------------------
+    .saec-assign-header {
+        background-color: $uptex-surface;
+        border: 1px solid $uptex-border-color;
+        border-radius: $uptex-radius-lg;
+        box-shadow: $uptex-shadow-elevation;
+        padding: 1.5rem 1.75rem;
+        margin-bottom: 1.5rem;
+
+        &__title {
+            font-weight: 800;
+            color: $uptex-text-dark;
+            margin-bottom: 0.85rem;
+        }
+
+        &__instructor {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.1rem;
+            padding-bottom: 1.1rem;
+            border-bottom: 1px solid $uptex-border-color;
+        }
+
+        &__instructor-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid $uptex-primary;
+        }
+
+        &__instructor-meta {
+            display: flex;
+            flex-direction: column;
+        }
+
+        &__instructor-name {
+            font-weight: 600;
+            color: $uptex-text-dark;
+        }
+
+        &__row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        &__duedate {
+            color: $uptex-text-muted;
+            font-size: 0.85rem;
+            font-weight: 600;
+
+            .icon {
+                margin-right: 0.35rem;
+                color: $uptex-text-muted;
+            }
+        }
+
+        &__support {
+            margin-left: auto;
+
+            .icon {
+                margin-right: 0.35rem;
+            }
+        }
+    }
+
+    .saec-assign-status-pill {
+        display: inline-flex;
+        align-items: center;
+        border-radius: $uptex-radius-pill;
+        padding: 0.35rem 0.9rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+
+        &--pendiente {
+            background-color: $uptex-danger-light;
+            color: $uptex-danger;
+        }
+
+        &--entregado {
+            background-color: $uptex-accent-green-light;
+            color: darken($uptex-accent-green, 15%);
+        }
+
+        &--calificado {
+            background-color: $uptex-primary;
+            color: $uptex-surface;
+        }
+    }
+
+    // -------------------------------------------------------------------
+    // LEFT COLUMN — Instrucciones / Rúbrica cards.
+    // -------------------------------------------------------------------
+    .saec-assign-card {
+        background-color: $uptex-surface;
+        border: 1px solid $uptex-border-color;
+        border-radius: $uptex-radius-lg;
+        box-shadow: $uptex-shadow-elevation;
+        overflow: hidden;
+
+        &__header {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 1.1rem 1.75rem;
+            border-bottom: 1px solid $uptex-border-color;
+        }
+
+        &__icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: $uptex-radius-sm;
+            background-color: $uptex-primary-light;
+            color: $uptex-primary;
+            flex-shrink: 0;
+        }
+
+        &__title {
+            font-weight: 800;
+            color: $uptex-text-dark;
+            margin: 0;
+        }
+
+        &__body {
+            padding: 1.75rem;
+        }
+    }
+
+    .saec-assign-workspace {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    // Rich-text instructions — clean typography for whatever the teacher
+    // actually wrote (paragraphs/lists/code blocks), not a fixed mockup copy.
+    .saec-assign-instructions {
+        color: $uptex-text-dark;
+        line-height: 1.6;
+        // The card itself is free to grow with the now-fluid 65% column,
+        // but unbounded line length hurts legibility at 1600px — cap
+        // prose measure to a comfortable reading width; pre/code blocks
+        // (already own max-width:100%/overflow-x:auto below) still use
+        // the full card width.
+        max-width: 85ch;
+
+        p {
+            margin-bottom: 0.85rem;
+        }
+
+        ul,
+        ol {
+            padding-left: 1.25rem;
+            margin-bottom: 0.85rem;
+
+            li {
+                margin-bottom: 0.35rem;
+            }
+        }
+
+        pre {
+            background-color: $uptex-bg-alt;
+            border: 1px solid $uptex-border-color;
+            border-radius: $uptex-radius-sm;
+            padding: 0.85rem 1rem;
+            overflow-x: auto;
+        }
+
+        code {
+            background-color: $uptex-bg-alt;
+            border-radius: 4px;
+            padding: 0.1rem 0.35rem;
+            font-size: 0.85em;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+        }
+    }
+
+    // Borderless, modern rubric criteria table.
+    .saec-rubric-table {
+        width: 100%;
+        border-collapse: collapse;
+
+        thead th {
+            text-align: left;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: $uptex-text-muted;
+            padding: 0 0.75rem 0.6rem 0;
+            border: none;
+        }
+
+        tbody tr {
+            border-top: 1px solid $uptex-border-color;
+        }
+
+        td {
+            padding: 0.85rem 0.75rem 0.85rem 0;
+            border: none;
+            vertical-align: top;
+        }
+
+        &__criterio {
+            font-weight: 700;
+            color: $uptex-text-dark;
+            width: 32%;
+        }
+
+        &__peso {
+            display: inline-flex;
+            align-items: center;
+            border-radius: $uptex-radius-pill;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            background-color: $uptex-primary-light;
+            color: $uptex-primary;
+        }
+
+        &__nivel {
+            color: $uptex-text-muted;
+            font-size: 0.85rem;
+        }
+    }
+
+    // -------------------------------------------------------------------
+    // RIGHT COLUMN — native submission form restyled in place: file
+    // manager becomes a "Zona de Carga" dropzone card, save button becomes
+    // the primary green CTA.
+    // -------------------------------------------------------------------
+    .filemanager-container {
+        background-color: $uptex-surface;
+        border: 1px solid $uptex-border-color;
+        border-radius: $uptex-radius-lg;
+        box-shadow: $uptex-shadow-elevation;
+        padding: 1.25rem;
+    }
+
+    .filemanager-container .dndupload-target {
+        background-color: $uptex-primary-light;
+        border: 2px dashed rgba($uptex-primary, 0.35);
+        border-radius: $uptex-radius-sm;
+        box-shadow: none;
+    }
+
+    .filemanager-container.dndupload-over .dndupload-target {
+        background-color: rgba($uptex-primary, 0.16);
+        border-color: $uptex-primary;
+    }
+
+    .dndupload-arrow svg,
+    .dndupload-arrow img {
+        filter: invert(31%) sepia(89%) saturate(451%) hue-rotate(100deg) brightness(94%) contrast(96%);
+    }
+
+    .dndupload-message,
+    .dnduploadnotsupported-message {
+        color: $uptex-text-muted;
+        font-weight: 600;
+    }
+
+    input[name="submitbutton"] {
+        background-color: $uptex-primary;
+        border-color: $uptex-primary;
+        font-weight: 700;
+        border-radius: $uptex-radius-sm;
+        padding: 0.6rem 1.5rem;
+        transition: $uptex-transition;
+
+        &:hover,
+        &:focus {
+            background-color: $uptex-primary-hover;
+            border-color: $uptex-primary-hover;
+        }
+    }
+}

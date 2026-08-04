@@ -1,0 +1,280 @@
+{{!
+    @template core_badges/issued_badge (theme_saec override)
+
+    Fase 12 — Institutional Credential Verification Portal. Overrides core's
+    badges/templates/issued_badge.mustache (same template name, so Moodle's
+    template resolver picks this file automatically for every page that
+    renders it — badges/badge.php's public verification page and the
+    badge-class preview — with zero core file changes).
+
+    Every context field from the original core template is preserved
+    (coursefullname/sitefullname, badgeimage, expiredate/expireddate(formatted),
+    badgename, badgedescription, badgeissuedon, recipientname/recipientnotification,
+    criteria, issuedby/issuedbyemailobfuscated, hasotherfields + version/language/
+    imageauthor*/imagecaption, endorsement, hasrelatedbadges/relatedbadges,
+    hasalignments/alignments, hostedurl, badgetag, downloadurl, addtobackpackurl)
+    — only the markup/classes changed. verifyurl/hasexpiry/linkedinurl are new,
+    added by theme_saec_core_badges_renderer::render_issued_badge() (see
+    theme/saec/renderers.php) without touching badges/classes/output/issued_badge.php.
+
+    Example context (json): see core's own badges/templates/issued_badge.mustache —
+    identical shape, plus:
+    {
+        "verifyurl": "https://example.org/badges/badge.php?hash=abc",
+        "hasexpiry": false,
+        "linkedinurl": "https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME&name=..."
+    }
+}}
+<div class="saec-verify-page">
+    <nav class="saec-verify-page__breadcrumb" aria-label="breadcrumb">
+        {{#str}} navcredentials, theme_saec {{/str}} / <span>{{badgename}}</span>
+    </nav>
+
+    <div class="saec-verify-page__hero">
+        <span class="saec-verify-page__hero-pill">
+            <i class="icon fa fa-check-circle" aria-hidden="true"></i>
+            {{#str}} credentialverifiedbanner, theme_saec {{/str}}
+        </span>
+    </div>
+
+    <div class="saec-verify-page__grid">
+        <div class="saec-verify-page__media-col">
+            <div class="saec-verify-page__media-card">
+                <img src="{{badgeimage}}" alt="{{imagecaption}}">
+                {{#expireddateformatted}}
+                    <span class="saec-verify-page__expired-flag">
+                        {{# pix }} i/expired, core, {{# str }} expireddate, badges, {{expireddateformatted}} {{/ str }}{{/ pix }}
+                    </span>
+                {{/expireddateformatted}}
+            </div>
+
+            {{#downloadurl}}
+                <form action="{{downloadurl}}" method="post" id="downloadbadgeform">
+                    <button type="submit" class="btn btn-primary btn-block">{{#str}}download{{/str}}</button>
+                </form>
+                {{#linkedinurl}}
+                    <a href="{{{linkedinurl}}}" target="_blank" rel="noopener" class="btn saec-btn-linkedin btn-block">
+                        <i class="icon fa fa-linkedin-square" aria-hidden="true"></i>
+                        {{#str}} addtolinkedin, theme_saec {{/str}}
+                    </a>
+                {{/linkedinurl}}
+            {{/downloadurl}}
+            {{#addtobackpackurl}}
+                <form action="{{addtobackpackurl}}" method="post" id="addtobackpackform">
+                    <button type="submit" class="btn btn-outline-primary btn-block">{{#str}}addtobackpack, badges{{/str}}</button>
+                </form>
+            {{/addtobackpackurl}}
+
+            {{#verifyurl}}
+                <p class="saec-verify-page__verify-link">
+                    <i class="icon fa fa-link" aria-hidden="true"></i>
+                    <a href="{{{verifyurl}}}">{{#str}} badgeverify, theme_saec {{/str}}</a>
+                </p>
+            {{/verifyurl}}
+        </div>
+
+        <div class="saec-verify-page__details-col">
+            <h1 class="saec-verify-page__title">{{badgename}}</h1>
+
+            <div class="saec-verify-page__card">
+                {{#recipientname}}
+                    <div class="saec-verify-page__row">
+                        {{#recipientnotification}}
+                            {{> core/notification_warning}}
+                        {{/recipientnotification}}
+                        {{#str}}awardedto, core_badges, {{recipientname}}{{/str}}
+                    </div>
+                {{/recipientname}}
+
+                <div class="saec-verify-page__row saec-verify-page__row--muted">
+                    {{#badgeissuedon}}
+                        <div>
+                            {{#str}}
+                                issuedon,
+                                core_badges,
+                                {{#userdate}}{{badgeissuedon}}, {{#str}} strftimedatetime, langconfig {{/str}}{{/userdate}}
+                            {{/str}}
+                        </div>
+                    {{/badgeissuedon}}
+                    {{#expiredate}}
+                        <div>
+                            {{#str}}
+                                expiresin,
+                                core_badges,
+                                {{#userdate}}{{expiredate}}, {{#str}} strftimedatetime, langconfig {{/str}}{{/userdate}}
+                            {{/str}}
+                        </div>
+                    {{/expiredate}}
+                    {{#expireddate}}
+                        <div class="saec-verify-page__expired-text">
+                            {{#str}}
+                                expiredin,
+                                core_badges,
+                                {{#userdate}}{{expireddate}}, {{#str}} strftimedatetime, langconfig {{/str}}{{/userdate}}
+                            {{/str}}
+                        </div>
+                    {{/expireddate}}
+                </div>
+
+                {{#issuedby}}
+                    <div class="saec-verify-page__row">
+                        {{#str}}
+                            issuedby,
+                            core_badges,
+                            {{#issuedbyemailobfuscated}}
+                                {{{issuedbyemailobfuscated}}}
+                            {{/issuedbyemailobfuscated}}
+                            {{^issuedbyemailobfuscated}}
+                                {{issuedby}}
+                            {{/issuedbyemailobfuscated}}
+                        {{/str}}
+                    </div>
+                {{/issuedby}}
+
+                {{#hostedurl}}
+                    <div class="saec-verify-page__row">
+                        <a href="{{.}}" target="_blank" aria-label="{{#str}}hostedurldescription, core_badges{{/str}}">
+                            {{#str}}hostedurl, core_badges{{/str}}
+                        </a>
+                    </div>
+                {{/hostedurl}}
+
+                {{#coursefullname}}
+                    <div class="saec-verify-page__row">
+                        {{#str}}
+                            course,
+                            core_badges,
+                            {{coursefullname}}
+                        {{/str}}
+                    </div>
+                {{/coursefullname}}
+
+                {{#badgetag}}
+                    <div class="saec-verify-page__row">
+                        {{> core_tag/taglist}}
+                    </div>
+                {{/badgetag}}
+            </div>
+
+            <div class="saec-verify-page__card">
+                <p class="saec-verify-page__description">{{{badgedescription}}}</p>
+
+                <div id="badge-criteria" class="saec-verify-page__criteria">
+                    <h3>{{#str}}bcriteria, core_badges{{/str}}</h3>
+                    {{{criteria}}}
+                </div>
+            </div>
+
+            {{#hasotherfields}}
+            <div class="saec-verify-page__card">
+                <a data-toggle="collapse" href="#collapseOtherDetails" role="button" aria-expanded="false" aria-controls="collapseOtherDetails">
+                    {{#str}}moredetails, core_badges{{/str}}
+                </a>
+                <div class="collapse" id="collapseOtherDetails">
+                    <div class="saec-verify-page__meta-grid">
+                        {{#version}}
+                            <dl>
+                                <dt>{{#str}}version, core_badges{{/str}}</dt>
+                                <dd>{{version}}</dd>
+                            </dl>
+                        {{/version}}
+
+                        {{#language}}
+                            <dl>
+                                <dt>{{#str}}language, core_badges{{/str}}</dt>
+                                <dd>{{language}}</dd>
+                            </dl>
+                        {{/language}}
+
+                        {{#imageauthorname}}
+                            <dl>
+                                <dt>{{#str}}imageauthorname, core_badges{{/str}}</dt>
+                                <dd>{{imageauthorname}}</dd>
+                            </dl>
+                        {{/imageauthorname}}
+
+                        {{#imageauthoremail}}
+                            <dl>
+                                <dt>{{#str}}imageauthoremail, core_badges{{/str}}</dt>
+                                <dd>{{{imageauthoremail}}}</dd>
+                            </dl>
+                        {{/imageauthoremail}}
+
+                        {{#imageauthorurl}}
+                            <dl>
+                                <dt>{{#str}}imageauthorurl, core_badges{{/str}}</dt>
+                                <dd><a href="{{imageauthorurl}}" target="_blank">{{imageauthorurl}}</a></dd>
+                            </dl>
+                        {{/imageauthorurl}}
+
+                        {{#imagecaption}}
+                            <dl>
+                                <dt>{{#str}}imagecaption, core_badges{{/str}}</dt>
+                                <dd>{{imagecaption}}</dd>
+                            </dl>
+                        {{/imagecaption}}
+                    </div>
+
+                    {{#endorsement}}
+                        <h4>{{#str}}endorsement, core_badges{{/str}}</h4>
+                        <div class="saec-verify-page__meta-grid">
+                            <dl>
+                                <dt>{{#str}}issuername, core_badges{{/str}}</dt>
+                                <dd>{{issuername}}</dd>
+                            </dl>
+                            <dl>
+                                <dt>{{#str}}issueremail, core_badges{{/str}}</dt>
+                                <dd>{{{issueremail}}}</dd>
+                            </dl>
+                            <dl>
+                                <dt>{{#str}}issuerurl, core_badges{{/str}}</dt>
+                                <dd><a href="{{issuerurl}}" target="_blank">{{issuerurl}}</a></dd>
+                            </dl>
+                            <dl>
+                                <dt>{{#str}}dateawarded, core_badges{{/str}}</dt>
+                                <dd>{{#userdate}}{{dateissued}}, {{#str}} strftimedatetime, langconfig {{/str}}{{/userdate}}</dd>
+                            </dl>
+                            <dl>
+                                <dt>{{#str}}claimid, core_badges{{/str}}</dt>
+                                <dd><a href="{{claimid}}" target="_blank">{{claimid}}</a></dd>
+                            </dl>
+                            <dl>
+                                <dt>{{#str}}claimcomment, core_badges{{/str}}</dt>
+                                <dd>{{claimcomment}}</dd>
+                            </dl>
+                        </div>
+                    {{/endorsement}}
+
+                    {{#hasrelatedbadges}}
+                        <h4>{{#str}}relatedbages, core_badges{{/str}}</h4>
+                        <ul>
+                    {{/hasrelatedbadges}}
+                    {{#relatedbadges}}
+                        <li>
+                        {{#url}}<a href="{{url}}" target="_blank">{{/url}}
+                            {{name}}
+                        {{#url}}</a>{{/url}}
+                        </li>
+                    {{/relatedbadges}}
+                    {{#hasrelatedbadges}}
+                        </ul>
+                    {{/hasrelatedbadges}}
+
+                    {{#hasalignments}}
+                        <h4>{{#str}}alignment, core_badges{{/str}}</h4>
+                        <ul>
+                    {{/hasalignments}}
+                    {{#alignments}}
+                        <li>
+                            <a href="{{targeturl}}" target="_blank">{{targetname}}</a>
+                        </li>
+                    {{/alignments}}
+                    {{#hasalignments}}
+                        </ul>
+                    {{/hasalignments}}
+                </div>
+            </div>
+            {{/hasotherfields}}
+        </div>
+    </div>
+</div>

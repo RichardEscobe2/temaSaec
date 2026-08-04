@@ -96,6 +96,7 @@
                         comentario Mustache (ni siquiera entre comillas) — el
                         comentario termina en la primera ocurrencia, cierre
                         prematuro y fuga de texto literal al DOM. }}
+                    {{^showstudentdashboard}}
                     {{#isDashboard}}
                     <div class="uptex-card mb-4">
                         <div class="p-4">
@@ -120,6 +121,7 @@
                         </div>
                     </div>
                     {{/isDashboard}}
+                    {{/showstudentdashboard}}
                     {{! --- FIN: BANNER DE BIENVENIDA UPTEX/SAEC --- }}
 
                     <div id="region-main">
@@ -136,7 +138,66 @@
                         {{/overflow}}
 
                         <div class="uptex-content-wrapper">
+                            {{#showstudentdashboard}}
+                                {{{ studentdashboardhtml }}}
+                            {{/showstudentdashboard}}
+                            {{#showcoursespage}}
+                                {{{ coursespagehtml }}}
+                            {{/showcoursespage}}
+                            {{#showbadgespage}}
+                                {{{ badgespagehtml }}}
+                            {{/showbadgespage}}
+                            {{#showanalyticspage}}
+                                {{{ analyticspagehtml }}}
+                            {{/showanalyticspage}}
+                            {{#showsettingspage}}
+                                {{{ settingspagehtml }}}
+                            {{/showsettingspage}}
+                            {{#showcourseviewpage}}
+                                {{{ courseviewheaderhtml }}}
+                            {{/showcourseviewpage}}
+                            {{#showassignviewpage}}
+                                {{{ assignheaderhtml }}}
+                            {{/showassignviewpage}}
+                            {{! output.main_content() does not return real page HTML — it
+                                returns a one-time placeholder token. core_renderer::header()
+                                renders this ENTIRE layout once, then does a raw string search
+                                for that token to split the output into a "before" half (emitted
+                                immediately) and an "after" half (emitted by footer()); whatever
+                                /my/index.php echoes between its header()/footer() calls
+                                (custom_block_region('content') — the user's own configured
+                                blocks, e.g. Timeline/Calendar/Course overview) is spliced in at
+                                exactly that point. If the token never appears anywhere in the
+                                rendered layout, header() throws
+                                "page layout file ... does not contain the main content
+                                placeholder" — so this call MUST run unconditionally on every
+                                execution path, never behind the showstudentdashboard guard.
+                                For students this means their own configured blocks (if any)
+                                still render below the custom dashboard above — themes cannot
+                                suppress that from the layout alone without touching core. }}
+                            {{#showcourseviewpage}}
+                                <div class="saec-course-view-grid">
+                                    <div class="saec-course-view-grid__main">
+                            {{/showcourseviewpage}}
+                            {{#showassignviewpage}}
+                                <div class="saec-assign-view-grid">
+                                    <div class="saec-assign-view-grid__workspace">
+                                        {{{ assignworkspacehtml }}}
+                                    </div>
+                                    <div class="saec-assign-view-grid__native">
+                            {{/showassignviewpage}}
                             {{{ output.main_content }}}
+                            {{#showcourseviewpage}}
+                                    </div>
+                                    <div class="saec-course-view-grid__sidebar">
+                                        {{{ courseviewsidebarhtml }}}
+                                    </div>
+                                </div>
+                            {{/showcourseviewpage}}
+                            {{#showassignviewpage}}
+                                    </div>
+                                </div>
+                            {{/showassignviewpage}}
                         </div>
                         {{{ output.activity_navigation }}}
                         {{{ output.course_content_footer }}}

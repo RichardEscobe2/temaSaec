@@ -94,3 +94,155 @@ $string['viewenrolbutton'] = 'View Details / Enrol';
 
 // Dynamically computed course duration (renderers.php).
 $string['courseduration'] = '{$a} weeks';
+
+// Student Dashboard (classes/dashboard/student_dashboard.php — Phase 1 backend).
+$string['dashboardwelcomeback'] = 'Welcome back, {$a}';
+$string['dashboardpendingsubmissions'] = 'You have {$a} pending submissions this week.';
+$string['dashboardnopending'] = 'You have no pending submissions this week. Great job!';
+$string['kpinodata'] = 'N/A';
+$string['kpigpa'] = 'Overall GPA';
+$string['kpiattendance'] = 'Attendance';
+$string['kpistudyhours'] = 'Study Hours';
+$string['kpistudyhoursvalue'] = '{$a}h';
+$string['kpistudyhoursfootnote'] = 'This week';
+$string['kpibadges'] = 'Badges';
+$string['kpibadgesfootnote'] = 'Earned';
+$string['courseprogresslabel'] = '{$a->completed} of {$a->total} modules';
+$string['deadlinetoday'] = 'Today';
+$string['deadlineclosingin'] = 'Closes in {$a} hours';
+$string['badgeissued'] = 'Issued: {$a}';
+$string['backpackexport'] = 'Export';
+$string['backpackexportcredly'] = 'Export to Credly';
+
+// templates/student_dashboard.mustache (Phase 2 — layout/drawers.php).
+$string['coursesenrolledheading'] = 'My Enrolled Courses';
+$string['viewallcourses'] = 'View all';
+$string['nocoursesenrolled'] = 'You are not enrolled in any course yet.';
+$string['academicsummaryheading'] = 'Academic Activity Summary';
+$string['upcomingdeadlinesheading'] = 'Upcoming Deadlines';
+$string['nodeadlines'] = 'You have no upcoming deadlines.';
+$string['opencalendar'] = 'Open Moodle Calendar';
+$string['mybackpackheading'] = 'My Backpack';
+$string['nobadgesyet'] = "You haven't earned any badges yet.";
+$string['courseprogresslabelheading'] = 'Course progress';
+$string['continuecourse'] = 'Continue';
+
+// "My Courses" page (/my/courses.php — classes/dashboard/courses_page.php,
+// templates/my_courses_page.mustache, Phase 8).
+$string['mycoursespagetitle'] = 'My Courses and Microcredentials';
+$string['mycoursespagesubtitle'] = 'Manage your academic progress and institutional certifications.';
+$string['mycoursessearchplaceholder'] = 'Search courses...';
+$string['tabinprogress'] = 'In Progress';
+$string['tabcompleted'] = 'Completed';
+$string['tabavailable'] = 'Available';
+$string['mycoursescontinuecourse'] = 'Continue Course';
+$string['courseprogresspercent'] = '{$a}% complete';
+$string['coursefinishedlabel'] = 'Course Finished';
+$string['courseavailablenote'] = 'Available - Open Enrolment';
+$string['viewbadge'] = 'View Badge';
+$string['enrolnow'] = 'Enrol now';
+$string['nocoursesintab'] = 'No courses in this category.';
+
+// "My Badge Backpack" page (/badges/mybadges.php —
+// classes/dashboard/badges_page.php, templates/badges_page.mustache, Phase 9).
+$string['mybadgespagetitle'] = 'My Badge Backpack';
+$string['mybadgespagesubtitle'] = 'Manage your academic achievements and institutional certifications.';
+$string['tabbadgesall'] = 'All';
+$string['tabbadgesinprogress'] = 'In Progress';
+$string['badgestatusgranted'] = 'Granted';
+$string['badgestatusinprogress'] = 'In Progress';
+$string['badgetargetcourse'] = 'Target course: {$a}';
+$string['nobadgesintab'] = 'No badges in this category.';
+$string['badgecriteriaheading'] = 'Earning Criteria';
+$string['downloadbadge'] = 'Download Badge';
+$string['viewcoursecriteria'] = 'View Course Criteria';
+$string['badgeexpires'] = 'Expires: {$a}';
+$string['badgeissuedby'] = 'Issued by';
+$string['badgeverify'] = 'Verify badge';
+$string['badgehashlabel'] = 'Verification ID';
+$string['addtolinkedin'] = 'Add to LinkedIn';
+$string['credentialverifiedbanner'] = 'Officially Verified Credential';
+
+// "My Performance" page (/grade/report/overview/index.php —
+// classes/dashboard/analytics_page.php, templates/analytics_page.mustache, Phase 13).
+$string['analyticspagetitle'] = 'Academic Performance';
+$string['analyticspagesubtitle'] = 'Detailed tracking of your progress and achievements at UPTex.';
+$string['kpicompletionrate'] = 'Completion Rate';
+$string['kpibadgesearned'] = 'Badges Earned';
+$string['matrizheading'] = 'Subject Matrix';
+$string['colsubject'] = 'Subject';
+$string['colgrade'] = 'Grade';
+$string['colactivities'] = 'Activities (%)';
+$string['colbadge'] = 'Badge';
+$string['badgestatusobtained'] = 'Obtained';
+$string['badgestatuseligible'] = 'Eligible';
+$string['badgestatuspending'] = 'Pending';
+$string['timelineheading'] = 'Activity Timeline';
+$string['timelinefeedback'] = 'Teacher Feedback';
+$string['timelinegrade'] = 'Grade: {$a}';
+$string['timelinesubmission'] = 'Assignment Submission';
+$string['notimelineitems'] = 'No recent academic activity yet.';
+$string['milestoneheading'] = 'Next Milestone';
+$string['milestoneremaining'] = '{$a} activities left to complete this course.';
+$string['nomilestone'] = "You've completed all your active courses. No pending milestones!";
+$string['trendheading'] = 'Trend';
+$string['trendup'] = 'Your performance has risen {$a}% this month.';
+$string['trenddown'] = 'Your performance has dropped {$a}% compared to last month.';
+$string['trendneutral'] = "You're holding steady compared to last month.";
+$string['notrenddata'] = 'Not enough historical data yet to calculate a trend.';
+$string['statusheading'] = 'Student Status';
+$string['statusnodata'] = 'Not enough data';
+$string['statusoutstanding'] = 'Outstanding Status';
+$string['statusgood'] = 'Good Standing';
+$string['statuspassing'] = 'Passing Status';
+$string['statusatrisk'] = 'At-Risk Status';
+$string['statuscompletionnote'] = '{$a}% overall course completion.';
+$string['kpigpafootnote'] = 'Across active courses';
+$string['kpistudyhourstotalfootnote'] = 'Total accumulated';
+$string['kpicompletionratefootnote'] = 'Overall activity progress';
+
+// "Account Settings" portal (/user/preferences.php —
+// templates/preferences_hero.mustache, templates/core/preferences_groups.mustache, Phase 16).
+$string['settingspagetitle'] = 'Account Settings';
+$string['settingspagesubtitle'] = 'Manage your personal information, system preferences and credentials.';
+$string['rolestudent'] = 'Student';
+$string['roleteacher'] = 'Teacher';
+$string['roleadmin'] = 'Administrator';
+
+// "Course" SaaS overlay (/course/view.php — classes/dashboard/course_view_page.php,
+// templates/components/course_view_*.mustache, Phase 17).
+$string['coursetabcourse'] = 'Course';
+$string['coursetabparticipants'] = 'Participants';
+$string['coursetabgrades'] = 'Grades';
+$string['coursetabcompetencies'] = 'Competencies';
+$string['teacherrolelabel'] = 'Teacher:';
+$string['sendmessage'] = 'Send Message';
+$string['courseprogressheading'] = 'Course progress';
+$string['coursegradeheading'] = 'Current grade';
+$string['sidebarnextdeadline'] = 'Next Deadline';
+$string['nonextdeadline'] = "You have no upcoming submissions in this course.";
+$string['deadlinedaysleft'] = '{$a} days left';
+$string['coursedeadlinetoday'] = 'Due today';
+$string['viewdeadline'] = 'View details';
+$string['sidebarannouncements'] = "Teacher's Announcements";
+$string['noannouncements'] = 'No recent announcements.';
+$string['sidebarquicklinks'] = 'Quick Resources';
+$string['quicklinkforum'] = 'General Forum / Announcements';
+$string['quicklinkgrades'] = 'Gradebook';
+$string['quicklinkparticipants'] = 'Participants Directory';
+$string['quicklinksyllabus'] = 'Guide / Course Syllabus';
+$string['sidebarresume'] = 'Resume Last Lesson';
+$string['resumelesson'] = 'Continue';
+$string['noresume'] = "You haven't visited any activity in this course yet.";
+$string['assignstatuspendiente'] = 'Pending';
+$string['assignstatusentregado'] = 'Submitted';
+$string['assignstatuscalificado'] = 'Graded';
+$string['assignduelabel'] = 'Due:';
+$string['assignduedateformat'] = '%d %B, %H:%M';
+$string['assignsupportmaterial'] = 'Support Material';
+$string['assigninstructions'] = 'Instructions';
+$string['assignnointro'] = 'No additional written instructions for this assignment. Check the guidance your instructor gave in class, or review the attached files if there are any.';
+$string['assignrubric'] = 'Grading Rubric';
+$string['assignrubriccriterio'] = 'Criterion';
+$string['assignrubricpeso'] = 'Weight';
+$string['assignrubricnivel'] = 'Achievement Level';

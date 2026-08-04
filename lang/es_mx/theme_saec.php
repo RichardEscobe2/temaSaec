@@ -1,4 +1,10 @@
 <?php
+// Mirrors lang/es/theme_saec.php verbatim. This site only has the "es_mx"
+// (Español - México) core language pack installed, not bare "es", and
+// es_mx's langconfig.php declares no parentlanguage — so with
+// $CFG->lang = 'es_mx', string_manager falls back straight to English for
+// any component with no es_mx-specific file, skipping lang/es/ entirely.
+// Keep both files in sync when adding/editing theme_saec strings.
 defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'SAEC Corporativo';

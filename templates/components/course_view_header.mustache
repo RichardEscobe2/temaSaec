@@ -1,0 +1,70 @@
+{{!
+    @template theme_saec/components/course_view_header
+
+    Hero banner + real-navigation tab bar for the "Course Inner View" SaaS
+    overlay (/course/view.php — Fase 17). Injected by layout/drawers.php
+    ABOVE Moodle's own native section/activity content, which stays fully
+    untouched. Context comes from
+    \theme_saec\dashboard\course_view_page::get_context().
+
+    Example context (json):
+    {
+        "coursename": "Curso de Regularización Universitaria",
+        "coursecode": "REG-2026",
+        "hasinstructor": true,
+        "instructorname": "Carlos Gomez",
+        "instructoravatarurl": "https://example.org/pluginfile.php/1/user/icon/f1.jpg",
+        "instructormessageurl": "https://example.org/message/index.php?id=4",
+        "hasprogress": true,
+        "progresspercent": 100,
+        "hasgrade": true,
+        "grade": "7.7",
+        "tabs": [
+            {"label": "Curso", "url": "https://example.org/course/view.php?id=3", "active": true},
+            {"label": "Participantes", "url": "https://example.org/user/index.php?id=3", "active": false}
+        ]
+    }
+}}
+<div class="saec-course-hero">
+    <div class="saec-course-hero__main">
+        {{#coursecode}}<span class="saec-course-hero__code">{{ coursecode }}</span>{{/coursecode}}
+        <h1 class="saec-course-hero__title">{{ coursename }}</h1>
+        {{#hasinstructor}}
+            <div class="saec-course-hero__instructor">
+                <img src="{{{ instructoravatarurl }}}" alt="" class="saec-course-hero__instructor-avatar">
+                <div class="saec-course-hero__instructor-meta">
+                    <span class="saec-teacher-role-label">{{#str}} teacherrolelabel, theme_saec {{/str}}</span>
+                    <span class="saec-course-hero__instructor-name">{{ instructorname }}</span>
+                </div>
+                <a href="{{{ instructormessageurl }}}" class="btn btn-outline-primary btn-sm">{{#str}} sendmessage, theme_saec {{/str}}</a>
+            </div>
+        {{/hasinstructor}}
+    </div>
+
+    <div class="saec-course-hero__stats">
+        {{#hasprogress}}
+            <div class="saec-course-hero__stat">
+                <span class="saec-course-hero__stat-label">{{#str}} courseprogressheading, theme_saec {{/str}}</span>
+                <div class="progress saec-course-hero__stat-bar">
+                    <div class="progress-bar" role="progressbar" style="width: {{ progresspercent }}%"
+                         aria-valuenow="{{ progresspercent }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <span class="saec-course-hero__stat-value">{{ progresspercent }}%</span>
+            </div>
+        {{/hasprogress}}
+        {{#hasgrade}}
+            <div class="saec-course-hero__stat">
+                <span class="saec-course-hero__stat-label">{{#str}} coursegradeheading, theme_saec {{/str}}</span>
+                <span class="saec-course-hero__stat-value saec-course-hero__stat-value--grade">{{ grade }} <small>/ 10</small></span>
+            </div>
+        {{/hasgrade}}
+    </div>
+</div>
+
+<div class="saec-course-tabs" role="tablist">
+    {{#tabs}}
+        <a href="{{{ url }}}" class="saec-course-tabs__tab {{#active}}active{{/active}}" role="tab" aria-selected="{{#active}}true{{/active}}{{^active}}false{{/active}}">
+            {{ label }}
+        </a>
+    {{/tabs}}
+</div>

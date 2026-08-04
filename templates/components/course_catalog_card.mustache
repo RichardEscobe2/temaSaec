@@ -1,0 +1,83 @@
+{{!
+    @template theme_saec/components/course_catalog_card
+
+    "Mis Cursos" (/my/courses.php) catalog tile — banner image with a
+    category badge overlay, progress-or-finished state, and a state-specific
+    CTA row. Context comes from \theme_saec\dashboard\courses_page — exactly
+    one of showcontinuebutton/showcompletedbuttons/showenrolbutton is true
+    per card, matching which tab (inprogress/completed/available) it came
+    from.
+
+    Example context (json):
+    {
+        "id": 12,
+        "fullname": "Fundamentos de Robótica Industrial",
+        "hascourseimage": true,
+        "courseimage": "https://example.org/pluginfile.php/1/course/overviewfiles/f1.jpg",
+        "categoryname": "Ingeniería",
+        "courseurl": "https://example.org/course/view.php?id=12",
+        "hasprogressbar": true,
+        "progresspercent": 65,
+        "progresslabel": "13 de 20 módulos",
+        "showcontinuebutton": true,
+        "showcompletedbuttons": false,
+        "showenrolbutton": false,
+        "badgeurl": "https://example.org/badges/mybadges.php",
+        "enrolurl": "https://example.org/enrol/index.php?id=12"
+    }
+}}
+<div class="saec-course-catalog-card" data-course-name="{{fullname}}">
+    <div class="saec-course-catalog-card__media">
+        {{#hascourseimage}}
+            <img src="{{{ courseimage }}}" alt="" loading="lazy">
+        {{/hascourseimage}}
+        {{^hascourseimage}}
+            <div class="saec-card-img__placeholder">{{#str}} placeholderinitial, theme_saec {{/str}}</div>
+        {{/hascourseimage}}
+        {{#categoryname}}
+            <span class="saec-course-catalog-card__badge">{{ categoryname }}</span>
+        {{/categoryname}}
+    </div>
+    <div class="saec-course-catalog-card__body">
+        <h3 class="saec-course-catalog-card__title">
+            <a href="{{{ courseurl }}}">{{ fullname }}</a>
+        </h3>
+
+        {{#hasprogressbar}}
+            <div class="saec-course-catalog-card__progress">
+                <span>{{#str}} courseprogresspercent, theme_saec, {{progresspercent}} {{/str}}</span>
+                {{#progresslabel}}<strong>{{ progresslabel }}</strong>{{/progresslabel}}
+            </div>
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" style="width: {{ progresspercent }}%"
+                     aria-valuenow="{{ progresspercent }}" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+        {{/hasprogressbar}}
+
+        {{#showcompletedbuttons}}
+            <p class="saec-course-catalog-card__finished">
+                <i class="icon fa fa-check-circle" aria-hidden="true"></i>
+                {{#str}} coursefinishedlabel, theme_saec {{/str}}
+            </p>
+        {{/showcompletedbuttons}}
+
+        {{#showenrolbutton}}
+            <p class="saec-course-catalog-card__note">
+                <i class="icon fa fa-info-circle" aria-hidden="true"></i>
+                {{#str}} courseavailablenote, theme_saec {{/str}}
+            </p>
+        {{/showenrolbutton}}
+
+        <div class="saec-course-catalog-card__footer">
+            {{#showcontinuebutton}}
+                <a href="{{{ courseurl }}}" class="btn btn-primary btn-block">{{#str}} mycoursescontinuecourse, theme_saec {{/str}}</a>
+            {{/showcontinuebutton}}
+            {{#showcompletedbuttons}}
+                <a href="{{{ badgeurl }}}" class="btn btn-outline-primary btn-block">{{#str}} viewbadge, theme_saec {{/str}}</a>
+            {{/showcompletedbuttons}}
+            {{#showenrolbutton}}
+                <a href="{{{ enrolurl }}}" class="btn btn-outline-primary btn-block">{{#str}} enrolnow, theme_saec {{/str}}</a>
+            {{/showenrolbutton}}
+        </div>
+    </div>
+</div>

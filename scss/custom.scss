@@ -36,11 +36,17 @@ $uptex-border-color: $uptex-slate-light; // Borde 1px sutil ("ghost border").
 
 $uptex-radius-sm:   8px;   // Botones, inputs, componentes estándar.
 $uptex-radius-lg:   12px;  // Tarjetas, contenedores grandes, modales.
+$uptex-radius-xl:   16px;  // Tarjetas elevadas (KPI del Panel del Alumno, Fase 3).
 $uptex-radius-pill: 999px; // Badges, chips, controles de asistencia.
 
 $uptex-shadow-sm:          0 1px 3px rgba(15, 23, 42, 0.06);
 $uptex-shadow-md:          0 4px 12px rgba(95, 99, 104, 0.1); // Sombra difusa estándar (dropdowns, hover).
 $uptex-shadow-card-hover:  0 4px 6px -1px rgba(11, 128, 67, 0.08), 0 2px 4px -2px rgba(11, 128, 67, 0.1); // Sombra ambiental con tinte verde.
+// Elevación neutra en reposo (Panel del Alumno, Fase 4) — dos capas sin
+// tinte, distinta a $uptex-shadow-card-hover (que sí lleva tinte
+// institucional): reposo = profundidad neutra, hover = respuesta de marca.
+$uptex-shadow-elevation:   0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
+$uptex-border-soft:        rgba(0, 0, 0, 0.05); // Borde ultra-sutil bajo elevación — más tenue que $uptex-border-color.
 
 $uptex-transition: all 0.15s ease-in-out;
 
@@ -328,6 +334,15 @@ p {
         }
     }
 
+    &__body {
+        // Flex children default to min-width: auto, which blocks
+        // overflow/ellipsis from ever kicking in — this lets __label and
+        // __value actually shrink to the icon's sibling width instead of
+        // pushing past the card's border.
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
     &__label {
         color: $uptex-text-muted;
         font-size: 0.7rem;
@@ -335,19 +350,25 @@ p {
         text-transform: uppercase;
         letter-spacing: 0.04em;
         margin: 0 0 0.15rem;
+        overflow-wrap: break-word;
     }
 
     &__value {
+        display: flex;
+        align-items: baseline;
+        gap: 0.3rem;
         font-size: 1.5rem;
         font-weight: 700;
         color: $uptex-text-dark;
         margin: 0;
         line-height: 1.2;
+        white-space: nowrap;
 
         small {
             font-size: 0.9rem;
             font-weight: 400;
             color: $uptex-text-muted;
+            white-space: nowrap;
         }
     }
 }
@@ -861,6 +882,10 @@ $uptex-shadow-feature-hover: 0 12px 24px rgba(0, 0, 0, 0.06);
     &:focus-within {
         transform: translateY(-4px);
         box-shadow: $uptex-shadow-card-hover;
+
+        .uptex-course-showcase-card__media img {
+            transform: scale(1.05);
+        }
     }
 
     &__media {
@@ -872,6 +897,42 @@ $uptex-shadow-feature-hover: 0 12px 24px rgba(0, 0, 0, 0.06);
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: transform 0.4s ease-in-out;
+        }
+    }
+
+    // Overlay + título sobre imagen (tarjetas de progreso del Panel del
+    // Alumno, /my/ — ver components/course_progress_card.mustache).
+    &__media-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0));
+    }
+
+    &__media-title {
+        position: absolute;
+        left: 0.75rem;
+        bottom: 0.6rem;
+        right: 0.75rem;
+        color: $uptex-surface;
+        font-weight: 700;
+        font-size: 0.95rem;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+    }
+
+    &__progress {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.7rem;
+        color: $uptex-text-muted;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        margin-bottom: 0.35rem;
+
+        strong {
+            color: $uptex-primary;
+            font-weight: 700;
         }
     }
 
@@ -1297,5 +1358,1722 @@ $uptex-shadow-feature-hover: 0 12px 24px rgba(0, 0, 0, 0.06);
     &__category .categoryname {
         color: $uptex-slate;
         font-size: 0.8rem;
+    }
+}
+
+// -- Lienzo del contenido dinámico (Fase 5) -----------------------------------
+// #page.drawers .main-inner es el "panel blanco flotante" propio de Boost
+// (theme/boost/scss/moodle/layout.scss: background-color: $white sobre todo
+// el área de contenido), pintado POR ENCIMA del tinte $uptex-bg-main que
+// body ya aplica (sección 2) — por eso ese tinte nunca llegaba a verse
+// detrás de las tarjetas del Panel del Alumno pese a estar declarado.
+// :has(.uptex-student-dashboard) acota el cambio exclusivamente a cuando el
+// panel de Alumno está renderizado (esa clase sólo existe en ese caso —
+// Docente/Administrador siguen viendo el .main-inner blanco nativo de
+// Boost en su /my/ de bloques) sin tocar PHP/layout para añadir una clase
+// de body nueva. Sólo el color de fondo cambia; padding/radio/márgenes de
+// Boost quedan intactos.
+#page.drawers:has(.uptex-student-dashboard) .main-inner {
+    background-color: $uptex-bg-main;
+}
+
+/* ===========================================================================
+   9. Panel del Alumno (/my/) — Fases 2-3: hero de bienvenida, tarjetas de
+   progreso de curso (media overlay en sección 3), lista de "Próximas
+   Entregas" y grid de insignias "Mi Mochila". Contexto generado por
+   \theme_saec\dashboard\student_dashboard (Fase 1) vía layout/drawers.php.
+
+   Fase 3 (pulido visual / micro-interacciones): todo el refinamiento vive
+   anidado bajo .uptex-student-dashboard para no alterar, fuera de esta
+   página, componentes que .uptex-metric-card/.uptex-badge-credential/
+   .progress ya comparten con Calificador, Asistencia y Rendimiento
+   Académico (secciones 3-4) — override aditivo, no destructivo.
+   =========================================================================== */
+.uptex-student-dashboard {
+
+    // -- Hero de bienvenida: superficie "glass" (mismo patrón que .glass-card
+    // en stitch_uptex/mi_panel_de_alumno_actualizado/code.html) -------------
+    .uptex-dashboard-hero {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        background-color: rgba($uptex-surface, 0.75);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid $uptex-border-soft;
+        border-radius: $uptex-radius-lg;
+        box-shadow: $uptex-shadow-elevation;
+
+        &__avatar img {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid $uptex-primary;
+            box-shadow: 0 0 0 3px $uptex-primary-light;
+        }
+
+        &__title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: $uptex-text-dark;
+            margin: 0 0 0.2rem;
+        }
+
+        &__subtitle {
+            color: $uptex-text-muted;
+            margin: 0;
+
+            &--pending {
+                color: $uptex-danger;
+                font-weight: 600;
+            }
+        }
+    }
+
+    // -- Encabezado de sección genérico (Cursos, Resumen, Entregas, Mochila) -
+    .uptex-dashboard-section {
+        &__header {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+
+            h2 {
+                font-size: 1.15rem;
+                margin: 0;
+            }
+        }
+
+        &__link,
+        &__hint {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: $uptex-primary;
+            transition: color 0.15s ease-in-out;
+        }
+
+        &__link:hover,
+        &__link:focus {
+            color: $uptex-primary-hover;
+        }
+
+        &--sidebar {
+            background-color: $uptex-surface;
+            border: 1px solid $uptex-border-soft;
+            border-radius: $uptex-radius-lg;
+            padding: 1.25rem;
+            box-shadow: $uptex-shadow-elevation;
+            transition: box-shadow 0.2s ease-in-out;
+
+            &:hover {
+                box-shadow: $uptex-shadow-md;
+            }
+        }
+    }
+
+    .uptex-dashboard-empty {
+        color: $uptex-text-muted;
+        font-size: 0.85rem;
+        padding: 1rem 0;
+        text-align: center;
+    }
+
+    // -- Grid de "Mis Cursos Inscritos" (Fase 7) ------------------------------
+    // Bootstrap's .row/.col-12.col-md-6 gave each card ~50% of .col-lg-8 —
+    // on the now-fluid .main-inner (Fase 6) that stretched cards past
+    // 450-500px. Scoped to the ONE .row that's a direct child of the
+    // courses section inside .col-lg-8 (student_dashboard.mustache has no
+    // other), so the KPI grid, badge grid and every other .row/.col-* in
+    // the theme are untouched. auto-fill lets extra columns appear on very
+    // wide screens instead of just two oversized ones.
+    .col-lg-8 > .uptex-dashboard-section > .row {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 300px));
+        gap: 1.25rem;
+        margin: 0; // neutralize Bootstrap's .row negative gutters — grid `gap` replaces them
+
+        > .col-12.col-md-6 {
+            width: 100%;
+            max-width: 300px;
+            padding: 0;        // neutralize Bootstrap's col gutters
+            margin-bottom: 0;  // grid `gap` replaces the .mb-4 utility
+        }
+    }
+
+    // -- Tarjetas de curso: barra de progreso institucional + CTA elevado ----
+    // (.uptex-course-showcase-card en sí — media overlay, hover zoom de
+    // imagen — vive en la sección 3 compartida y ahí se queda "flat" en
+    // reposo (shadow: none, sólo :hover) porque ese mismo componente se
+    // reutiliza en el listado nativo de cursos y otras vistas; aquí, sólo
+    // para el Panel del Alumno, se le da elevación neutra en reposo (Fase
+    // 4) además del verde institucional de la barra y el CTA "Continuar".)
+    .uptex-course-showcase-card {
+        border-color: $uptex-border-soft;
+        box-shadow: $uptex-shadow-elevation;
+
+        // Re-declared, not just inherited: the shared :hover rule (section 3)
+        // and this block's own resting box-shadow above are equal-specificity
+        // (two classes each) — without restating :hover here, source order
+        // alone would let our flat resting shadow win on hover too and
+        // silently cancel the shared component's lift effect.
+        &:hover,
+        &:focus-within {
+            box-shadow: $uptex-shadow-card-hover;
+        }
+    }
+
+    .progress {
+        background-color: $uptex-slate-soft;
+    }
+
+    .progress-bar {
+        background-color: $uptex-primary; // Verde institucional #0B8043.
+        transition: width 0.4s ease-in-out;
+    }
+
+    .uptex-course-showcase-card__footer .btn {
+        border-radius: $uptex-radius-pill;
+        font-weight: 700;
+        transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+        &:hover,
+        &:focus {
+            transform: translateY(-2px);
+            box-shadow: $uptex-shadow-card-hover;
+        }
+    }
+
+    // -- KPI cards: radio ampliado, valor más prominente, elevación hover ----
+    // Icono/gap reducidos frente al valor compartido (48px/1rem) — a 4
+    // columnas por fila el espacio horizontal es más ajustado que en
+    // Calificador/Asistencia (3 columnas), y la etiqueta más larga en este
+    // panel ("Attendance") necesita el ancho extra para no partirse a media
+    // palabra.
+    .uptex-metric-card {
+        border-radius: $uptex-radius-xl;
+        border-color: $uptex-border-soft;
+        gap: 0.75rem;
+        box-shadow: $uptex-shadow-elevation;
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: $uptex-shadow-md;
+        }
+
+        &__icon {
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
+        }
+
+        &__value {
+            font-size: 1.75rem;
+        }
+    }
+
+    // -- Próximas Entregas -----------------------------------------------------
+    .uptex-deadline-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .uptex-deadline-item {
+        display: flex;
+        gap: 0.75rem;
+        padding: 0.6rem;
+        background-color: $uptex-bg-subtle;
+        border-radius: $uptex-radius-sm;
+        border-left: 4px solid $uptex-border-color;
+        transition: background-color 0.15s ease-in-out;
+
+        &:hover {
+            background-color: $uptex-bg-alt;
+        }
+
+        &__daybox {
+            flex-shrink: 0;
+            min-width: 48px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: $uptex-radius-sm;
+            padding: 0.3rem 0;
+            background-color: $uptex-slate-soft;
+            color: $uptex-text-muted;
+        }
+
+        // Nota: NO usar "&--urgent &__daybox" en una sola línea — con dos
+        // referencias & dentro de .uptex-student-dashboard cada una se
+        // expande a la cadena completa del ancestro por separado y duplica
+        // ".uptex-student-dashboard" en el selector resultante (nunca
+        // matchea el DOM real). Anidar &--urgent y usar el nombre de clase
+        // literal del descendiente evita el problema.
+        &--urgent {
+            border-left-color: $uptex-danger;
+            background-color: $uptex-danger-light;
+
+            .uptex-deadline-item__daybox {
+                background-color: $uptex-danger-light;
+                color: $uptex-danger;
+            }
+        }
+
+        &__daytag {
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        &__daynumber {
+            font-size: 1.1rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        &__body {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        &__title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: $uptex-text-dark;
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        &__course {
+            font-size: 0.75rem;
+            color: $uptex-text-muted;
+            margin: 0.1rem 0 0;
+        }
+
+        &__time {
+            margin-top: 0.25rem;
+            font-size: 0.7rem;
+            color: $uptex-text-muted;
+        }
+
+        &__urgent-note {
+            color: $uptex-danger;
+            font-weight: 700;
+        }
+    }
+
+    // -- Mi Mochila: grid de insignias, hover zoom y botón Credly -------------
+    .uptex-badge-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: center;
+    }
+
+    .uptex-badge-credential {
+        border-color: $uptex-border-soft;
+        box-shadow: $uptex-shadow-elevation;
+
+        &__media img {
+            transition: transform 0.2s ease-in-out;
+        }
+
+        // Mismo cuidado que en .uptex-deadline-item--urgent arriba: &:hover
+        // anidado (un solo &) + clase literal del descendiente, nunca
+        // "&:hover &__media img" en una línea. Redeclarado también aquí (no
+        // heredado) por la misma razón que .uptex-course-showcase-card
+        // arriba: misma especificidad que la regla compartida de sección 3,
+        // orden de fuente posterior — sin esto, el box-shadow de reposo de
+        // este bloque ganaría también en :hover y cancelaría la elevación.
+        &:hover {
+            box-shadow: $uptex-shadow-md;
+
+            .uptex-badge-credential__media img {
+                transform: scale(1.05);
+            }
+        }
+    }
+
+    .btn-secondary {
+        background-color: $uptex-accent-green; // Verde acento #7CB342 ("Exportar a Credly").
+        border-color: $uptex-accent-green;
+        border-radius: $uptex-radius-pill;
+        transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+
+        &:hover,
+        &:focus {
+            background-color: darken($uptex-accent-green, 8%);
+            border-color: darken($uptex-accent-green, 8%);
+        }
+
+        &:disabled {
+            opacity: 0.65;
+        }
+    }
+
+    // -- Responsividad: Tablet (768-1199px) -----------------------------------
+    @include media-breakpoint-down(lg) {
+        .uptex-dashboard-section--sidebar + .uptex-dashboard-section--sidebar {
+            margin-top: 0.5rem;
+        }
+    }
+
+    // -- Responsividad: Mobile (<768px) ---------------------------------------
+    @include media-breakpoint-down(md) {
+        .uptex-dashboard-hero {
+            flex-direction: column;
+            text-align: center;
+            padding: 1.25rem;
+        }
+
+        .uptex-dashboard-section__header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.35rem;
+        }
+
+        .uptex-metric-card__value {
+            font-size: 1.4rem;
+        }
+    }
+
+    @include media-breakpoint-down(sm) {
+        .uptex-dashboard-hero__title {
+            font-size: 1.25rem;
+        }
+
+        .uptex-badge-grid {
+            gap: 0.75rem;
+        }
+    }
+}
+
+/* ===========================================================================
+   10. Página "Mis Cursos" (/my/courses.php) — Fase 8: catálogo propio
+   (\theme_saec\dashboard\courses_page + templates/my_courses_page.mustache)
+   con pestañas En Curso/Completados/Disponibles, buscador y grid de
+   tarjetas, en reemplazo visual del bloque nativo block_myoverview.
+   =========================================================================== */
+
+// block_myoverview sigue renderizándose (my/courses.php es core: su HTML es
+// el placeholder obligatorio que header()/footer() necesitan encontrar para
+// empalmar el contenido — ver el comentario grande en drawers.mustache), así
+// que en vez de tocar ese archivo simplemente se oculta sólo en esta página;
+// el catálogo propio (templates/my_courses_page.mustache) se inyecta justo
+// encima, en el mismo slot. Se oculta el <section class="block_myoverview">
+// exterior completo (título de bloque "Vista general del curso" + chrome
+// nativo incluidos) — no sólo el <div class="block-myoverview"> interior de
+// main.mustache, que es un elemento distinto anidado dentro de esa section.
+body.page-mycourses .block_myoverview {
+    display: none;
+}
+
+// Encabezado nativo de Moodle (output.full_header, <header id="page-header">
+// — sólo el h1 "Mis cursos" en esta página, sin acciones/menús dentro):
+// duplicaba el título propio "Mis Cursos y Microcredenciales" de
+// templates/my_courses_page.mustache. #page-header es compartido por casi
+// todas las páginas (cursos, panel, admin...), así que se oculta sólo aquí.
+body.page-mycourses #page-header {
+    display: none;
+}
+
+.saec-courses-page {
+    &__header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    &__title {
+        font-weight: 800;
+        margin-bottom: 0.25rem;
+    }
+
+    &__subtitle {
+        color: $uptex-text-muted;
+        margin: 0;
+    }
+
+    &__search {
+        position: relative;
+        min-width: 260px;
+    }
+
+    &__search-icon {
+        position: absolute;
+        left: 0.85rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: $uptex-text-muted;
+        font-size: 0.85rem;
+        pointer-events: none;
+    }
+
+    &__search-input {
+        width: 100%;
+        border: 1px solid $uptex-border-color;
+        border-radius: $uptex-radius-pill;
+        padding: 0.55rem 1rem 0.55rem 2.25rem;
+        font-size: 0.9rem;
+        color: $uptex-text-dark;
+
+        &:focus {
+            outline: none;
+            border-color: $uptex-primary;
+            box-shadow: 0 0 0 2px $uptex-primary-soft;
+        }
+    }
+
+    &__tabs {
+        display: flex;
+        gap: 1.5rem;
+        border-bottom: 1px solid $uptex-border-color;
+        margin-bottom: 1.5rem;
+    }
+
+    &__tab {
+        background: none;
+        border: none;
+        border-bottom: 2px solid transparent;
+        padding: 0.75rem 0.1rem;
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: $uptex-text-muted;
+        transition: color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+
+        &:hover,
+        &:focus {
+            color: $uptex-primary;
+        }
+
+        &.active {
+            color: $uptex-primary;
+            border-bottom-color: $uptex-primary;
+        }
+    }
+}
+
+.saec-courses-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.saec-course-catalog-card {
+    background-color: $uptex-surface;
+    border: 1px solid $uptex-border-color;
+    border-radius: $uptex-radius-lg;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+
+    &:hover,
+    &:focus-within {
+        transform: translateY(-4px);
+        box-shadow: $uptex-shadow-card-hover;
+    }
+
+    &__media {
+        position: relative;
+        aspect-ratio: 16 / 9;
+        overflow: hidden;
+        background-color: $uptex-bg-subtle;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    &__badge {
+        position: absolute;
+        top: 0.75rem;
+        left: 0.75rem;
+        background-color: $uptex-primary-light;
+        color: $uptex-primary-hover;
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 0.3rem 0.7rem;
+        border-radius: $uptex-radius-sm;
+    }
+
+    &__body {
+        padding: 1.1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+        flex: 1 1 auto;
+    }
+
+    &__title {
+        font-weight: 700;
+        font-size: 1rem;
+        color: $uptex-text-dark;
+        margin: 0;
+
+        a {
+            color: inherit;
+
+            &:hover,
+            &:focus {
+                color: $uptex-primary;
+                text-decoration: none;
+            }
+        }
+    }
+
+    &__progress {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.8rem;
+        color: $uptex-text-dark;
+        font-weight: 700;
+
+        strong {
+            color: $uptex-text-muted;
+            font-weight: 700;
+            font-size: 0.75rem;
+        }
+    }
+
+    &__finished,
+    &__note {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.85rem;
+        margin: 0;
+    }
+
+    &__finished {
+        color: $uptex-accent-green;
+        font-weight: 700;
+    }
+
+    &__note {
+        color: $uptex-text-muted;
+        font-weight: 400;
+    }
+
+    &__footer {
+        margin-top: auto;
+        display: flex;
+        gap: 0.6rem;
+
+        .btn {
+            flex: 1 1 auto;
+        }
+    }
+}
+
+/* ===========================================================================
+   11. Página "Mi Mochila de Insignias" (/badges/mybadges.php) — Fase 9:
+   catálogo propio (\theme_saec\dashboard\badges_page +
+   templates/badges_page.mustache) con pestañas Todas/En Proceso, en
+   reemplazo visual del renderer nativo de gestión de insignias.
+   =========================================================================== */
+
+// El renderer nativo (core_badges\output\badge_user_collection) sigue
+// renderizándose (badges/mybadges.php es core: su HTML es el placeholder
+// obligatorio que header()/footer() necesitan encontrar para empalmar el
+// contenido — ver el comentario grande en drawers.mustache), así que en vez
+// de tocar ese archivo se ocultan sus hermanos dentro de .uptex-content-wrapper
+// (cabecera "Mis insignias de ... sitio web", buscador, grid nativo,
+// "insignias de otros sitios web", etc.) — todo lo que NO sea nuestro propio
+// .saec-badges-page — en lugar de listar sus clases nativas una por una.
+// #page-header (breadcrumb "Preferencias / Gestionar insignias" + tarjeta de
+// perfil con avatar/nombre/"Mensaje", propias de output.full_header cuando
+// el contexto de página es de usuario) se oculta igual que en
+// body.page-mycourses — ambas reglas scoped por body class exclusiva de
+// esta página, sin afectar el resto de /badges/ ni el resto del sitio.
+body.page-mybadges {
+    #page-header {
+        display: none;
+    }
+
+    .uptex-content-wrapper > :not(.saec-badges-page) {
+        display: none;
+    }
+}
+
+.saec-badges-page {
+    &__header {
+        margin-bottom: 1.5rem;
+    }
+
+    &__title {
+        font-weight: 800;
+        margin-bottom: 0.25rem;
+    }
+
+    &__subtitle {
+        color: $uptex-text-muted;
+        margin: 0;
+    }
+
+    &__tabs {
+        display: flex;
+        gap: 1.5rem;
+        border-bottom: 1px solid $uptex-border-color;
+        margin-bottom: 1.5rem;
+    }
+
+    &__tab {
+        background: none;
+        border: none;
+        border-bottom: 2px solid transparent;
+        padding: 0.75rem 0.1rem;
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: $uptex-text-muted;
+        transition: color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+
+        &:hover,
+        &:focus {
+            color: $uptex-primary;
+        }
+
+        &.active {
+            color: $uptex-primary;
+            border-bottom-color: $uptex-primary;
+        }
+    }
+}
+
+.saec-badges-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.5rem;
+}
+
+.saec-badge-catalog-card {
+    background-color: $uptex-surface;
+    border: 1px solid $uptex-border-color;
+    border-radius: $uptex-radius-lg;
+    padding: 1.25rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+
+    // Fase 10: toda la tarjeta es el disparador del modal de detalle
+    // (badges_page.mustache) — el ligero scale (no sólo la elevación ya
+    // usada en el resto del catálogo) marca visualmente que es clicable,
+    // no sólo "hover-able" como las tarjetas de curso.
+    &:hover,
+    &:focus-within {
+        transform: translateY(-4px) scale(1.02);
+        box-shadow: $uptex-shadow-card-hover;
+    }
+
+    &:focus-visible {
+        outline: 2px solid $uptex-primary;
+        outline-offset: 2px;
+    }
+
+    &__media {
+        width: 96px;
+        height: 96px;
+        margin-bottom: 0.75rem;
+        border-radius: 50%;
+        overflow: hidden;
+        background-color: $uptex-bg-subtle;
+        border: 1px solid $uptex-border-color;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+    }
+
+    &__body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.35rem;
+    }
+
+    &__title {
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: $uptex-text-dark;
+        margin: 0;
+    }
+
+    &__subtitle {
+        font-size: 0.8rem;
+        color: $uptex-text-muted;
+        margin: 0;
+    }
+
+    &__pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.25rem 0.75rem;
+        border-radius: $uptex-radius-pill;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+
+        &--granted {
+            background-color: $uptex-accent-green-light;
+            color: darken($uptex-accent-green, 15%);
+        }
+
+        &--inprogress {
+            background-color: $uptex-slate-soft;
+            color: $uptex-slate;
+        }
+    }
+
+    &__date {
+        font-size: 0.75rem;
+        color: $uptex-text-muted;
+        margin: 0;
+    }
+}
+
+// ---------------------------------------------------------------------
+// BADGE DETAIL MODAL (Fase 10) — body content of the core/modal opened
+// from a .saec-badge-catalog-card click (badges_page.mustache). The modal
+// chrome itself (header/footer/backdrop/close button) is core/modal's own
+// theme_boost styling, untouched; only the body content gets UPTex
+// tokens/typography here, via templates/components/badge_detail_body.
+// ---------------------------------------------------------------------
+.saec-badge-modal {
+    text-align: center;
+
+    &__media {
+        width: 140px;
+        height: 140px;
+        margin: 0 auto 1rem;
+        border-radius: 50%;
+        overflow: hidden;
+        background-color: $uptex-bg-subtle;
+        border: 1px solid $uptex-border-color;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+    }
+
+    &__subtitle {
+        color: $uptex-text-muted;
+        margin-bottom: 0.5rem;
+    }
+
+    &__date {
+        font-size: 0.85rem;
+        color: $uptex-text-muted;
+        margin: 0.5rem 0 0;
+    }
+
+    // Fase 11: metadatos restaurados (emisor, expiración, hash/verificación)
+    // — filas etiqueta/valor de dos columnas, alineadas a la izquierda a
+    // diferencia del resto del modal (imagen/pill/fecha, centrados).
+    &__meta {
+        text-align: left;
+        margin-top: 1.25rem;
+        padding-top: 1.25rem;
+        border-top: 1px solid $uptex-border-color;
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+    }
+
+    &__meta-row {
+        display: flex;
+        align-items: baseline;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    &__meta-label {
+        flex-shrink: 0;
+        color: $uptex-text-muted;
+        font-weight: 700;
+    }
+
+    &__meta-value {
+        color: $uptex-text-dark;
+
+        &--expiry {
+            color: $uptex-danger;
+            font-weight: 600;
+        }
+    }
+
+    &__hash {
+        font-family: monospace;
+        font-size: 0.75rem;
+        word-break: break-all;
+    }
+
+    &__description {
+        text-align: left;
+        color: $uptex-text-dark;
+        margin-top: 1.25rem;
+        padding-top: 1.25rem;
+        border-top: 1px solid $uptex-border-color;
+    }
+
+    &__criteria {
+        text-align: left;
+        margin-top: 1.25rem;
+        padding-top: 1.25rem;
+        border-top: 1px solid $uptex-border-color;
+
+        h4 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: $uptex-text-dark;
+            margin-bottom: 0.5rem;
+        }
+    }
+
+    &__actions {
+        margin-top: 1.5rem;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.75rem;
+    }
+}
+
+// LinkedIn's own brand blue (#0A66C2) — this button is the one place in the
+// theme that intentionally breaks from the $uptex-* green palette, since it
+// represents a third-party brand mark rather than a SAEC/UPTex action.
+.saec-btn-linkedin {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #0a66c2;
+    border-color: #0a66c2;
+    color: $uptex-surface;
+
+    &:hover,
+    &:focus {
+        background-color: darken(#0a66c2, 8%);
+        border-color: darken(#0a66c2, 8%);
+        color: $uptex-surface;
+    }
+
+    .icon {
+        margin: 0;
+        font-size: 1.1rem;
+    }
+}
+
+/* ===========================================================================
+   12. Portal Institucional de Verificación de Credenciales (/badges/badge.php)
+   — Fase 12: restyla templates/core_badges/issued_badge (override de la
+   plantilla nativa, ver docblock del archivo) en un layout de 2 columnas,
+   sin tocar core (renderers.php añade verifyurl/hasexpiry/linkedinurl;
+   layout/drawers.php sólo agrega la clase de body page-badge-verify).
+   =========================================================================== */
+
+// #page-header (breadcrumb nativo + <h2>{{badgename}}</h2> duplicado del
+// propio título del portal) — 'base' es un pagelayout compartido por otras
+// páginas ajenas, así que se oculta scoped a esta URL exacta, no al layout.
+body.page-badge-verify #page-header {
+    display: none;
+}
+
+.saec-verify-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 1rem 0 2rem;
+
+    &__breadcrumb {
+        font-size: 0.8rem;
+        color: $uptex-text-muted;
+        margin-bottom: 1rem;
+
+        span {
+            color: $uptex-text-dark;
+            font-weight: 600;
+        }
+    }
+
+    &__hero {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    &__hero-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background-color: $uptex-accent-green-light;
+        color: darken($uptex-accent-green, 18%);
+        font-weight: 700;
+        font-size: 0.95rem;
+        padding: 0.6rem 1.5rem;
+        border-radius: $uptex-radius-pill;
+        box-shadow: $uptex-shadow-sm;
+
+        .icon {
+            font-size: 1.2rem;
+            margin: 0;
+        }
+    }
+
+    &__grid {
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        gap: 2rem;
+        align-items: start;
+
+        @include media-breakpoint-down(md) {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    &__media-col {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        position: sticky;
+        top: 1rem;
+
+        @include media-breakpoint-down(md) {
+            position: static;
+        }
+    }
+
+    &__media-card {
+        position: relative;
+        background-color: $uptex-surface;
+        border: 1px solid $uptex-border-color;
+        border-radius: $uptex-radius-lg;
+        box-shadow: $uptex-shadow-elevation;
+        padding: 1.5rem;
+        text-align: center;
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+    }
+
+    &__expired-flag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        margin-top: 0.75rem;
+        color: $uptex-danger;
+        font-weight: 700;
+        font-size: 0.8rem;
+    }
+
+    &__verify-link {
+        text-align: center;
+        font-size: 0.8rem;
+        color: $uptex-text-muted;
+        margin: 0.25rem 0 0;
+
+        a {
+            color: $uptex-text-muted;
+            text-decoration: underline;
+
+            &:hover,
+            &:focus {
+                color: $uptex-primary;
+            }
+        }
+    }
+
+    &__title {
+        font-weight: 800;
+        margin-bottom: 1.25rem;
+    }
+
+    &__card {
+        background-color: $uptex-surface;
+        border: 1px solid $uptex-border-color;
+        border-radius: $uptex-radius-lg;
+        box-shadow: $uptex-shadow-elevation;
+        padding: 1.5rem;
+        margin-bottom: 1.25rem;
+
+        h3, h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: $uptex-text-dark;
+        }
+    }
+
+    &__row {
+        padding: 0.4rem 0;
+
+        &--muted {
+            color: $uptex-text-muted;
+            font-size: 0.9rem;
+        }
+    }
+
+    &__expired-text {
+        color: $uptex-danger;
+        font-weight: 700;
+    }
+
+    &__description {
+        color: $uptex-text-dark;
+    }
+
+    &__criteria {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid $uptex-border-color;
+
+        ul {
+            padding-left: 1.25rem;
+        }
+    }
+
+    &__meta-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem 1.5rem;
+        margin-top: 1rem;
+
+        dl {
+            margin: 0;
+        }
+
+        dt {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            color: $uptex-text-muted;
+        }
+
+        dd {
+            margin: 0.15rem 0 0;
+            color: $uptex-text-dark;
+            word-break: break-word;
+        }
+    }
+}
+
+/* ===========================================================================
+   13. Página "Mi Rendimiento" (/grade/report/overview/index.php) — Fase 13:
+   panel propio (\theme_saec\dashboard\analytics_page +
+   templates/analytics_page.mustache) con KPIs, Matriz de Materias, Línea de
+   Actividad y tarjetas de resumen, en reemplazo visual del reporte nativo de
+   calificaciones.
+   =========================================================================== */
+
+// El reporte nativo sigue renderizándose (grade/report/overview/index.php es
+// core: su HTML es el placeholder obligatorio que header()/footer()
+// necesitan encontrar para empalmar el contenido — ver el comentario grande
+// en drawers.mustache), así que en vez de tocar ese archivo se ocultan sus
+// hermanos dentro de .uptex-content-wrapper — todo lo que NO sea
+// .saec-analytics-page — igual que en body.page-mybadges.
+body.page-analytics {
+    #page-header {
+        display: none;
+    }
+
+    .uptex-content-wrapper > :not(.saec-analytics-page) {
+        display: none;
+    }
+}
+
+.saec-analytics-page {
+    &__header {
+        margin-bottom: 1.5rem;
+    }
+
+    &__title {
+        font-weight: 800;
+        margin-bottom: 0.25rem;
+    }
+
+    &__subtitle {
+        color: $uptex-text-muted;
+        margin: 0;
+    }
+
+    &__card {
+        background-color: $uptex-surface;
+        border: 1px solid $uptex-border-color;
+        border-radius: $uptex-radius-lg;
+        box-shadow: $uptex-shadow-elevation;
+        padding: 1.25rem;
+        height: 100%;
+    }
+
+    &__card-heading {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: $uptex-text-dark;
+        margin-bottom: 1rem;
+    }
+}
+
+// -- Matriz de Materias ---------------------------------------------------
+.saec-subject-matrix {
+    width: 100%;
+    border-collapse: collapse;
+
+    th {
+        text-align: left;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        color: $uptex-text-muted;
+        padding: 0.5rem 0.75rem;
+        border-bottom: 1px solid $uptex-border-color;
+    }
+
+    td {
+        padding: 0.85rem 0.75rem;
+        border-bottom: 1px solid $uptex-border-color;
+        vertical-align: middle;
+    }
+
+    tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    tbody tr:hover {
+        background-color: $uptex-bg-alt;
+    }
+
+    &__course {
+        display: block;
+        font-weight: 700;
+        color: $uptex-text-dark;
+
+        &:hover,
+        &:focus {
+            color: $uptex-primary;
+        }
+    }
+
+    &__code {
+        font-size: 0.75rem;
+        color: $uptex-text-muted;
+    }
+
+    &__grade {
+        font-weight: 800;
+        color: $uptex-primary;
+        font-size: 1.05rem;
+    }
+
+    &__progress {
+        display: inline-block;
+        width: 90px;
+        height: 6px;
+        vertical-align: middle;
+        margin-right: 0.5rem;
+        background-color: $uptex-slate-soft;
+    }
+
+    &__progress-label {
+        font-size: 0.8rem;
+        color: $uptex-text-muted;
+    }
+
+    &__pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.25rem 0.65rem;
+        border-radius: $uptex-radius-pill;
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+
+        &--granted {
+            background-color: $uptex-accent-green-light;
+            color: darken($uptex-accent-green, 15%);
+        }
+
+        &--eligible {
+            background-color: $uptex-primary-light;
+            color: $uptex-primary;
+        }
+
+        &--pending {
+            background-color: $uptex-slate-soft;
+            color: $uptex-slate;
+        }
+    }
+}
+
+// -- Línea de Actividad ------------------------------------------------------
+.saec-timeline {
+    position: relative;
+    padding-left: 1.25rem;
+
+    &::before {
+        content: "";
+        position: absolute;
+        left: 4px;
+        top: 6px;
+        bottom: 6px;
+        width: 1px;
+        background-color: $uptex-border-color;
+    }
+
+    &__item {
+        position: relative;
+        padding-bottom: 1.25rem;
+
+        &:last-child {
+            padding-bottom: 0;
+        }
+    }
+
+    &__dot {
+        position: absolute;
+        left: -1.25rem;
+        top: 0.3rem;
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background-color: $uptex-slate;
+    }
+
+    &__item--feedback &__dot {
+        background-color: $uptex-primary;
+    }
+
+    &__item--submission &__dot {
+        background-color: $uptex-accent-green;
+    }
+
+    &__date {
+        display: block;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        color: $uptex-text-muted;
+    }
+
+    &__title {
+        font-weight: 700;
+        color: $uptex-text-dark;
+        margin: 0.15rem 0 0;
+    }
+
+    &__detail {
+        font-size: 0.85rem;
+        color: $uptex-text-muted;
+        margin: 0.15rem 0 0;
+
+        &--quote {
+            font-style: italic;
+        }
+    }
+}
+
+// -- Tarjetas de resumen (Próximo Hito / Tendencia / Estatus) ----------------
+// -- Próximo Hito: institutional dark-green gradient banner (Fase 15) --------
+// No photographic asset in pix/ reads cleanly as a text-overlay background
+// (img1-3.png each already have their own baked-in UPTex banner text/logos —
+// stacking our own white type over those would collide/become illegible), so
+// the "campus/tech lab" banner look is built from $uptex-accent-dark (the
+// same institutional dark green already used for the accreditation section,
+// custom.scss Fase 5) plus a subtle repeating diagonal hairline texture — a
+// real design token + CSS-only pattern, not a placeholder or fabricated path.
+.saec-milestone-card {
+    position: relative;
+    background-color: $uptex-accent-dark;
+    background-image:
+        linear-gradient(rgba(0, 80, 45, 0.85), rgba(0, 50, 25, 0.95)),
+        repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.05) 0, rgba(255, 255, 255, 0.05) 1px, transparent 1px, transparent 14px);
+    border-radius: $uptex-radius-lg;
+    overflow: hidden;
+    height: 100%;
+
+    &__overlay {
+        position: relative;
+        color: $uptex-surface;
+        padding: 1.75rem;
+        height: 100%;
+    }
+
+    &__eyebrow {
+        display: block;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        opacity: 0.85;
+        margin-bottom: 0.6rem;
+    }
+
+    &__title {
+        font-size: 1.25rem;
+        font-weight: 800;
+        margin-bottom: 0.4rem;
+
+        a {
+            color: $uptex-surface;
+
+            &:hover,
+            &:focus {
+                text-decoration: underline;
+            }
+        }
+    }
+
+    &__note {
+        // Explicit, not inherited: custom.scss's global `p { color:
+        // $uptex-text-dark; }` rule (Fase 2) matches this bare <p> directly,
+        // and an explicit same-element rule always wins over an inherited
+        // value regardless of specificity — without restating white here,
+        // this note rendered near-invisible dark-on-dark-green.
+        color: $uptex-surface;
+        margin: 0;
+        opacity: 0.92;
+        font-size: 0.9rem;
+    }
+}
+
+// -- Tendencia: 3-state card (up/down/neutral) + real 2-bar mini chart -------
+.saec-trend-card {
+    background-color: $uptex-slate-soft;
+    border-radius: $uptex-radius-lg;
+    padding: 1.5rem;
+    height: 100%;
+    transition: background-color 0.15s ease-in-out;
+
+    &--up {
+        background-color: $uptex-accent-green-light;
+    }
+
+    &--down {
+        // Deliberately a soft amber/red, not the flat $uptex-danger-light
+        // used for hard errors elsewhere — a grade dip is a signal to
+        // watch, not a system failure.
+        background-color: rgba(#f59e0b, 0.14);
+    }
+
+    &--neutral {
+        background-color: $uptex-slate-soft;
+    }
+
+    &__eyebrow {
+        display: block;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: $uptex-text-muted;
+        margin-bottom: 0.75rem;
+    }
+
+    &__chart {
+        display: flex;
+        align-items: flex-end;
+        gap: 0.4rem;
+        height: 48px;
+        margin-bottom: 0.85rem;
+    }
+
+    &__bar {
+        display: block;
+        width: 14px;
+        min-height: 6px;
+        border-radius: 3px 3px 0 0;
+        background-color: rgba($uptex-slate, 0.35);
+
+        &--current {
+            background-color: $uptex-slate;
+        }
+    }
+
+    &--up &__bar--current {
+        background-color: darken($uptex-accent-green, 10%);
+    }
+
+    &--down &__bar--current {
+        background-color: darken(#f59e0b, 15%);
+    }
+
+    &__note {
+        margin: 0;
+        font-weight: 600;
+        color: $uptex-text-dark;
+
+        .icon {
+            margin-right: 0.35rem;
+        }
+    }
+
+    &--up &__note {
+        color: darken($uptex-accent-green, 15%);
+    }
+
+    &--down &__note {
+        color: darken(#f59e0b, 20%);
+    }
+
+    &--neutral &__note {
+        color: $uptex-slate;
+    }
+}
+
+.saec-status-card {
+    background-color: $uptex-surface;
+    border: 1px solid $uptex-border-color;
+    border-radius: $uptex-radius-lg;
+    padding: 1.5rem;
+    height: 100%;
+
+    &__header {
+        margin-bottom: 0.75rem;
+    }
+
+    &__chip {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.3rem 0.85rem;
+        border-radius: $uptex-radius-pill;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+
+        &--granted {
+            background-color: $uptex-accent-green-light;
+            color: darken($uptex-accent-green, 15%);
+        }
+
+        &--eligible {
+            background-color: $uptex-primary-light;
+            color: $uptex-primary;
+        }
+
+        &--pending {
+            background-color: $uptex-slate-soft;
+            color: $uptex-slate;
+        }
+
+        &--danger {
+            background-color: $uptex-danger-light;
+            color: $uptex-danger;
+        }
+
+        &--neutral {
+            background-color: $uptex-slate-soft;
+            color: $uptex-slate;
+        }
+    }
+
+    &__title {
+        font-weight: 700;
+        color: $uptex-text-dark;
+        margin-bottom: 0.5rem;
+    }
+
+    &__note {
+        font-size: 0.8rem;
+        color: $uptex-text-muted;
+        margin: 0.5rem 0 0;
+    }
+}
+
+/* ===========================================================================
+   16. Portal "Configuración de Cuenta" (/user/preferences.php) — Fase 16:
+   cabecera + hero de perfil propios (templates/preferences_hero.mustache,
+   inyectados por layout/drawers.php) por ENCIMA del grid nativo de
+   categorías, que en sí mismo se convierte en pestañas vía un override de
+   plantilla (templates/core/preferences_groups.mustache) — a diferencia de
+   Insignias/Cursos/Rendimiento, aquí NO se oculta output.main_content: ES
+   el contenido nativo (restilizado) el que se muestra, no un panel paralelo.
+   =========================================================================== */
+
+// Sólo el encabezado nativo (breadcrumb "Preferencias" + tarjeta de perfil
+// avatar/nombre/"Mensaje", el mismo patrón de output.full_header por
+// contexto de usuario ya visto en Insignias/Rendimiento) se oculta — el
+// grid de categorías de más abajo se conserva y se restila vía el override
+// de core/preferences_groups.
+body.page-settings #page-header {
+    display: none;
+}
+
+// user/preferences.php also echoes its own bare `<h2>Preferencias</h2>`
+// directly into output.main_content (core, not #page-header — confirmed
+// via devtools), right before the groups grid our own tabs replace, so it
+// duplicates this page's own "Configuración de Cuenta" title. Targeted via
+// :has() on its real DOM adjacency to .saec-settings-tabs rather than a
+// bare `h2` selector, so it can't accidentally hide an unrelated heading.
+body.page-settings h2:has(+ .saec-settings-tabs) {
+    display: none;
+}
+
+.saec-settings-page {
+    &__header {
+        margin-bottom: 1.5rem;
+    }
+
+    &__title {
+        font-weight: 800;
+        margin-bottom: 0.25rem;
+    }
+
+    &__subtitle {
+        color: $uptex-text-muted;
+        margin: 0;
+    }
+}
+
+.saec-settings-hero {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    background-color: $uptex-surface;
+    border: 1px solid $uptex-border-color;
+    border-radius: $uptex-radius-lg;
+    box-shadow: $uptex-shadow-elevation;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.5rem;
+
+    &__avatar {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid $uptex-primary;
+        box-shadow: 0 0 0 3px $uptex-primary-light;
+        flex-shrink: 0;
+    }
+
+    &__body {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    &__name {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: $uptex-text-dark;
+        margin: 0;
+    }
+
+    &__email {
+        color: $uptex-text-muted;
+        font-size: 0.85rem;
+        margin: 0.15rem 0 0;
+        overflow-wrap: break-word;
+    }
+
+    &__role {
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        padding: 0.35rem 0.9rem;
+        border-radius: $uptex-radius-pill;
+        background-color: $uptex-primary-light;
+        color: $uptex-primary;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+}
+
+.saec-settings-tabs {
+    display: flex;
+    gap: 1.5rem;
+    border-bottom: 1px solid $uptex-border-color;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.saec-settings-tabs__tab {
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 0.75rem 0.1rem;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: $uptex-text-muted;
+    transition: color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+
+    &:hover,
+    &:focus {
+        color: $uptex-primary;
+    }
+
+    &.active {
+        color: $uptex-primary;
+        border-bottom-color: $uptex-primary;
+    }
+}
+
+.saec-settings-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.saec-settings-list__item {
+    a {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: $uptex-surface;
+        border: 1px solid $uptex-border-color;
+        border-radius: $uptex-radius-sm;
+        padding: 0.85rem 1.1rem;
+        color: $uptex-text-dark;
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-decoration: none;
+        transition: border-color 0.15s ease-in-out, background-color 0.15s ease-in-out, transform 0.15s ease-in-out;
+
+        .icon {
+            color: $uptex-text-muted;
+            font-size: 0.8rem;
+            transition: transform 0.15s ease-in-out;
+        }
+
+        &:hover,
+        &:focus {
+            border-color: $uptex-primary;
+            background-color: $uptex-primary-light;
+            color: $uptex-primary;
+            text-decoration: none;
+            transform: translateX(2px);
+
+            .icon {
+                color: $uptex-primary;
+                transform: translateX(2px);
+            }
+        }
     }
 }

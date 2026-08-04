@@ -1,0 +1,111 @@
+{{!
+    @template theme_saec/analytics_page
+
+    "Rendimiento Académico" page (/grade/report/overview/index.php) —
+    replaces core's plain grade-overview table for students (hidden via
+    scss/custom.scss's `body.page-analytics` rules; see the big comment in
+    templates/drawers.mustache on why that output still has to render at
+    all). Context comes from \theme_saec\dashboard\analytics_page::get_context(),
+    injected by layout/drawers.php.
+}}
+<div class="saec-analytics-page">
+    <div class="saec-analytics-page__header">
+        <h1 class="saec-analytics-page__title">{{#str}} analyticspagetitle, theme_saec {{/str}}</h1>
+        <p class="saec-analytics-page__subtitle">{{#str}} analyticspagesubtitle, theme_saec {{/str}}</p>
+    </div>
+
+    <div class="row">
+        {{#kpis}}
+            <div class="col-6 col-md-3 mb-4">
+                {{> theme_saec/components/metric_card }}
+            </div>
+        {{/kpis}}
+    </div>
+
+    <div class="row">
+        <div class="col-12 col-lg-8">
+            <section class="saec-analytics-page__card mb-4">
+                <h2 class="saec-analytics-page__card-heading">{{#str}} matrizheading, theme_saec {{/str}}</h2>
+                {{#hassubjects}}
+                    {{> theme_saec/components/subject_matrix_table }}
+                {{/hassubjects}}
+                {{^hassubjects}}
+                    <div class="uptex-dashboard-empty">{{#str}} nocoursesenrolled, theme_saec {{/str}}</div>
+                {{/hassubjects}}
+            </section>
+        </div>
+
+        <div class="col-12 col-lg-4">
+            <section class="saec-analytics-page__card mb-4">
+                <h2 class="saec-analytics-page__card-heading">{{#str}} timelineheading, theme_saec {{/str}}</h2>
+                {{#hastimeline}}
+                    <div class="saec-timeline">
+                        {{#timeline}}
+                            {{> theme_saec/components/timeline_item }}
+                        {{/timeline}}
+                    </div>
+                {{/hastimeline}}
+                {{^hastimeline}}
+                    <div class="uptex-dashboard-empty">{{#str}} notimelineitems, theme_saec {{/str}}</div>
+                {{/hastimeline}}
+            </section>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 col-lg-5 mb-4">
+            <div class="saec-milestone-card">
+                <div class="saec-milestone-card__overlay">
+                    <span class="saec-milestone-card__eyebrow">{{#str}} milestoneheading, theme_saec {{/str}}</span>
+                    {{#nextmilestone.hasmilestone}}
+                        <p class="saec-milestone-card__title">
+                            <a href="{{{ nextmilestone.courseurl }}}">{{ nextmilestone.coursename }}</a>
+                        </p>
+                        <p class="saec-milestone-card__note">{{ nextmilestone.remainingnote }}</p>
+                    {{/nextmilestone.hasmilestone}}
+                    {{^nextmilestone.hasmilestone}}
+                        <p class="saec-milestone-card__note">{{#str}} nomilestone, theme_saec {{/str}}</p>
+                    {{/nextmilestone.hasmilestone}}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-3 mb-4">
+            <div class="saec-trend-card
+                {{#trend.isup}}saec-trend-card--up{{/trend.isup}}
+                {{#trend.isdown}}saec-trend-card--down{{/trend.isdown}}
+                {{#trend.isneutral}}saec-trend-card--neutral{{/trend.isneutral}}">
+                <span class="saec-trend-card__eyebrow">{{#str}} trendheading, theme_saec {{/str}}</span>
+                {{#trend.hastrend}}
+                    <div class="saec-trend-card__chart" aria-hidden="true">
+                        <span class="saec-trend-card__bar" style="height: {{ trend.previousbarheight }}%"></span>
+                        <span class="saec-trend-card__bar saec-trend-card__bar--current" style="height: {{ trend.currentbarheight }}%"></span>
+                    </div>
+                    <p class="saec-trend-card__note">
+                        <i class="icon fa {{#trend.isup}}fa-arrow-up{{/trend.isup}}{{#trend.isdown}}fa-arrow-down{{/trend.isdown}}{{#trend.isneutral}}fa-arrow-right{{/trend.isneutral}}" aria-hidden="true"></i>
+                        {{ trend.trendnote }}
+                    </p>
+                {{/trend.hastrend}}
+                {{^trend.hastrend}}
+                    <p class="saec-trend-card__note">{{#str}} notrenddata, theme_saec {{/str}}</p>
+                {{/trend.hastrend}}
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-4 mb-4">
+            <div class="saec-status-card">
+                <div class="saec-status-card__header">
+                    <span class="saec-status-card__chip saec-status-card__chip--{{ studentstatus.statusvariant }}">{{ studentstatus.statuslabel }}</span>
+                </div>
+                <p class="saec-status-card__title">{{#str}} statusheading, theme_saec {{/str}}</p>
+                {{#studentstatus.hascompletion}}
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" style="width: {{ studentstatus.completionpercent }}%"
+                             aria-valuenow="{{ studentstatus.completionpercent }}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <p class="saec-status-card__note">{{#str}} statuscompletionnote, theme_saec, {{studentstatus.completionpercent}} {{/str}}</p>
+                {{/studentstatus.hascompletion}}
+            </div>
+        </div>
+    </div>
+</div>

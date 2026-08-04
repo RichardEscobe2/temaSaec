@@ -1,0 +1,74 @@
+{{!
+    @template theme_saec/components/assign_workspace
+
+    Left-column (65%) "Instrucciones" + "Rúbrica de Evaluación" cards for the
+    "Assignment View" SaaS overlay (/mod/assign/view.php — Fase 19). Injected
+    BESIDE Moodle's own native status table/action buttons/submission form
+    (reflowed into the right column by scss/saec/_assign.scss — this
+    template never touches that markup). Context comes from
+    \theme_saec\dashboard\assign_view_page::get_context()['workspace'].
+
+    The Instrucciones card ALWAYS renders (Fase 21 — mandatory unified
+    2-column layout for every assignment, not just ones with real intro
+    text): a real teacher-written intro when one exists, otherwise an honest
+    "no instructions" notice — never a blank left column.
+
+    Example context (json):
+    {
+        "hasrealintro": true,
+        "introhtml": "<p>Desarrolla una aplicación...</p>",
+        "nointrofallback": false,
+        "rubric": {
+            "hasrubric": true,
+            "rubricname": "Rubrica Tarea Practica",
+            "criteria": [
+                {"criterio": "Contenido y Cumplimiento de Requisitos", "peso": 40, "nivellogro": "Cumple completamente con todos los requisitos."}
+            ]
+        }
+    }
+}}
+<div class="saec-assign-workspace">
+    <div class="saec-assign-card">
+        <div class="saec-assign-card__header">
+            <span class="saec-assign-card__icon"><i class="icon fa fa-clipboard" aria-hidden="true"></i></span>
+            <h2 class="saec-assign-card__title">{{#str}} assigninstructions, theme_saec {{/str}}</h2>
+        </div>
+        <div class="saec-assign-card__body saec-assign-instructions">
+            {{#hasrealintro}}
+                {{{ introhtml }}}
+            {{/hasrealintro}}
+            {{#nointrofallback}}
+                <p class="saec-assign-instructions__empty">{{#str}} assignnointro, theme_saec {{/str}}</p>
+            {{/nointrofallback}}
+        </div>
+    </div>
+
+    {{#rubric.hasrubric}}
+        <div class="saec-assign-card">
+            <div class="saec-assign-card__header">
+                <span class="saec-assign-card__icon"><i class="icon fa fa-list-alt" aria-hidden="true"></i></span>
+                <h2 class="saec-assign-card__title">{{#str}} assignrubric, theme_saec {{/str}}</h2>
+            </div>
+            <div class="saec-assign-card__body">
+                <table class="saec-rubric-table">
+                    <thead>
+                        <tr>
+                            <th>{{#str}} assignrubriccriterio, theme_saec {{/str}}</th>
+                            <th>{{#str}} assignrubricpeso, theme_saec {{/str}}</th>
+                            <th>{{#str}} assignrubricnivel, theme_saec {{/str}}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#rubric.criteria}}
+                            <tr>
+                                <td class="saec-rubric-table__criterio">{{ criterio }}</td>
+                                <td><span class="saec-rubric-table__peso">{{ peso }}%</span></td>
+                                <td class="saec-rubric-table__nivel">{{ nivellogro }}</td>
+                            </tr>
+                        {{/rubric.criteria}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {{/rubric.hasrubric}}
+</div>

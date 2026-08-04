@@ -3,8 +3,11 @@
 
     Global UPTex/SAEC header/navigation bar. Structure:
       - Left: drawer toggle (opens/closes the theme_saec/nav-drawer sidebar
-        — visible at every breakpoint, desktop included, so every role can
-        collapse the rail) + UPTex brand/logo.
+        as an off-canvas panel — only rendered/visible below 992px; at
+        desktop widths post.scss's "PERSISTENT DESKTOP SIDEBAR" rules pin
+        the drawer open and hide this button with display:none, since a
+        primary nav that can be collapsed away reads as broken on desktop)
+        + UPTex brand/logo.
       - Center: empty flexible space (reserved for a future search box).
       - Right: language selector, native notification/messaging popovers
         (output.navbar_plugin_output) and native user menu (core/user_menu),
@@ -18,7 +21,13 @@
         "baseUrl": "https://example.org",
         "logourl": "https://example.org/theme/saec/pix/logo1.png",
         "sitename": "SAEC",
-        "langmenu": false,
+        "langmenu": {
+            "title": "Español - México (es_mx)",
+            "items": [
+                {"title": "English (en)", "text": "English (en)", "url": "#", "isactive": false},
+                {"title": "Español - México (es_mx)", "text": "Español - México (es_mx)", "url": "#", "isactive": true}
+            ]
+        },
         "isloggedin": false,
         "loginurl": "https://example.org/login/index.php",
         "usermenu": false,

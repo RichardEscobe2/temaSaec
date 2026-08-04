@@ -2,6 +2,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/course/renderer.php');
+require_once($CFG->dirroot . '/badges/renderer.php');
 
 /**
  * theme_saec course renderer override.
@@ -206,5 +207,60 @@ class theme_saec_core_course_renderer extends core_course_renderer {
             }
         }
         return '';
+    }
+}
+
+/**
+ * theme_saec badges renderer override (Fase 12 — Institutional Credential
+ * Verification Portal, /badges/badge.php).
+ *
+ * Same theme_overridden_renderer_factory mechanism as
+ * theme_saec_core_course_renderer above: this legacy-named class,
+ * `theme_saec_core_badges_renderer extends core_badges_renderer`, transparently
+ * replaces the core renderer for every call to $PAGE->get_renderer('core',
+ * 'badges') — used by both badges/badge.php (public verification) and the
+ * badge-class preview — with zero core file changes.
+ *
+ * Only render_issued_badge() is overridden, and only to ADD fields
+ * (verifyurl, hasexpiry, linkedinurl) to the same context
+ * issued_badge::export_for_template() already builds; every existing field is
+ * passed through untouched to templates/core_badges/issued_badge.mustache
+ * (this theme's override of that template).
+ */
+class theme_saec_core_badges_renderer extends core_badges_renderer {
+
+    /**
+     * @param \core_badges\output\issued_badge $ibadge
+     * @return string
+     */
+    protected function render_issued_badge(\core_badges\output\issued_badge $ibadge) {
+        $data = $ibadge->export_for_template($this);
+
+        $verifyurl = (new moodle_url('/badges/badge.php', ['hash' => $ibadge->hash]))->out(false);
+        $data->verifyurl = $verifyurl;
+        $data->hasexpiry = !empty($data->expiredate) || !empty($data->expireddate);
+
+        // LinkedIn's "Add to Profile" only makes sense for the badge's own
+        // recipient — downloadurl is already gated on that same condition
+        // by issued_badge::export_for_template(), so reusing its presence
+        // avoids re-deriving the $USER->id == recipient->id check here.
+        if (!empty($data->downloadurl)) {
+            $linkedinparams = [
+                'startTask' => 'CERTIFICATION_NAME',
+                'name' => $data->badgename,
+                'organizationName' => $data->issuedby,
+                'issueYear' => (int) date('Y', $data->badgeissuedon),
+                'issueMonth' => (int) date('n', $data->badgeissuedon),
+                'certUrl' => $verifyurl,
+                'certId' => $ibadge->hash,
+            ];
+            if (!empty($data->expiredate)) {
+                $linkedinparams['expirationYear'] = (int) date('Y', $data->expiredate);
+                $linkedinparams['expirationMonth'] = (int) date('n', $data->expiredate);
+            }
+            $data->linkedinurl = (new moodle_url('https://www.linkedin.com/profile/add', $linkedinparams))->out(false);
+        }
+
+        return $this->render_from_template('core_badges/issued_badge', $data);
     }
 }

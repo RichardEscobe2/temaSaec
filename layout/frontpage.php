@@ -21,6 +21,15 @@ $bodyattributes = $OUTPUT->body_attributes();
 $isloggedin = isloggedin() && !isguestuser();
 $loginurl = (new moodle_url('/login/index.php'))->out(false);
 
+// 1c. MENÚ DE IDIOMA (navbar): ver la nota equivalente en layout/drawers.php
+// — $OUTPUT->lang_menu() da HTML pre-renderizado con la forma de
+// core/single_select, no el {title, items} que theme_boost/language_menu.mustache
+// espera (navbar.mustache incluye ese partial), así que el dropdown salía
+// vacío. \core\output\language_menu::export_for_template() da la forma
+// correcta directamente.
+$languagemenu = new \core\output\language_menu($PAGE);
+$langmenudata = $languagemenu->export_for_template($renderer);
+
 // 2. IMÁGENES DEL TEMA (pix/) — resueltas vía image_url para no romper si cambia la extensión.
 $logourl = $OUTPUT->image_url('logo1', 'theme_saec')->out(false);
 $logofooterurl = $OUTPUT->image_url('logo2', 'theme_saec')->out(false);
@@ -40,7 +49,7 @@ $templatecontext = [
     'usermenu' => $usermenudata,
     'isloggedin' => $isloggedin,
     'loginurl' => $loginurl,
-    'langmenu' => $OUTPUT->lang_menu(),
+    'langmenu' => $langmenudata,
     'baseUrl' => $CFG->wwwroot,
     'logourl' => $logourl,
     'logofooterurl' => $logofooterurl,

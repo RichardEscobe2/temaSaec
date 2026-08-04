@@ -1,0 +1,77 @@
+{{!
+    @template theme_saec/components/badge_detail_body
+
+    Detail-modal body content for a badge card (Fase 10-11) — pre-rendered
+    server-side inside a hidden [data-badge-modal-body] wrapper in
+    theme_saec/components/badge_catalog_card, then read via JS and passed
+    as core/modal's `body` config on click. The badge title itself becomes
+    the modal's `title` config instead of being repeated in here.
+    Context is identical to badge_catalog_card's — see its docblock.
+}}
+<div class="saec-badge-modal">
+    <div class="saec-badge-modal__media">
+        <img src="{{{ imageurl }}}" alt="">
+    </div>
+
+    {{#hasissued}}
+        {{#subtitle}}<p class="saec-badge-modal__subtitle">{{ subtitle }}</p>{{/subtitle}}
+        <span class="saec-badge-catalog-card__pill saec-badge-catalog-card__pill--granted">
+            {{#str}} badgestatusgranted, theme_saec {{/str}}
+        </span>
+        <p class="saec-badge-modal__date">{{ date }}</p>
+    {{/hasissued}}
+
+    {{#isinprogress}}
+        <span class="saec-badge-catalog-card__pill saec-badge-catalog-card__pill--inprogress">
+            {{#str}} badgestatusinprogress, theme_saec {{/str}}
+        </span>
+        <p class="saec-badge-modal__date">{{#str}} badgetargetcourse, theme_saec, {{targetcoursename}} {{/str}}</p>
+    {{/isinprogress}}
+
+    {{#hasissued}}
+        <div class="saec-badge-modal__meta">
+            {{#issuername}}
+                <div class="saec-badge-modal__meta-row">
+                    <span class="saec-badge-modal__meta-label">{{#str}} badgeissuedby, theme_saec {{/str}}</span>
+                    <span class="saec-badge-modal__meta-value">{{ issuername }}</span>
+                </div>
+            {{/issuername}}
+            {{#hasexpiry}}
+                <div class="saec-badge-modal__meta-row">
+                    <span class="saec-badge-modal__meta-value saec-badge-modal__meta-value--expiry">{{ expirydate }}</span>
+                </div>
+            {{/hasexpiry}}
+            <div class="saec-badge-modal__meta-row">
+                <span class="saec-badge-modal__meta-label">{{#str}} badgehashlabel, theme_saec {{/str}}</span>
+                <span class="saec-badge-modal__meta-value saec-badge-modal__hash">{{ uniquehash }}</span>
+            </div>
+            <div class="saec-badge-modal__meta-row">
+                <a href="{{{ verifyurl }}}" target="_blank" rel="noopener">{{#str}} badgeverify, theme_saec {{/str}}</a>
+            </div>
+        </div>
+    {{/hasissued}}
+
+    {{#description}}
+        <div class="saec-badge-modal__description">{{{ description }}}</div>
+    {{/description}}
+
+    {{#criteriahtml}}
+        <div class="saec-badge-modal__criteria">
+            <h4>{{#str}} badgecriteriaheading, theme_saec {{/str}}</h4>
+            {{{ criteriahtml }}}
+        </div>
+    {{/criteriahtml}}
+
+    <div class="saec-badge-modal__actions">
+        {{#hasissued}}
+            <a href="{{{ downloadurl }}}" class="btn btn-primary">{{#str}} downloadbadge, theme_saec {{/str}}</a>
+            <a href="{{{ linkedinurl }}}" target="_blank" rel="noopener" class="btn saec-btn-linkedin">
+                <i class="icon fa fa-linkedin-square" aria-hidden="true"></i>
+                {{#str}} addtolinkedin, theme_saec {{/str}}
+            </a>
+        {{/hasissued}}
+        {{#isinprogress}}
+            <a href="{{{ targetcourseurl }}}" class="btn btn-outline-primary">{{#str}} viewcoursecriteria, theme_saec {{/str}}</a>
+        {{/isinprogress}}
+    </div>
+</div>

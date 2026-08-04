@@ -1,0 +1,109 @@
+{{!
+    @template theme_saec/badges_page
+
+    "Mi Mochila de Insignias" page (/badges/mybadges.php) — replaces core's
+    badge management page output for students (hidden via
+    scss/custom.scss's `body.page-mybadges` rules; see the big comment in
+    templates/drawers.mustache on why that output still has to render at
+    all). Tabs are a plain client-side toggle over the two pre-rendered
+    lists below — no AJAX. Context comes from
+    \theme_saec\dashboard\badges_page::get_context(), injected by
+    layout/drawers.php. The Credly/external-backpack tab and connection
+    banner from the stitch_uptex mockup are intentionally out of scope here.
+
+    Example context (json):
+    {
+        "hasearned": true,
+        "earnedbadges": [
+            {
+                "badgeid": 4, "title": "Certificado de Regularización Universitaria",
+                "imageurl": "https://example.org/pluginfile.php/1/badges/badgeimage/4/f1",
+                "hasissued": true, "subtitle": "Educación Continua",
+                "date": "Emitido: 23 jun. 2026", "isinprogress": false, "targetcoursename": null
+            }
+        ],
+        "hasinprogress": false,
+        "inprogressbadges": []
+    }
+}}
+<div class="saec-badges-page" id="saec-badges-page-{{uniqid}}">
+    <div class="saec-badges-page__header">
+        <div>
+            <h1 class="saec-badges-page__title">{{#str}} mybadgespagetitle, theme_saec {{/str}}</h1>
+            <p class="saec-badges-page__subtitle">{{#str}} mybadgespagesubtitle, theme_saec {{/str}}</p>
+        </div>
+    </div>
+
+    <div class="saec-badges-page__tabs" role="tablist">
+        <button type="button" class="saec-badges-page__tab active" data-saec-badges-tab="all" role="tab" aria-selected="true">
+            {{#str}} tabbadgesall, theme_saec {{/str}}
+        </button>
+        <button type="button" class="saec-badges-page__tab" data-saec-badges-tab="inprogress" role="tab" aria-selected="false">
+            {{#str}} tabbadgesinprogress, theme_saec {{/str}}
+        </button>
+    </div>
+
+    <div class="saec-badges-page__panel" data-saec-badges-panel="all">
+        {{#hasearned}}
+            <div class="saec-badges-grid">
+                {{#earnedbadges}}
+                    {{> theme_saec/components/badge_catalog_card }}
+                {{/earnedbadges}}
+            </div>
+        {{/hasearned}}
+        {{^hasearned}}
+            <div class="uptex-dashboard-empty">{{#str}} nobadgesintab, theme_saec {{/str}}</div>
+        {{/hasearned}}
+    </div>
+
+    <div class="saec-badges-page__panel d-none" data-saec-badges-panel="inprogress">
+        {{#hasinprogress}}
+            <div class="saec-badges-grid">
+                {{#inprogressbadges}}
+                    {{> theme_saec/components/badge_catalog_card }}
+                {{/inprogressbadges}}
+            </div>
+        {{/hasinprogress}}
+        {{^hasinprogress}}
+            <div class="uptex-dashboard-empty">{{#str}} nobadgesintab, theme_saec {{/str}}</div>
+        {{/hasinprogress}}
+    </div>
+</div>
+{{#js}}
+require(['jquery', 'core/modal'], function($, Modal) {
+    var root = $('#saec-badges-page-{{uniqid}}');
+    var tabs = root.find('[data-saec-badges-tab]');
+    var panels = root.find('[data-saec-badges-panel]');
+
+    tabs.on('click', function() {
+        var target = $(this).attr('data-saec-badges-tab');
+        tabs.removeClass('active').attr('aria-selected', 'false');
+        $(this).addClass('active').attr('aria-selected', 'true');
+        panels.addClass('d-none');
+        root.find('[data-saec-badges-panel="' + target + '"]').removeClass('d-none');
+    });
+
+    var openBadgeModal = function(card) {
+        Modal.create({
+            title: card.attr('data-badge-title'),
+            body: card.find('[data-badge-modal-body]').html(),
+            large: true,
+            removeOnClose: true,
+            show: true
+        });
+    };
+
+    root.on('click', '[data-saec-badge-trigger]', function() {
+        openBadgeModal($(this));
+    });
+
+    // WAI-ARIA button pattern: the card carries role="button"/tabindex="0"
+    // (see badge_catalog_card.mustache), so Enter/Space must activate it too.
+    root.on('keydown', '[data-saec-badge-trigger]', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openBadgeModal($(this));
+        }
+    });
+});
+{{/js}}

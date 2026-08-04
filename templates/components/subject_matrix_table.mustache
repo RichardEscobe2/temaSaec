@@ -1,0 +1,62 @@
+{{!
+    @template theme_saec/components/subject_matrix_table
+
+    "Matriz de Materias" table for templates/analytics_page.mustache.
+    Context: the `subjects` array from \theme_saec\dashboard\analytics_page —
+    one row per enrolled+visible course.
+
+    Example context (json):
+    {
+        "subjects": [
+            {
+                "courseid": 3, "coursename": "Curso de Regularización Universitaria",
+                "coursecode": "REG101", "courseurl": "https://example.org/course/view.php?id=3",
+                "hasgrade": true, "grade": "9.8",
+                "hasprogress": true, "progresspercent": 100,
+                "hasbadgestatus": true, "badgestatus": "Obtenida", "badgestatusvariant": "granted"
+            }
+        ]
+    }
+}}
+<div class="table-responsive">
+    <table class="saec-subject-matrix">
+        <thead>
+            <tr>
+                <th>{{#str}} colsubject, theme_saec {{/str}}</th>
+                <th>{{#str}} colgrade, theme_saec {{/str}}</th>
+                <th>{{#str}} colactivities, theme_saec {{/str}}</th>
+                <th>{{#str}} colbadge, theme_saec {{/str}}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#subjects}}
+                <tr>
+                    <td>
+                        <a href="{{{ courseurl }}}" class="saec-subject-matrix__course">{{ coursename }}</a>
+                        <span class="saec-subject-matrix__code">{{ coursecode }}</span>
+                    </td>
+                    <td>
+                        {{#hasgrade}}<span class="saec-subject-matrix__grade">{{ grade }}</span>{{/hasgrade}}
+                        {{^hasgrade}}<span class="text-muted">—</span>{{/hasgrade}}
+                    </td>
+                    <td>
+                        {{#hasprogress}}
+                            <div class="progress saec-subject-matrix__progress">
+                                <div class="progress-bar" role="progressbar" style="width: {{ progresspercent }}%"
+                                     aria-valuenow="{{ progresspercent }}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <span class="saec-subject-matrix__progress-label">{{ progresspercent }}%</span>
+                        {{/hasprogress}}
+                        {{^hasprogress}}<span class="text-muted">—</span>{{/hasprogress}}
+                    </td>
+                    <td>
+                        {{#hasbadgestatus}}
+                            <span class="saec-subject-matrix__pill saec-subject-matrix__pill--{{ badgestatusvariant }}">{{ badgestatus }}</span>
+                        {{/hasbadgestatus}}
+                        {{^hasbadgestatus}}<span class="text-muted">—</span>{{/hasbadgestatus}}
+                    </td>
+                </tr>
+            {{/subjects}}
+        </tbody>
+    </table>
+</div>

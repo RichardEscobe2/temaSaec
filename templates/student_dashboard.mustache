@@ -1,0 +1,159 @@
+{{!
+    @template theme_saec/student_dashboard
+
+    Student Dashboard (/my/) main content — replaces core's block-based
+    my_index content for logged-in users whom
+    \theme_saec\dashboard\student_dashboard::is_student() identifies as
+    students. Rendered into layout/drawers.php's page-content region (see
+    templates/drawers.mustache, showstudentdashboard branch).
+
+    NOTE: never write two closing braces in a row inside a Mustache comment
+    (not even as part of a quoted tag name) — the comment ends at the first
+    occurrence, causing a premature close and literal text leaking to the DOM.
+
+    Structural parity target: stitch_uptex/mi_panel_de_alumno_actualizado.
+    Every value is bound to the context array returned by
+    \theme_saec\dashboard\student_dashboard::get_dashboard_context() (plus
+    mycoursesurl/calendarurl, added by layout/drawers.php) — no hardcoded
+    text or example numbers.
+
+    Example context (json):
+    {
+        "firstname": "Alex",
+        "avatarurl": "https://example.org/pluginfile.php/1/user/icon/f1.jpg",
+        "greeting": "Bienvenido de nuevo, Alex",
+        "haspending": true,
+        "pendingmessage": "Tienes 3 entregas pendientes para esta semana.",
+        "mycoursesurl": "https://example.org/my/courses.php",
+        "calendarurl": "https://example.org/calendar/view.php",
+        "hascourses": true,
+        "courses": [
+            {
+                "id": 12, "fullname": "Ingeniería de Software II",
+                "courseurl": "https://example.org/course/view.php?id=12",
+                "hascourseimage": false, "courseimage": null,
+                "hascompletiondata": true, "progresspercent": 85,
+                "progresslabel": "12 de 14 módulos"
+            }
+        ],
+        "kpis": [
+            {
+                "icon": "<i class=\"icon fa fa-table\" aria-hidden=\"true\"></i>",
+                "iconvariant": "primary", "label": "Promedio General", "value": "9.4",
+                "hasvaluesuffix": true, "valuesuffix": "/ 10", "hasfootnote": false
+            }
+        ],
+        "hasdeadlines": true,
+        "deadlines": [
+            {
+                "title": "Proyecto Final: Fase 1", "coursename": "Sistemas Operativos",
+                "daytag": "HOY", "daynumber": 24, "isurgent": true,
+                "hasclosingnote": true, "closingnote": "Cierra en 4 horas"
+            }
+        ],
+        "hasbadges": true,
+        "canexport": true,
+        "badges": [
+            {
+                "title": "Advanced Python Programming",
+                "imageurl": "https://example.org/pluginfile.php/1/badges/badgeimage/1/f1",
+                "isverified": true, "ispending": false, "date": "Emitido: Oct 24, 2023"
+            }
+        ]
+    }
+}}
+<div class="uptex-student-dashboard">
+    <div class="uptex-dashboard-hero">
+        <div class="uptex-dashboard-hero__avatar">
+            {{#avatarurl}}
+                <img src="{{{ avatarurl }}}" alt="">
+            {{/avatarurl}}
+        </div>
+        <div>
+            <h1 class="uptex-dashboard-hero__title">{{ greeting }}</h1>
+            <p class="uptex-dashboard-hero__subtitle {{#haspending}}uptex-dashboard-hero__subtitle--pending{{/haspending}}">
+                {{ pendingmessage }}
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 col-lg-8">
+            <section class="uptex-dashboard-section mb-4">
+                <div class="uptex-dashboard-section__header">
+                    <h2>{{#str}} coursesenrolledheading, theme_saec {{/str}}</h2>
+                    <a href="{{{ mycoursesurl }}}" class="uptex-dashboard-section__link">{{#str}} viewallcourses, theme_saec {{/str}}</a>
+                </div>
+                {{#hascourses}}
+                    <div class="row">
+                        {{#courses}}
+                            <div class="col-12 col-md-6 mb-4">
+                                {{> theme_saec/components/course_progress_card }}
+                            </div>
+                        {{/courses}}
+                    </div>
+                {{/hascourses}}
+                {{^hascourses}}
+                    <div class="uptex-dashboard-empty">{{#str}} nocoursesenrolled, theme_saec {{/str}}</div>
+                {{/hascourses}}
+            </section>
+        </div>
+
+        <div class="col-12 col-lg-4">
+            <section class="uptex-dashboard-section uptex-dashboard-section--sidebar mb-4">
+                <div class="uptex-dashboard-section__header">
+                    <h2>{{#str}} upcomingdeadlinesheading, theme_saec {{/str}}</h2>
+                </div>
+                {{#hasdeadlines}}
+                    <div class="uptex-deadline-list">
+                        {{#deadlines}}
+                            {{> theme_saec/components/deadline_item }}
+                        {{/deadlines}}
+                    </div>
+                {{/hasdeadlines}}
+                {{^hasdeadlines}}
+                    <div class="uptex-dashboard-empty">{{#str}} nodeadlines, theme_saec {{/str}}</div>
+                {{/hasdeadlines}}
+                <a href="{{{ calendarurl }}}" class="btn btn-outline-primary btn-block mt-3">{{#str}} opencalendar, theme_saec {{/str}}</a>
+            </section>
+
+            <section class="uptex-dashboard-section uptex-dashboard-section--sidebar">
+                <div class="uptex-dashboard-section__header">
+                    <h2>{{#str}} mybackpackheading, theme_saec {{/str}}</h2>
+                    {{#canexport}}
+                        <span class="uptex-dashboard-section__hint">{{#str}} backpackexport, theme_saec {{/str}}</span>
+                    {{/canexport}}
+                </div>
+                {{#hasbadges}}
+                    <div class="uptex-badge-grid">
+                        {{#badges}}
+                            {{> theme_saec/components/credential_badge }}
+                        {{/badges}}
+                    </div>
+                {{/hasbadges}}
+                {{^hasbadges}}
+                    <div class="uptex-dashboard-empty">{{#str}} nobadgesyet, theme_saec {{/str}}</div>
+                {{/hasbadges}}
+                {{#canexport}}
+                    <button type="button" class="btn btn-secondary btn-block mt-3" disabled
+                            title="{{#str}} backpackexportcredly, theme_saec {{/str}}">
+                        {{#str}} backpackexportcredly, theme_saec {{/str}}
+                    </button>
+                {{/canexport}}
+            </section>
+        </div>
+    </div>
+
+    <section class="uptex-dashboard-section mt-4">
+        <div class="uptex-dashboard-section__header">
+            <h2>{{#str}} academicsummaryheading, theme_saec {{/str}}</h2>
+        </div>
+        <div class="row">
+            {{#kpis}}
+                <div class="col-12 col-md-3 mb-4 mb-md-0">
+                    {{> theme_saec/components/metric_card }}
+                </div>
+            {{/kpis}}
+        </div>
+    </section>
+</div>

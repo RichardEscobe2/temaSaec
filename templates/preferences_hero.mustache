@@ -1,0 +1,31 @@
+{{!
+    @template theme_saec/preferences_hero
+
+    Header + profile hero for the "Configuración de Cuenta" portal
+    (/user/preferences.php — Fase 16). Injected above the native category
+    grid (restyled into tabs via templates/core/preferences_groups.mustache)
+    by layout/drawers.php — this partial only carries the page title/subtitle
+    and the user's own real identity (avatar, name, email, role); it does
+    not touch the native preferences links/data at all.
+
+    Example context (json):
+    {
+        "avatarurl": "https://example.org/pluginfile.php/1/user/icon/f1.jpg",
+        "fullname": "Juan Perez",
+        "email": "juan.perez@example.org",
+        "rolelabel": "Alumno"
+    }
+}}
+<div class="saec-settings-page__header">
+    <h1 class="saec-settings-page__title">{{#str}} settingspagetitle, theme_saec {{/str}}</h1>
+    <p class="saec-settings-page__subtitle">{{#str}} settingspagesubtitle, theme_saec {{/str}}</p>
+</div>
+
+<div class="saec-settings-hero">
+    <img src="{{{ avatarurl }}}" alt="" class="saec-settings-hero__avatar">
+    <div class="saec-settings-hero__body">
+        <p class="saec-settings-hero__name">{{ fullname }}</p>
+        <p class="saec-settings-hero__email">{{ email }}</p>
+    </div>
+    <span class="saec-settings-hero__role">{{ rolelabel }}</span>
+</div>

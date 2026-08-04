@@ -1,0 +1,27 @@
+{{!
+    @template theme_saec/components/timeline_item
+
+    One "Línea de Actividad" entry for templates/analytics_page.mustache.
+    Context: one item from \theme_saec\dashboard\analytics_page's `timeline`
+    array — real grade/feedback/submission data, never fabricated.
+
+    Example context (json):
+    {
+        "type": "feedback", "isfeedback": true,
+        "date": "22 oct, 10:00", "title": "Feedback de Profesor",
+        "detail": "Excelente análisis en el caso práctico de arquitectura."
+    }
+}}
+<div class="saec-timeline__item saec-timeline__item--{{ type }}">
+    <span class="saec-timeline__dot" aria-hidden="true"></span>
+    <div class="saec-timeline__body">
+        <span class="saec-timeline__date">{{ date }}</span>
+        <p class="saec-timeline__title">{{ title }}</p>
+        {{#isfeedback}}
+            <p class="saec-timeline__detail saec-timeline__detail--quote">&ldquo;{{ detail }}&rdquo;</p>
+        {{/isfeedback}}
+        {{^isfeedback}}
+            <p class="saec-timeline__detail">{{ detail }}</p>
+        {{/isfeedback}}
+    </div>
+</div>

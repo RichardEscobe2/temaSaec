@@ -1,0 +1,57 @@
+{{!
+    @template theme_saec/components/course_progress_card
+
+    Enrolled-course tile for the Student Dashboard (/my/) "Mis Cursos
+    Inscritos" section — image with a dark gradient overlay + title-on-image
+    (.uptex-course-showcase-card, scss/custom.scss section 3), a completion
+    progress bar (native Bootstrap .progress, themed in custom.scss section
+    2) and a "Continuar" CTA. Context comes from
+    \theme_saec\dashboard\student_dashboard::get_student_courses_progress().
+
+    hascompletiondata is false when the course has completion tracking
+    disabled or no trackable activities — the progress row is omitted
+    entirely rather than showing a fake 0%.
+
+    Example context (json):
+    {
+        "id": 12,
+        "fullname": "Ingeniería de Software II",
+        "courseurl": "https://example.org/course/view.php?id=12",
+        "hascourseimage": true,
+        "courseimage": "https://example.org/pluginfile.php/1/course/overviewfiles/f1.jpg",
+        "hascompletiondata": true,
+        "progresspercent": 85,
+        "progresslabel": "12 de 14 módulos",
+        "completedmodules": 12,
+        "totalmodules": 14
+    }
+}}
+<div class="uptex-course-showcase-card">
+    <div class="uptex-course-showcase-card__media">
+        {{#hascourseimage}}
+            <img src="{{{ courseimage }}}" alt="" loading="lazy">
+        {{/hascourseimage}}
+        {{^hascourseimage}}
+            <div class="saec-card-img__placeholder">{{#str}} placeholderinitial, theme_saec {{/str}}</div>
+        {{/hascourseimage}}
+        <div class="uptex-course-showcase-card__media-overlay"></div>
+        <span class="uptex-course-showcase-card__media-title">{{ fullname }}</span>
+    </div>
+    <div class="uptex-course-showcase-card__body">
+        {{#hascompletiondata}}
+            <div>
+                <div class="uptex-course-showcase-card__progress">
+                    <span>{{#str}} courseprogresslabelheading, theme_saec {{/str}}</span>
+                    <strong>{{ progresslabel }}</strong>
+                </div>
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" style="width: {{ progresspercent }}%"
+                         aria-valuenow="{{ progresspercent }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+        {{/hascompletiondata}}
+        <div class="uptex-course-showcase-card__footer">
+            <a href="{{{ courseurl }}}" class="btn btn-primary btn-block">{{#str}} continuecourse, theme_saec {{/str}}</a>
+        </div>
+    </div>
+</div>

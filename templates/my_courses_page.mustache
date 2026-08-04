@@ -1,0 +1,127 @@
+{{!
+    @template theme_saec/my_courses_page
+
+    "Mis Cursos y Microcredenciales" page (/my/courses.php) — replaces
+    block_myoverview's rendered output for students (hidden via
+    scss/custom.scss's `body.page-mycourses .block-myoverview` rule; see the
+    big comment in templates/drawers.mustache on why that block's markup
+    still has to render at all). Tabs and search are plain client-side
+    toggles over the three pre-rendered lists below — no AJAX, no
+    block_myoverview dependency. Context comes from
+    \theme_saec\dashboard\courses_page::get_context(), injected by
+    layout/drawers.php.
+
+    Example context (json):
+    {
+        "hasinprogress": true,
+        "inprogresscourses": [
+            {
+                "id": 12, "fullname": "Fundamentos de Robótica Industrial",
+                "hascourseimage": false, "courseimage": null,
+                "categoryname": "Ingeniería",
+                "courseurl": "https://example.org/course/view.php?id=12",
+                "hasprogressbar": true, "progresspercent": 65,
+                "progresslabel": "13 de 20 módulos",
+                "showcontinuebutton": true, "showcompletedbuttons": false, "showenrolbutton": false,
+                "badgeurl": "https://example.org/badges/mybadges.php"
+            }
+        ],
+        "hascompleted": false,
+        "completedcourses": [],
+        "hasavailable": false,
+        "availablecourses": []
+    }
+}}
+<div class="saec-courses-page" id="saec-courses-page-{{uniqid}}">
+    <div class="saec-courses-page__header">
+        <div>
+            <h1 class="saec-courses-page__title">{{#str}} mycoursespagetitle, theme_saec {{/str}}</h1>
+            <p class="saec-courses-page__subtitle">{{#str}} mycoursespagesubtitle, theme_saec {{/str}}</p>
+        </div>
+        <div class="saec-courses-page__search">
+            <span class="saec-courses-page__search-icon" aria-hidden="true">
+                <i class="icon fa fa-search"></i>
+            </span>
+            <label class="sr-only" for="saec-courses-search-{{uniqid}}">{{#str}} mycoursessearchplaceholder, theme_saec {{/str}}</label>
+            <input type="search" id="saec-courses-search-{{uniqid}}" class="saec-courses-page__search-input"
+                   placeholder="{{#str}} mycoursessearchplaceholder, theme_saec {{/str}}"
+                   data-saec-courses-search>
+        </div>
+    </div>
+
+    <div class="saec-courses-page__tabs" role="tablist">
+        <button type="button" class="saec-courses-page__tab active" data-saec-tab="inprogress" role="tab" aria-selected="true">
+            {{#str}} tabinprogress, theme_saec {{/str}}
+        </button>
+        <button type="button" class="saec-courses-page__tab" data-saec-tab="completed" role="tab" aria-selected="false">
+            {{#str}} tabcompleted, theme_saec {{/str}}
+        </button>
+        <button type="button" class="saec-courses-page__tab" data-saec-tab="available" role="tab" aria-selected="false">
+            {{#str}} tabavailable, theme_saec {{/str}}
+        </button>
+    </div>
+
+    <div class="saec-courses-page__panel" data-saec-panel="inprogress">
+        {{#hasinprogress}}
+            <div class="saec-courses-grid">
+                {{#inprogresscourses}}
+                    {{> theme_saec/components/course_catalog_card }}
+                {{/inprogresscourses}}
+            </div>
+        {{/hasinprogress}}
+        {{^hasinprogress}}
+            <div class="uptex-dashboard-empty">{{#str}} nocoursesintab, theme_saec {{/str}}</div>
+        {{/hasinprogress}}
+    </div>
+
+    <div class="saec-courses-page__panel d-none" data-saec-panel="completed">
+        {{#hascompleted}}
+            <div class="saec-courses-grid">
+                {{#completedcourses}}
+                    {{> theme_saec/components/course_catalog_card }}
+                {{/completedcourses}}
+            </div>
+        {{/hascompleted}}
+        {{^hascompleted}}
+            <div class="uptex-dashboard-empty">{{#str}} nocoursesintab, theme_saec {{/str}}</div>
+        {{/hascompleted}}
+    </div>
+
+    <div class="saec-courses-page__panel d-none" data-saec-panel="available">
+        {{#hasavailable}}
+            <div class="saec-courses-grid">
+                {{#availablecourses}}
+                    {{> theme_saec/components/course_catalog_card }}
+                {{/availablecourses}}
+            </div>
+        {{/hasavailable}}
+        {{^hasavailable}}
+            <div class="uptex-dashboard-empty">{{#str}} nocoursesintab, theme_saec {{/str}}</div>
+        {{/hasavailable}}
+    </div>
+</div>
+{{#js}}
+require(['jquery'], function($) {
+    var root = $('#saec-courses-page-{{uniqid}}');
+    var tabs = root.find('[data-saec-tab]');
+    var panels = root.find('[data-saec-panel]');
+    var search = root.find('[data-saec-courses-search]');
+
+    tabs.on('click', function() {
+        var target = $(this).attr('data-saec-tab');
+        tabs.removeClass('active').attr('aria-selected', 'false');
+        $(this).addClass('active').attr('aria-selected', 'true');
+        panels.addClass('d-none');
+        root.find('[data-saec-panel="' + target + '"]').removeClass('d-none');
+        search.val('').trigger('input');
+    });
+
+    search.on('input', function() {
+        var query = $(this).val().toLowerCase();
+        root.find('[data-saec-panel]:not(.d-none) .saec-course-catalog-card').each(function() {
+            var name = ($(this).attr('data-course-name') || '').toLowerCase();
+            $(this).toggle(name.indexOf(query) !== -1);
+        });
+    });
+});
+{{/js}}

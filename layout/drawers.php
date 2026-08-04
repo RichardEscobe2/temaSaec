@@ -3,7 +3,32 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/behat/lib.php');
 
-global $USER, $DB, $CFG, $PAGE, $OUTPUT, $SITE;
+use theme_saec\dashboard\analytics_page;
+use theme_saec\dashboard\badges_page;
+use theme_saec\dashboard\courses_page;
+use theme_saec\dashboard\student_dashboard;
+
+// NOTA CRÍTICA (Fase 18 — bug de "doctype() no llamado" en mod_assign):
+// $PAGE y $OUTPUT NO se globalizan aquí a propósito. core_renderer::
+// render_page_layout() (lib/outputrenderers.php) hace `include($layoutfile)`
+// DESDE DENTRO de un método de instancia, y justo antes define variables
+// LOCALES `$OUTPUT = $this;` / `$PAGE = $this->page;` / `$COURSE = ...` —
+// con su propio comentario explícito: "this object may, or may not, be the
+// same as the global $OUTPUT object". Casi siempre SÍ coinciden (por eso
+// nunca se notó), pero cuando un renderer llama a $this->output->header()
+// sobre una instancia de core_renderer DISTINTA a la global (el patrón
+// exacto de mod_assign\output\renderer::render_assign_header(), que llama
+// $this->output->header() en vez de que view.php llame $OUTPUT->header()
+// directamente), declarar `global $OUTPUT;` aquí SOBRESCRIBE esa variable
+// local con el $OUTPUT global equivocado — todo lo que este layout renderiza
+// (incluido el <!DOCTYPE html> vía {{> theme_boost/head}}) termina en el
+// objeto renderer INCORRECTO, y la instancia real nunca marca su
+// contenttype, disparando el "The page layout file did not call
+// $OUTPUT->doctype()" de core_renderer::header(). Usar las variables
+// LOCALES que render_page_layout() ya deja listas es exactamente lo que
+// pide el comentario de core ("people writing Moodle code expect the
+// current renderer to be called $OUTPUT... so define a variable...").
+global $USER, $DB, $CFG, $SITE;
 
 // 1. DETECCIÓN DE ROLES SAEC
 $is_admin = is_siteadmin($USER);
@@ -35,11 +60,205 @@ if (isloggedin() && !isguestuser() && $PAGE->pagelayout === 'mydashboard') {
     ];
 }
 
+// 1c. PANEL DEL ALUMNO (/my/, Fase 2): construye el contexto completo de
+// \theme_saec\dashboard\student_dashboard (Fase 1) y pre-renderiza
+// theme_saec/student_dashboard sólo cuando el usuario logueado es Alumno.
+// student_dashboard::get_dashboard_context() ya hace su propia
+// comprobación de rol y devuelve null para Docente/Administrador, así que
+// esos roles siguen viendo el contenido nativo de /my/ (bloques) sin
+// cambios — ver el condicional showstudentdashboard en drawers.mustache.
+$studentdashboardhtml = null;
+if (isloggedin() && !isguestuser() && $PAGE->pagelayout === 'mydashboard') {
+    $studentdashboardcontext = student_dashboard::get_dashboard_context();
+    if ($studentdashboardcontext !== null) {
+        $studentdashboardcontext['mycoursesurl'] = (new moodle_url('/my/courses.php'))->out(false);
+        $studentdashboardcontext['calendarurl'] = (new moodle_url('/calendar/view.php'))->out(false);
+        $studentdashboardhtml = $OUTPUT->render_from_template('theme_saec/student_dashboard', $studentdashboardcontext);
+
+        // my/index.php already ran by this point and populated $PAGE->button
+        // with its native "Customise this page" control (moodle/my:manageblocks
+        // — on by default for every logged-in user, editing the block region
+        // student_dashboard.mustache replaces entirely). Clear it before
+        // full_header() reads $PAGE->button below, rather than hiding it with
+        // CSS: there is no block region left for a student to customise here,
+        // so the control has nothing to do and shouldn't exist in the DOM.
+        $PAGE->set_button('');
+    }
+}
+
+// 1d. PÁGINA "MIS CURSOS" (/my/courses.php, Fase 8): construye el contexto
+// de \theme_saec\dashboard\courses_page y pre-renderiza
+// theme_saec/my_courses_page sólo para Alumnos. block_myoverview sigue
+// renderizándose (my/courses.php es core — ver el comentario grande en
+// drawers.mustache sobre por qué su HTML no puede simplemente omitirse),
+// pero scss/custom.scss lo oculta en esta página específica
+// (body.page-mycourses .block-myoverview) y este catálogo lo sustituye
+// visualmente en el mismo slot.
+$coursespagehtml = null;
+if (isloggedin() && !isguestuser() && $PAGE->pagelayout === 'mycourses' && student_dashboard::is_student()) {
+    $coursespagecontext = courses_page::get_context();
+    $coursespagehtml = $OUTPUT->render_from_template('theme_saec/my_courses_page', $coursespagecontext);
+}
+
+// 1e. PÁGINA "MI MOCHILA DE INSIGNIAS" (/badges/mybadges.php, Fase 9):
+// construye el contexto de \theme_saec\dashboard\badges_page y
+// pre-renderiza theme_saec/badges_page sólo para Alumnos. El pagelayout de
+// esta página ('standard') lo comparten decenas de páginas ajenas, así que
+// se detecta por URL exacta en vez de por pagelayout. Moodle no añade una
+// clase de body específica para esta página (a diferencia de
+// 'page-mycourses', que my/courses.php sí agrega) y para cuando este layout
+// se ejecuta — dentro de core_renderer::header(), ver el "output has
+// already started" que dispara $PAGE->add_body_class() aquí — ya es
+// demasiado tarde para registrar una en $PAGE. En su lugar se añade
+// directamente al arreglo local $extraclasses de más abajo, que
+// $OUTPUT->body_attributes() sí acepta como clases extra independientes del
+// listado ya cerrado de $PAGE; así scss/custom.scss puede ocultar el
+// contenido nativo del renderer de insignias con ese alcance
+// (body.page-mybadges) sin afectar otras páginas bajo /badges/.
+$badgespagehtml = null;
+$ismybadgespage = ($PAGE->url->out_omit_querystring() === (new moodle_url('/badges/mybadges.php'))->out_omit_querystring());
+if ($ismybadgespage && isloggedin() && !isguestuser() && student_dashboard::is_student()) {
+    $badgespagecontext = badges_page::get_context();
+    $badgespagehtml = $OUTPUT->render_from_template('theme_saec/badges_page', $badgespagecontext);
+}
+
+// 1f. PORTAL DE VERIFICACIÓN DE CREDENCIALES (/badges/badge.php, Fase 12):
+// esta página es pública (verificadores externos sin sesión también la
+// visitan), así que a diferencia de badges_page.php arriba NO se reemplaza
+// su contenido — theme_saec_core_badges_renderer (renderers.php) ya
+// restyla el output nativo vía un override de plantilla/renderer. Sólo se
+// necesita una clase de body propia para ocultar el encabezado nativo
+// duplicado (#page-header) sin afectar otras páginas con pagelayout 'base'.
+$isbadgeverifypage = ($PAGE->url->out_omit_querystring() === (new moodle_url('/badges/badge.php'))->out_omit_querystring());
+
+// 1g. PÁGINA "MI RENDIMIENTO" (/grade/report/overview/index.php, Fase 13):
+// construye el contexto de \theme_saec\dashboard\analytics_page y
+// pre-renderiza theme_saec/analytics_page sólo para Alumnos. Igual que
+// badges_page.php: el reporte nativo de calificaciones sigue renderizándose
+// (es core), pero scss/custom.scss lo oculta en esta página específica
+// (body.page-analytics) y este panel lo sustituye visualmente en el mismo
+// slot.
+$analyticspagehtml = null;
+$isanalyticspage = ($PAGE->url->out_omit_querystring()
+    === (new moodle_url('/grade/report/overview/index.php'))->out_omit_querystring());
+if ($isanalyticspage && isloggedin() && !isguestuser() && student_dashboard::is_student()) {
+    $analyticspagecontext = analytics_page::get_context();
+    $analyticspagehtml = $OUTPUT->render_from_template('theme_saec/analytics_page', $analyticspagecontext);
+}
+
+// 1h. PORTAL DE CONFIGURACIÓN DE CUENTA (/user/preferences.php, Fase 16):
+// a diferencia de las páginas anteriores, ésta aplica a CUALQUIER usuario
+// logueado (alumno, docente o administrador), no sólo a Alumnos — por eso
+// no usa student_dashboard::is_student() como guarda. El grid nativo de
+// categorías (Cuenta del usuario / Blogs / Insignias) sigue viniendo 100%
+// de core_user::preferences_group() vía navigation_node — sólo su plantilla
+// (core/preferences_groups) se sobrescribe (ver
+// templates/core/preferences_groups.mustache) para convertirlo en pestañas;
+// aquí sólo se construye la cabecera/hero que se inyecta ENCIMA de ese
+// contenido nativo restilizado, igual que el resto de páginas de este tema.
+$settingspagehtml = null;
+$issettingspage = ($PAGE->url->out_omit_querystring() === (new moodle_url('/user/preferences.php'))->out_omit_querystring());
+if ($issettingspage && isloggedin() && !isguestuser()) {
+    $prefsrolelabel = $is_admin
+        ? get_string('roleadmin', 'theme_saec')
+        : ($is_teacher ? get_string('roleteacher', 'theme_saec') : get_string('rolestudent', 'theme_saec'));
+
+    $prefsuserpicture = new user_picture($USER);
+    $prefsuserpicture->size = 100;
+
+    $settingspagecontext = [
+        'avatarurl' => $prefsuserpicture->get_url($PAGE)->out(false),
+        'fullname' => fullname($USER),
+        'email' => $USER->email,
+        'rolelabel' => $prefsrolelabel,
+    ];
+    $settingspagehtml = $OUTPUT->render_from_template('theme_saec/preferences_hero', $settingspagecontext);
+}
+
+// 1i. VISTA DE CURSO — SaaS OVERLAY (/course/view.php, Fase 17): a diferencia
+// de todas las páginas anteriores, aquí NO se oculta ni se restila vía
+// override de plantilla el contenido nativo de secciones/actividades —
+// theme_saec_core_course_renderer (renderers.php) ya existe para el
+// frontpage y no se toca aquí. Sólo se inyecta un hero + barra de pestañas
+// ENCIMA, y un sidebar A UN LADO (ver el wrapper condicional en
+// drawers.mustache), dejando 100% intacto el HTML/JS de edición de curso,
+// drag-and-drop y togglers de finalización — course_view_page::get_context()
+// ya se auto-desactiva (null) si $PAGE->user_is_editing() o si el usuario no
+// es Alumno, así que un profesor editando ve el curso nativo sin ninguna
+// interferencia de este tema.
+$courseviewheaderhtml = null;
+$courseviewsidebarhtml = null;
+$iscourseviewpage = ($PAGE->url->out_omit_querystring() === (new moodle_url('/course/view.php'))->out_omit_querystring());
+// NOTA: nunca uses empty()/!empty() sobre $PAGE->course. moodle_page define
+// __get() (carga perezosa de course/cm/category/etc.) pero NO __isset() —
+// sin __isset(), PHP trata CUALQUIER propiedad mágica como "no existente"
+// para empty()/isset(), sin importar lo que __get() devolvería realmente
+// (confirmado con un caso mínimo fuera de Moodle). $PAGE->course nunca es
+// null (cae a $SITE si nunca se llamó set_course()), así que comparar su id
+// directamente es both correcto y evita esta trampa por completo.
+if ($iscourseviewpage && $PAGE->course->id != SITEID) {
+    $courseviewcontext = \theme_saec\dashboard\course_view_page::get_context($PAGE->course->id);
+    if ($courseviewcontext !== null) {
+        $courseviewheaderhtml = $OUTPUT->render_from_template('theme_saec/components/course_view_header', $courseviewcontext);
+        $courseviewsidebarhtml = $OUTPUT->render_from_template('theme_saec/components/course_view_sidebar', $courseviewcontext['sidebar']);
+        // Hover/focus prefetch for the hero tab bar (Participantes/
+        // Calificaciones/Competencias) — those are real navigations to
+        // separate core pages, so this only shaves perceived latency on
+        // click, it doesn't avoid the navigation itself.
+        $PAGE->requires->js(new moodle_url('/theme/saec/javascript/course_tab_prefetch.js'), true);
+    }
+}
+
+// 1j. VISTA DE TAREA — SaaS OVERLAY (/mod/assign/view.php, Fase 21): mismo
+// principio que 1i — el formulario de envío nativo (filemanager, mform,
+// botones Guardar cambios/Cancelar) NUNCA se toca ni se restructura en el
+// DOM; sólo se inyecta un header de estado (píldora Pendiente/Entregado/
+// Calificado + fecha de vencimiento) y una columna izquierda de workspace
+// (Instrucciones — real o, si el docente no escribió ninguna, un aviso
+// honesto de "sin instrucciones" — + Rúbrica real si el método de
+// calificación activo es "rubric") que la rejilla CSS de drawers.mustache
+// coloca junto a output.main_content (columna derecha, 65/35). La rejilla
+// 65/35 es ahora INCONDICIONAL para toda vista de tarea de un alumno — ya
+// no existe un caso de "columna izquierda vacía" desde que
+// assign_view_page::get_workspace() siempre devuelve contenido real para
+// Instrucciones (Fase 21). assign_view_page::get_context() sigue
+// auto-desactivándose (null) si el usuario está editando o si tiene la
+// capacidad mod/assign:grade (profesores ven la página nativa de
+// calificación sin ninguna interferencia de este tema).
+$assignheaderhtml = null;
+$assignworkspacehtml = null;
+$isassignviewpage = ($PAGE->url->out_omit_querystring() === (new moodle_url('/mod/assign/view.php'))->out_omit_querystring());
+if ($isassignviewpage && $PAGE->cm && $PAGE->cm->modname === 'assign') {
+    $assignviewcontext = \theme_saec\dashboard\assign_view_page::get_context($PAGE->cm->id);
+    if ($assignviewcontext !== null) {
+        $assignheaderhtml = $OUTPUT->render_from_template('theme_saec/components/assign_header', $assignviewcontext['header']);
+        $assignworkspacehtml = $OUTPUT->render_from_template('theme_saec/components/assign_workspace', $assignviewcontext['workspace']);
+    }
+}
+
 // 2. CONFIGURACIÓN DE NAVEGACIÓN NATIVA DE MOODLE
 $addblockbutton = $OUTPUT->addblockbutton();
 $extraclasses = [];
 if ($PAGE->user_is_editing()) {
     $extraclasses[] = 'edithread';
+}
+if ($badgespagehtml !== null) {
+    $extraclasses[] = 'page-mybadges';
+}
+if ($isbadgeverifypage) {
+    $extraclasses[] = 'page-badge-verify';
+}
+if ($analyticspagehtml !== null) {
+    $extraclasses[] = 'page-analytics';
+}
+if ($settingspagehtml !== null) {
+    $extraclasses[] = 'page-settings';
+}
+if ($courseviewheaderhtml !== null) {
+    $extraclasses[] = 'saec-course-view-active';
+}
+if ($assignheaderhtml !== null) {
+    $extraclasses[] = 'saec-assign-view-active';
 }
 $bodyattributes = $OUTPUT->body_attributes($extraclasses);
 
@@ -213,6 +432,19 @@ $hashelp = !empty($CFG->supportpage);
 $helpurl = $hashelp ? $CFG->supportpage : null;
 $logouturl = (new moodle_url('/login/logout.php', ['sesskey' => sesskey()]))->out(false);
 
+// 3d. MENÚ DE IDIOMA (navbar): $OUTPUT->lang_menu() devuelve HTML ya
+// renderizado contra la plantilla core/single_select — no el {title, items}
+// que theme_boost/language_menu.mustache espera — así que navbar.mustache
+// ({{#langmenu}}{{> theme_boost/language_menu}}{{/langmenu}}) terminaba
+// renderizando ese partial con un contexto vacío (dropdown sin opciones).
+// \core\output\language_menu::export_for_template() da directamente la
+// forma correcta, y a diferencia de \core\navigation\output\primary (que
+// sólo expone su propio 'lang' para invitados/deslogueados) no depende del
+// estado de sesión — sólo de $CFG->langmenu + 2+ idiomas instalados — así
+// que el selector también aparece ya logueado, como pide este panel.
+$languagemenu = new \core\output\language_menu($PAGE);
+$langmenudata = $languagemenu->export_for_template($renderer);
+
 // 4. CONTEXTO COMPLETO PARA MUSTACHE
 $templatecontext = [
     'sitename' => format_string($SITE->fullname),
@@ -225,7 +457,7 @@ $templatecontext = [
     'secondarymoremenu' => $secondaryinitial,
     'mobileprimarynav' => $primarymoremenu,
     'usermenu' => $usermenudata, // Pasa los datos que la plantilla core/user_menu necesita
-    'langmenu' => $OUTPUT->lang_menu(),
+    'langmenu' => $langmenudata,
     'regionmainsettingsmenu' => $regionmainsettingsmenu,
     'hasregionmainsettingsmenu' => !empty($regionmainsettingsmenu),
     'headercontent' => $headercontent,
@@ -239,6 +471,22 @@ $templatecontext = [
     'studentName' => fullname($USER),
     'firstName' => $isloggedin ? $USER->firstname : '',
     'dashboardkpi' => $dashboardkpi,
+    'showstudentdashboard' => ($studentdashboardhtml !== null),
+    'studentdashboardhtml' => $studentdashboardhtml,
+    'showcoursespage' => ($coursespagehtml !== null),
+    'coursespagehtml' => $coursespagehtml,
+    'showbadgespage' => ($badgespagehtml !== null),
+    'badgespagehtml' => $badgespagehtml,
+    'showanalyticspage' => ($analyticspagehtml !== null),
+    'analyticspagehtml' => $analyticspagehtml,
+    'showsettingspage' => ($settingspagehtml !== null),
+    'settingspagehtml' => $settingspagehtml,
+    'showcourseviewpage' => ($courseviewheaderhtml !== null),
+    'courseviewheaderhtml' => $courseviewheaderhtml,
+    'courseviewsidebarhtml' => $courseviewsidebarhtml,
+    'showassignviewpage' => ($assignheaderhtml !== null),
+    'assignheaderhtml' => $assignheaderhtml,
+    'assignworkspacehtml' => $assignworkspacehtml,
     'baseUrl' => $CFG->wwwroot,
     'isDashboard' => ($PAGE->pagelayout === 'mydashboard'),
     'isFrontpage' => ($PAGE->pagelayout === 'frontpage'),

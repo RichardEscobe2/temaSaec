@@ -1,0 +1,42 @@
+{{!
+    @template theme_saec/components/deadline_item
+
+    Single tile in the Student Dashboard "Próximas Entregas" list
+    (.uptex-deadline-item, scss/custom.scss section 9). Intended to be
+    looped by a caller inside a .uptex-deadline-list wrapper. Context comes
+    from \theme_saec\dashboard\student_dashboard::get_student_upcoming_deadlines().
+
+    isurgent/hasclosingnote are both true only for events due today; the
+    caller (student_dashboard.mustache) is responsible for its own
+    hasdeadlines empty-state fallback.
+
+    Example context (json):
+    {
+        "title": "Proyecto Final: Fase 1",
+        "coursename": "Sistemas Operativos",
+        "daytag": "HOY",
+        "daynumber": 24,
+        "time": "11:59 PM",
+        "isurgent": true,
+        "hasclosingnote": true,
+        "closingnote": "Cierra en 4 horas"
+    }
+}}
+<div class="uptex-deadline-item {{#isurgent}}uptex-deadline-item--urgent{{/isurgent}}">
+    <div class="uptex-deadline-item__daybox">
+        <span class="uptex-deadline-item__daytag">{{ daytag }}</span>
+        <span class="uptex-deadline-item__daynumber">{{ daynumber }}</span>
+    </div>
+    <div class="uptex-deadline-item__body">
+        <h3 class="uptex-deadline-item__title">{{ title }}</h3>
+        <p class="uptex-deadline-item__course">{{ coursename }}</p>
+        <div class="uptex-deadline-item__time">
+            {{#hasclosingnote}}
+                <span class="uptex-deadline-item__urgent-note">{{ closingnote }}</span>
+            {{/hasclosingnote}}
+            {{^hasclosingnote}}
+                <span>{{ time }}</span>
+            {{/hasclosingnote}}
+        </div>
+    </div>
+</div>

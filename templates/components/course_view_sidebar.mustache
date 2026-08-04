@@ -1,0 +1,75 @@
+{{!
+    @template theme_saec/components/course_view_sidebar
+
+    Right-column sidebar widgets for the "Course Inner View" SaaS overlay
+    (/course/view.php — Fase 17): next deadline, teacher announcements,
+    quick resource links, and a "resume last lesson" shortcut. Every item
+    is real course/user data from
+    \theme_saec\dashboard\course_view_page::get_context() — nothing
+    fabricated (no invented "Rubric"/"Base Code" resources).
+
+    Example context (json):
+    {
+        "nextdeadline": {"hasdeadline": true, "title": "Examen Parcial 1", "duedate": "30 jun 2026, 00:00", "daysleftnote": "3 días restantes", "isurgent": false, "url": "https://example.org/mod/quiz/view.php?id=5"},
+        "hasannouncements": true,
+        "announcements": [{"title": "Bienvenida", "snippet": "Iniciamos el ciclo...", "date": "1 jun 2026", "url": "https://example.org/mod/forum/discuss.php?d=1"}],
+        "quicklinks": [{"label": "Calificaciones", "iconhtml": "<i class=\"icon fa fa-table\"></i>", "url": "https://example.org/grade/report/user/index.php?id=3"}],
+        "resume": {"hasresume": true, "name": "Tarea Práctica de Regularización", "url": "https://example.org/mod/assign/view.php?id=4"}
+    }
+}}
+<div class="saec-course-sidebar">
+    <div class="saec-course-sidebar__widget">
+        <h3 class="saec-course-sidebar__heading">{{#str}} sidebarnextdeadline, theme_saec {{/str}}</h3>
+        {{#nextdeadline.hasdeadline}}
+            <div class="saec-deadline-widget {{#nextdeadline.isurgent}}saec-deadline-widget--urgent{{/nextdeadline.isurgent}}">
+                <p class="saec-deadline-widget__title">{{ nextdeadline.title }}</p>
+                <p class="saec-deadline-widget__date">{{ nextdeadline.duedate }} &middot; {{ nextdeadline.daysleftnote }}</p>
+                <a href="{{{ nextdeadline.url }}}" class="btn btn-primary btn-sm btn-block">{{#str}} viewdeadline, theme_saec {{/str}}</a>
+            </div>
+        {{/nextdeadline.hasdeadline}}
+        {{^nextdeadline.hasdeadline}}
+            <p class="uptex-dashboard-empty">{{#str}} nonextdeadline, theme_saec {{/str}}</p>
+        {{/nextdeadline.hasdeadline}}
+    </div>
+
+    <div class="saec-course-sidebar__widget">
+        <h3 class="saec-course-sidebar__heading">{{#str}} sidebarannouncements, theme_saec {{/str}}</h3>
+        {{#hasannouncements}}
+            {{#announcements}}
+                <a href="{{{ url }}}" class="saec-announcement-item">
+                    <p class="saec-announcement-item__title">{{ title }}</p>
+                    <p class="saec-announcement-item__snippet">{{ snippet }}</p>
+                    <span class="saec-announcement-item__date">{{ date }}</span>
+                </a>
+            {{/announcements}}
+        {{/hasannouncements}}
+        {{^hasannouncements}}
+            <p class="uptex-dashboard-empty">{{#str}} noannouncements, theme_saec {{/str}}</p>
+        {{/hasannouncements}}
+    </div>
+
+    <div class="saec-course-sidebar__widget">
+        <h3 class="saec-course-sidebar__heading">{{#str}} sidebarquicklinks, theme_saec {{/str}}</h3>
+        <div class="saec-quicklinks-grid">
+            {{#quicklinks}}
+                <a href="{{{ url }}}" class="saec-quicklinks-grid__item">
+                    {{{ iconhtml }}}
+                    <span>{{ label }}</span>
+                </a>
+            {{/quicklinks}}
+        </div>
+    </div>
+
+    <div class="saec-course-sidebar__widget">
+        <h3 class="saec-course-sidebar__heading">{{#str}} sidebarresume, theme_saec {{/str}}</h3>
+        {{#resume.hasresume}}
+            <a href="{{{ resume.url }}}" class="saec-resume-widget">
+                <span>{{ resume.name }}</span>
+                <i class="icon fa fa-play-circle" aria-hidden="true"></i>
+            </a>
+        {{/resume.hasresume}}
+        {{^resume.hasresume}}
+            <p class="uptex-dashboard-empty">{{#str}} noresume, theme_saec {{/str}}</p>
+        {{/resume.hasresume}}
+    </div>
+</div>

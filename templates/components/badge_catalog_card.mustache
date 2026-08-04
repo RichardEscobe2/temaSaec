@@ -1,0 +1,60 @@
+{{!
+    @template theme_saec/components/badge_catalog_card
+
+    "Mi Mochila de Insignias" (/badges/mybadges.php) catalog tile — badge
+    image in a rounded container, title, subtitle (category/issuer for
+    earned badges, target course for in-progress badges), a status pill,
+    and a date-or-target line. Context comes from
+    \theme_saec\dashboard\badges_page — exactly one of hasissued/isinprogress
+    is true per card, matching which tab (all/inprogress) it came from.
+
+    The whole card is a click/keyboard trigger (Fase 10) for a detail modal:
+    templates/badges_page.mustache's inline JS reads data-badge-title plus
+    the hidden [data-badge-modal-body] markup below (rendered from
+    theme_saec/components/badge_detail_body against the SAME context —
+    no separate data fetch) and feeds both straight into core/modal.
+
+    Example context (json):
+    {
+        "badgeid": 4,
+        "title": "Certificado de Regularización Universitaria",
+        "imageurl": "https://example.org/pluginfile.php/1/badges/badgeimage/4/f1",
+        "hasissued": true,
+        "subtitle": "Educación Continua",
+        "date": "Emitido: 23 jun. 2026",
+        "isinprogress": false,
+        "targetcoursename": null,
+        "targetcourseurl": null,
+        "description": "<p>Otorgada a estudiantes que completan el proceso de regularización.</p>",
+        "criteriahtml": "<div>Esta insignia se otorga cuando...</div>",
+        "downloadurl": "https://example.org/badges/mybadges.php?download=4&hash=abc&sesskey=xyz"
+    }
+}}
+<div class="saec-badge-catalog-card" tabindex="0" role="button" aria-haspopup="dialog"
+     data-saec-badge-trigger data-badge-title="{{ title }}">
+    <div class="saec-badge-catalog-card__media">
+        <img src="{{{ imageurl }}}" alt="" loading="lazy">
+    </div>
+    <div class="saec-badge-catalog-card__body">
+        <h3 class="saec-badge-catalog-card__title">{{ title }}</h3>
+
+        {{#hasissued}}
+            {{#subtitle}}<p class="saec-badge-catalog-card__subtitle">{{ subtitle }}</p>{{/subtitle}}
+            <span class="saec-badge-catalog-card__pill saec-badge-catalog-card__pill--granted">
+                {{#str}} badgestatusgranted, theme_saec {{/str}}
+            </span>
+            <p class="saec-badge-catalog-card__date">{{ date }}</p>
+        {{/hasissued}}
+
+        {{#isinprogress}}
+            <span class="saec-badge-catalog-card__pill saec-badge-catalog-card__pill--inprogress">
+                {{#str}} badgestatusinprogress, theme_saec {{/str}}
+            </span>
+            <p class="saec-badge-catalog-card__date">{{#str}} badgetargetcourse, theme_saec, {{targetcoursename}} {{/str}}</p>
+        {{/isinprogress}}
+    </div>
+
+    <div class="d-none" data-badge-modal-body>
+        {{> theme_saec/components/badge_detail_body }}
+    </div>
+</div>

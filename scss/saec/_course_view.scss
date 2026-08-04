@@ -1,0 +1,465 @@
+// theme_saec — scss/saec/_course_view.scss (Fase 17)
+// "Course Inner View" SaaS overlay (/course/view.php). Two halves:
+//
+// 1. Our OWN new components (hero, tabs, 2-col grid, sidebar widgets) —
+//    freely styled, no isolation concerns since the class names are unique
+//    to this theme.
+// 2. A CSS-only restyle of Moodle's NATIVE section/activity markup
+//    (.course-content, .course-section, .activity-item, completion
+//    buttons...) — every one of these rules is nested under
+//    `body.saec-course-view-active`, the class layout/drawers.php only adds
+//    when \theme_saec\dashboard\course_view_page::get_context() actually
+//    applies (a student, NOT $PAGE->user_is_editing(), viewing a real
+//    course). Teachers, admins, and anyone in edit mode see the untouched
+//    core Boost styling — and no other page on the site carries this class,
+//    so none of these rules can leak elsewhere. The DOM/JS itself
+//    (drag-drop, AJAX completion toggles, section collapse) is never
+//    touched — only paint (colour/spacing/radius/shadow).
+
+// ---------------------------------------------------------------------
+// SHARED — teacher role label (course hero + assign header instructor
+// blocks, see scss/saec/_assign.scss). Global, unscoped class so it works
+// unmodified in both partials.
+// ---------------------------------------------------------------------
+.saec-teacher-role-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: $uptex-text-muted;
+}
+
+// ---------------------------------------------------------------------
+// HERO BANNER
+// ---------------------------------------------------------------------
+.saec-course-hero {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1.5rem;
+    background-color: $uptex-surface;
+    border: 1px solid $uptex-border-color;
+    border-radius: $uptex-radius-lg;
+    box-shadow: $uptex-shadow-elevation;
+    padding: 1.75rem;
+    margin-bottom: 1.5rem;
+
+    &__main {
+        flex: 1 1 320px;
+        min-width: 0;
+    }
+
+    &__code {
+        display: inline-block;
+        background-color: $uptex-primary-light;
+        color: $uptex-primary;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 0.3rem 0.7rem;
+        border-radius: $uptex-radius-sm;
+        margin-bottom: 0.6rem;
+    }
+
+    &__title {
+        font-weight: 800;
+        margin-bottom: 0.85rem;
+        overflow-wrap: break-word;
+    }
+
+    &__instructor {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    &__instructor-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid $uptex-primary;
+    }
+
+    &__instructor-meta {
+        display: flex;
+        flex-direction: column;
+        margin-right: 0.5rem;
+    }
+
+    &__instructor-name {
+        font-weight: 600;
+        color: $uptex-text-dark;
+    }
+
+    &__stats {
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+        flex-shrink: 0;
+    }
+
+    &__stat {
+        min-width: 140px;
+    }
+
+    &__stat-label {
+        display: block;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        color: $uptex-text-muted;
+        margin-bottom: 0.4rem;
+    }
+
+    &__stat-bar {
+        height: 6px;
+        margin-bottom: 0.3rem;
+    }
+
+    &__stat-value {
+        font-weight: 700;
+        color: $uptex-text-dark;
+
+        &--grade {
+            font-size: 1.4rem;
+            color: $uptex-primary;
+
+            small {
+                font-size: 0.85rem;
+                font-weight: 400;
+                color: $uptex-text-muted;
+            }
+        }
+    }
+}
+
+// ---------------------------------------------------------------------
+// NATIVE SECONDARY NAV DUPLICATE (Fase 22) — Boost's own course secondary
+// navigation (drawers.mustache's {{#secondarymoremenu}} block, rendered via
+// core/moremenu, ABOVE #page-content on every 'course' pagelayout page)
+// carries the exact same Curso/Participantes/Calificaciones/Competencias
+// links as .saec-course-tabs below, since Moodle's course context nav
+// happens to expose the same four items. Once the hero+tabs overlay landed
+// (Fase 17), that made both bars real/visible at once — a genuine
+// duplicate, not just a visual coincidence. Hidden ONLY when the overlay
+// itself is active (body.saec-course-view-active — students, non-editing,
+// real course, exactly per course_view_page::get_context()); every OTHER
+// course-related page (Participantes, Calificaciones, teacher/edit views)
+// never gets that class, so its native secondary nav is untouched there —
+// it's the ONLY way to navigate on those pages.
+// ---------------------------------------------------------------------
+body.saec-course-view-active .secondary-navigation {
+    display: none;
+}
+
+// ---------------------------------------------------------------------
+// REDUNDANT PAGE HEADER + EMPTY SECTION-JUMP DROPDOWN (Fase 23) —
+// #page-header (output.full_header) repeats the course name as a plain H1
+// above .saec-course-hero, which already IS the course title display; on
+// this page its breadcrumb <ol> is genuinely empty (course view is the top
+// of its own navigational context — verified live, nothing lost by hiding
+// it) and it carries no edit/settings controls for a student. Likewise
+// .tertiary-navigation (drawers.mustache's {{#overflow}} block, core's
+// section-jump <select>) renders with no real destination here since the
+// hero+tabs overlay already covers course navigation. Both scoped to
+// body.saec-course-view-active only, same reasoning as .secondary-navigation
+// above — every other pagelayout (mod/assign, /my/, admin pages) keeps its
+// own real title/breadcrumb and any genuinely populated tertiary nav.
+// ---------------------------------------------------------------------
+body.saec-course-view-active {
+    #page-header,
+    .tertiary-navigation {
+        display: none;
+    }
+}
+
+// ---------------------------------------------------------------------
+// SUB-NAVIGATION — real links to Curso/Participantes/Calificaciones/
+// Competencias, styled as a tab bar (matches the pattern already used by
+// the Badges/My Courses/Settings pages this theme).
+// ---------------------------------------------------------------------
+.saec-course-tabs {
+    display: flex;
+    gap: 1.5rem;
+    border-bottom: 1px solid $uptex-border-color;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+
+    &__tab {
+        display: inline-block;
+        border-bottom: 2px solid transparent;
+        padding: 0.75rem 0.1rem;
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: $uptex-text-muted;
+        text-decoration: none;
+        transition: color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+
+        &:hover,
+        &:focus {
+            color: $uptex-primary;
+            text-decoration: none;
+        }
+
+        &.active {
+            color: $uptex-primary;
+            border-bottom-color: $uptex-primary;
+        }
+    }
+}
+
+// ---------------------------------------------------------------------
+// 70/30 TWO-COLUMN GRID — wraps output.main_content (native course content,
+// left) and our sidebar widgets (right). Only present in the DOM at all
+// when showcourseviewpage is true (templates/drawers.mustache).
+// ---------------------------------------------------------------------
+.saec-course-view-grid {
+    display: grid;
+    grid-template-columns: 7fr 3fr;
+    gap: 1.75rem;
+    align-items: start;
+
+    @include media-breakpoint-down(md) {
+        grid-template-columns: 1fr;
+    }
+
+    &__main {
+        min-width: 0;
+    }
+
+    &__sidebar {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+}
+
+// ---------------------------------------------------------------------
+// SIDEBAR WIDGETS
+// ---------------------------------------------------------------------
+.saec-course-sidebar__widget {
+    background-color: $uptex-surface;
+    border: 1px solid $uptex-border-color;
+    border-radius: $uptex-radius-lg;
+    box-shadow: $uptex-shadow-elevation;
+    padding: 1.25rem;
+}
+
+.saec-course-sidebar__heading {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: $uptex-text-dark;
+    margin-bottom: 1rem;
+}
+
+.saec-deadline-widget {
+    background-color: $uptex-bg-subtle;
+    border-radius: $uptex-radius-sm;
+    padding: 1rem;
+    border-left: 4px solid $uptex-border-color;
+
+    &--urgent {
+        border-left-color: $uptex-danger;
+        background-color: $uptex-danger-light;
+    }
+
+    &__title {
+        font-weight: 700;
+        color: $uptex-text-dark;
+        margin: 0 0 0.25rem;
+        font-size: 0.9rem;
+    }
+
+    &__date {
+        font-size: 0.75rem;
+        color: $uptex-text-muted;
+        margin: 0 0 0.75rem;
+    }
+}
+
+.saec-announcement-item {
+    display: block;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid $uptex-border-color;
+    text-decoration: none;
+    color: inherit;
+
+    &:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    &:hover,
+    &:focus {
+        text-decoration: none;
+
+        .saec-announcement-item__title {
+            color: $uptex-primary;
+        }
+    }
+
+    &__title {
+        font-weight: 700;
+        color: $uptex-text-dark;
+        margin: 0 0 0.25rem;
+        font-size: 0.85rem;
+        transition: color 0.15s ease-in-out;
+    }
+
+    &__snippet {
+        font-size: 0.8rem;
+        color: $uptex-text-muted;
+        margin: 0 0 0.25rem;
+    }
+
+    &__date {
+        font-size: 0.7rem;
+        color: $uptex-text-muted;
+    }
+}
+
+.saec-quicklinks-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+
+    &__item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.85rem 0.5rem;
+        background-color: $uptex-bg-subtle;
+        border-radius: $uptex-radius-sm;
+        color: $uptex-text-dark;
+        text-decoration: none;
+        text-align: center;
+        font-size: 0.75rem;
+        font-weight: 600;
+        transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+
+        &:hover,
+        &:focus {
+            background-color: $uptex-primary-light;
+            color: $uptex-primary;
+            text-decoration: none;
+        }
+    }
+
+    &__icon-img {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+.saec-resume-widget {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    background-color: $uptex-primary-light;
+    color: $uptex-primary;
+    border-radius: $uptex-radius-sm;
+    padding: 0.85rem 1rem;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-decoration: none;
+
+    &:hover,
+    &:focus {
+        background-color: $uptex-primary;
+        color: $uptex-surface;
+        text-decoration: none;
+    }
+}
+
+// ---------------------------------------------------------------------
+// NATIVE COURSE CONTENT — CSS-only restyle, scoped to
+// body.saec-course-view-active so it can never affect teachers/admins,
+// edit mode, or any other page. Structure/JS untouched.
+// ---------------------------------------------------------------------
+body.saec-course-view-active {
+    // Descendant selector, not a direct-child chain: core wraps the
+    // <ul class="topics|weeks"> in an intermediate state div
+    // (.course-content > div.stateready > ul.topics > li.section.main,
+    // confirmed via devtools) that a same-format upgrade could rename —
+    // `li.section.main` alone is specific enough to stay safely scoped.
+    .course-content li.section.main {
+        background-color: $uptex-surface;
+        border: 1px solid $uptex-border-color;
+        border-radius: $uptex-radius-lg;
+        box-shadow: $uptex-shadow-elevation;
+        margin-bottom: 1.25rem;
+        overflow: hidden;
+    }
+
+    .course-section-header {
+        padding: 1rem 1.25rem;
+        margin: 0;
+        transition: background-color 0.15s ease-in-out;
+
+        &:hover {
+            background-color: $uptex-bg-alt;
+        }
+
+        .sectionname {
+            font-weight: 700;
+            color: $uptex-text-dark;
+        }
+    }
+
+    .course-content-item-content {
+        padding: 0 1.25rem 1rem;
+    }
+
+    .activity-item {
+        border-radius: $uptex-radius-sm;
+        padding: 0.5rem 0.75rem;
+        transition: background-color 0.15s ease-in-out;
+
+        &:hover {
+            background-color: $uptex-bg-alt;
+        }
+    }
+
+    .activityname,
+    .instancename {
+        color: $uptex-text-dark;
+        font-weight: 600;
+
+        &:hover,
+        &:focus {
+            color: $uptex-primary;
+        }
+    }
+
+    .activity-dates {
+        color: $uptex-text-muted;
+        font-size: 0.8rem;
+    }
+
+    // Completion toggle: Moodle's own Bootstrap button/dropdown (behaviour
+    // untouched) reshaped into a pill matching the rest of this theme's
+    // status-pill vocabulary. Only .btn-success (the native "done" state)
+    // gets a brand-colour nudge; every other state just inherits the pill
+    // shape so we don't have to know its exact class name.
+    .completion-dropdown .btn {
+        border-radius: $uptex-radius-pill;
+        font-weight: 700;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+
+        &.btn-success {
+            background-color: $uptex-accent-green-light;
+            border-color: transparent;
+            color: darken($uptex-accent-green, 15%);
+        }
+    }
+}

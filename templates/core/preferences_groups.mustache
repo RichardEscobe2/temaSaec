@@ -1,0 +1,57 @@
+{{!
+    @template core/preferences_groups (theme_saec override)
+
+    Fase 16 — Account Settings Portal. Overrides core's own
+    lib/templates/preferences_groups.mustache (same template name, so
+    Moodle's resolver picks this file automatically everywhere it's used —
+    /user/preferences.php's category grid — with zero core file changes).
+
+    Context is UNCHANGED from core's template: `groups` (preferences_group
+    objects: title + nodes) and each node's `get_title`/`action`/
+    `get_content` (navigation_node — Mustache invokes these as public
+    method calls, same as core's own template does). Every native link/URL
+    is preserved exactly; only the markup/classes changed — 3 flat cards
+    become a tab bar + panels, activated by inline JS since Mustache alone
+    has no per-loop index/first-item helper to key off of.
+}}
+<div class="saec-settings-tabs" role="tablist">
+    {{#groups}}
+        <button type="button" class="saec-settings-tabs__tab" role="tab" aria-selected="false">
+            {{ title }}
+        </button>
+    {{/groups}}
+</div>
+
+<div class="saec-settings-panels">
+    {{#groups}}
+        <div class="saec-settings-panel d-none">
+            <ul class="saec-settings-list">
+                {{#nodes}}
+                    <li class="saec-settings-list__item">
+                        <a {{#get_title}}title="{{get_title}}"{{/get_title}} href="{{{action}}}">
+                            <span>{{ get_content }}</span>
+                            <i class="icon fa fa-chevron-right" aria-hidden="true"></i>
+                        </a>
+                    </li>
+                {{/nodes}}
+            </ul>
+        </div>
+    {{/groups}}
+</div>
+{{#js}}
+require(['jquery'], function($) {
+    var tabs = $('.saec-settings-tabs__tab');
+    var panels = $('.saec-settings-panel');
+
+    tabs.removeClass('active').attr('aria-selected', 'false').first().addClass('active').attr('aria-selected', 'true');
+    panels.addClass('d-none').first().removeClass('d-none');
+
+    tabs.on('click', function() {
+        var index = tabs.index(this);
+        tabs.removeClass('active').attr('aria-selected', 'false');
+        $(this).addClass('active').attr('aria-selected', 'true');
+        panels.addClass('d-none');
+        panels.eq(index).removeClass('d-none');
+    });
+});
+{{/js}}
