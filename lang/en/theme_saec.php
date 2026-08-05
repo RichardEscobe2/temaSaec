@@ -290,3 +290,43 @@ $string['teacherherostudentsheading'] = 'Enrolled Students';
 $string['coursequicktoolsheading'] = 'Quick Course Tools';
 $string['courseannouncementsheading'] = 'News & Announcements';
 $string['coursepostannouncement'] = 'Post Announcement';
+
+// Gradebook "Course Selection Hub" (/grade/report/overview/index.php) — Sprint 4.
+$string['graderhubheading'] = 'Select a course to grade';
+$string['graderhubsubheading'] = 'You have {$a} assigned courses';
+$string['graderhubcta'] = 'View Gradebook';
+$string['graderhubsearchplaceholder'] = 'Search by subject...';
+$string['graderhubnomatch'] = 'No course matches your search.';
+
+// Student "Boleta Digital" summary (/grade/report/user/index.php) — Sprint 6.
+$string['boletaoverallgradelabel'] = 'Overall Grade';
+$string['boletacompletedlabel'] = 'Completed Items';
+$string['boletastatuslabel'] = 'Status';
+$string['boletastatuspass'] = 'Passed';
+$string['boletastatusfail'] = 'Failed';
+$string['boletastatuspending'] = 'Under Review';
+
+// Assignment View SaaS overlay, teacher branch (/mod/assign/view.php) — Sprint 7.
+$string['assignkpiparticipants'] = 'Participants';
+$string['assignkpiteams'] = 'Teams';
+$string['assignkpidrafts'] = 'Drafts';
+$string['assignkpisubmitted'] = 'Submitted';
+$string['assignkpineedsgrading'] = 'Needs Grading';
+
+// "Control de Asistencia" Course Selection Hub (theme/saec/pages/attendance_hub.php) — Sprint 9.
+$string['attendancehubtitle'] = 'Attendance Control';
+$string['attendancehubheading'] = 'Select an activity to manage attendance';
+$string['attendancehubsubheading'] = 'You have {$a} attendance activities';
+$string['attendancehubsessions'] = '{$a->total} sessions · {$a->taken} taken';
+$string['attendancehubratelabel'] = 'Overall Rate';
+$string['attendancehubnodata'] = 'No sessions taken yet';
+$string['attendancehubcta'] = 'Manage Attendance';
+$string['attendancehubempty'] = 'You have no attendance activities yet.';
+
+// Session Management Panel cards (mod/attendance/manage.php) — Sprint 9.
+$string['attendancemanagetaken'] = 'Completed';
+$string['attendancemanagepending'] = 'Pending';
+$string['attendancemanagepresent'] = 'Present';
+
+// Quick Attendance Matrix (mod/attendance/take.php) — Sprint 9.
+$string['attendancemarkallpresent'] = 'Mark all as Present';

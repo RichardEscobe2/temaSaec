@@ -1,0 +1,215 @@
+// -----------------------------------------------------------------------
+// GRADER OVERVIEW — /grade/report/overview/index.php ("Course Selection
+// Hub"). Transforms Moodle core's native course-listing tables into a
+// responsive card grid. Two different native tables can render on this
+// exact page depending on the viewer's enrolment mix — both are covered:
+//
+//   1. #overview-grade (grade_report_overview::fill_table(), a flexible_table)
+//      — coursename + grade + optional rank. Shown when the viewer has
+//      student enrolments (own courses, or a teacher/admin/parent viewing
+//      a specific user's report).
+//   2. table.generaltable, no id (grade_report_overview::print_teacher_table(),
+//      a plain html_table) — coursename only, under the "Cursos que yo
+//      estoy enseñando" heading. Shown whenever the viewer teaches any
+//      course. Verified live: a teacher account with no student
+//      enrolments (e.g. maestro_b1) sees ONLY this table — #overview-grade
+//      never renders for them — so it needs its own treatment, not just
+//      #overview-grade's.
+//
+// Neither has a mustache template (both emit raw HTML via html_writer with
+// no template hook) — a markup override would require touching core PHP,
+// out of scope. Every rule below is a pure CSS transform of the existing
+// table/tr/td structure.
+//
+// Only reachable unstyled by teachers/admins/parents — a logged-in Student
+// visiting this exact URL gets body.page-analytics and the theme's own
+// \theme_saec\dashboard\analytics_page overlay instead (custom.scss
+// section 13), which hides both native tables entirely. No overlap, so no
+// shared selectors with that page state.
+//
+// table.generaltable:not(#overview-grade) below (the "Cursos que yo estoy
+// enseñando" list) also has a real theme-owned replacement now —
+// \theme_saec\dashboard\grader_hub_page + templates/grader_hub_page.mustache
+// (scss/saec/_grader_hub.scss), gated on body.page-grader-hub. That gate is
+// teacher_dashboard::is_teacher() (moodle/course:update in some course),
+// narrower than the moodle/grade:viewall capability that actually populates
+// this native table — a non-editing "teacher" role (grade:viewall without
+// course:update, a real default Moodle archetype) still reaches this exact
+// unreplaced table, so its rule here stays as that population's styling,
+// not dead code.
+// -----------------------------------------------------------------------
+.path-grade-report-overview {
+
+    // -- Shared card-grid scaffolding -----------------------------------
+    #overview-grade,
+    table.generaltable:not(#overview-grade) {
+        display: block;
+        width: 100%;
+        background-color: transparent;
+        border: none;
+        box-shadow: none;
+
+        // Visually hidden, not display:none — keeps column headers
+        // ("Nombre del curso", "Calificación", "Posición") in the
+        // accessibility tree for screen readers even though the grid
+        // layout below no longer has a visual header row.
+        thead {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        tbody {
+            display: grid;
+            // Naturally resolves to ~3 cols at 1024px+, 2 cols at ~768px,
+            // 1 col under ~620px (300px card + 1.5rem gap) — satisfies the
+            // desktop/tablet/mobile targets without hardcoded breakpoints.
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        // flexible_table/html_table both pad short pages with filler rows
+        // (emptyrow, or an empty tbody when $table->data is empty) — never
+        // real course data.
+        tr.emptyrow,
+        tbody.empty tr {
+            display: none;
+        }
+
+        tr {
+            position: relative;
+            min-height: 44px;
+            background-color: $saec-surface;
+            border: 1px solid $saec-border;
+            border-radius: $saec-radius;
+            padding: 1.25rem;
+            transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+            &:hover,
+            &:focus-within {
+                transform: translateY(-2px);
+                box-shadow: $saec-shadow-md;
+            }
+        }
+
+        td {
+            border: none;
+            padding: 0;
+            background-color: transparent;
+            vertical-align: initial;
+        }
+
+        // Course name: card title, doubles as the click target for the
+        // whole card (Bootstrap "stretched-link" pattern) since neither
+        // native table exposes a separate action anchor to restyle into a
+        // distinct CTA button without editing core PHP.
+        td:nth-of-type(1) a {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            color: $saec-text-dark;
+            font-weight: 700;
+            font-size: 1.05rem;
+            line-height: 1.35;
+            text-decoration: none;
+
+            &::after {
+                content: "";
+                position: absolute;
+                inset: 0;
+            }
+
+            &:hover,
+            &:focus {
+                color: $saec-primary;
+                text-decoration: none;
+            }
+        }
+    }
+
+    // -- #overview-grade: coursename + grade + optional rank -------------
+    #overview-grade {
+        tr {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            grid-template-areas:
+                "title title"
+                "rank  grade";
+            row-gap: 0.75rem;
+        }
+
+        td:nth-of-type(1) {
+            grid-area: title;
+        }
+
+        // Grade: pill badge, bottom-right (de facto CTA — the arrow glyph
+        // is a decorative affordance only, no instructional text, so it
+        // stays meaningful regardless of interface language).
+        td:nth-of-type(2) {
+            grid-area: grade;
+            align-self: end;
+            justify-self: end;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.35rem 0.9rem;
+            border-radius: 999px;
+            background-color: $saec-primary-light;
+            color: $saec-primary-hover;
+            font-weight: 700;
+            font-size: 0.9rem;
+            white-space: nowrap;
+
+            &::after {
+                content: "\2192";
+            }
+        }
+
+        // Rank (optional — only present when the course has ranking
+        // enabled): small muted meta chip, bottom-left.
+        td:nth-of-type(3) {
+            grid-area: rank;
+            align-self: end;
+            justify-self: start;
+            padding: 0.3rem 0.75rem;
+            border-radius: 999px;
+            background-color: $saec-bg-main;
+            color: $saec-text-muted;
+            font-size: 0.75rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+    }
+
+    // -- "Cursos que yo estoy enseñando": coursename only -----------------
+    // Single column, so the title fills the whole card; a standalone arrow
+    // (on the row, not the anchor — the anchor's own ::after is already
+    // spoken for by the stretched-link overlay above) supplies the same
+    // "click to open" affordance #overview-grade gets from its grade pill.
+    table.generaltable:not(#overview-grade) {
+        tr {
+            display: flex;
+            align-items: center;
+            padding-right: 3rem;
+        }
+
+        tr::after {
+            content: "\2192";
+            position: absolute;
+            top: 50%;
+            right: 1.25rem;
+            transform: translateY(-50%);
+            color: $saec-primary;
+            font-weight: 700;
+            font-size: 1.1rem;
+            pointer-events: none;
+        }
+    }
+}

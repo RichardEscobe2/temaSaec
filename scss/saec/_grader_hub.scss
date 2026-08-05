@@ -1,0 +1,206 @@
+// -----------------------------------------------------------------------
+// GRADEBOOK "COURSE SELECTION HUB" (/grade/report/overview/index.php,
+// teacher branch) — Sprint 4. Theme-owned overlay
+// (\theme_saec\dashboard\grader_hub_page + templates/grader_hub_page.mustache)
+// that replaces grade_report_overview::print_teacher_table()'s bare
+// course-name list with real category/student-count metadata and a
+// gradebook CTA. Same strategy as body.page-analytics (custom.scss section
+// 13): the native report still renders (core, can't be skipped) and is
+// hidden here rather than touched.
+// -----------------------------------------------------------------------
+body.page-grader-hub {
+    #page-header {
+        display: none;
+    }
+
+    .uptex-content-wrapper > :not(.saec-grader-hub) {
+        display: none;
+    }
+}
+
+.saec-grader-hub {
+    &__hero {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1.25rem;
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        background-color: $saec-surface;
+        border: 1px solid $saec-border;
+        border-radius: $saec-radius;
+        box-shadow: $saec-shadow-md;
+
+        // Avatar + title block flexes to fill the row and pushes the
+        // search pill to the far end on wide viewports; on narrow ones
+        // flex-wrap above drops the search onto its own full-width row.
+        > div {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+    }
+
+    &__avatar {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+
+    &__title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: $saec-text-dark;
+        margin: 0 0 0.2rem;
+    }
+
+    &__subtitle {
+        color: $saec-text-muted;
+        margin: 0;
+    }
+
+    &__search {
+        position: relative;
+        flex: 1 1 260px;
+        min-width: 220px;
+    }
+
+    &__search-icon {
+        position: absolute;
+        left: 0.85rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: $saec-text-muted;
+        font-size: 0.85rem;
+        pointer-events: none;
+    }
+
+    &__search-input {
+        width: 100%;
+        min-height: 44px;
+        border: 1px solid $saec-border;
+        border-radius: 999px;
+        padding: 0.55rem 1rem 0.55rem 2.25rem;
+        font-size: 0.9rem;
+        color: $saec-text-dark;
+        background-color: $saec-bg-main;
+
+        &:focus {
+            outline: none;
+            border-color: $saec-primary;
+            box-shadow: 0 0 0 2px $saec-primary-light;
+        }
+    }
+
+    &__grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    &__empty-filtered {
+        color: $saec-text-muted;
+        text-align: center;
+        padding: 2rem 1rem;
+    }
+
+    &__empty {
+        color: $saec-text-muted;
+        text-align: center;
+        padding: 3rem 1rem;
+        background-color: $saec-surface;
+        border: 1px dashed $saec-border;
+        border-radius: $saec-radius;
+
+        i {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 0.75rem;
+            color: $saec-border;
+        }
+    }
+}
+
+.saec-grader-hub-card {
+    display: flex;
+    flex-direction: column;
+    min-height: 44px;
+    background-color: $saec-surface;
+    border: 1px solid $saec-border;
+    border-radius: $saec-radius;
+    padding: 1.25rem;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+
+    &:hover,
+    &:focus-within {
+        transform: translateY(-4px);
+        box-shadow: $saec-shadow-md;
+    }
+
+    &__badge {
+        align-self: flex-start;
+        padding: 0.3rem 0.75rem;
+        border-radius: 999px;
+        background-color: $saec-primary-light;
+        color: $saec-primary-hover;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        margin-bottom: 0.75rem;
+    }
+
+    &__title {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: $saec-text-dark;
+        margin: 0 0 0.2rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    &__code {
+        font-size: 0.75rem;
+        color: $saec-text-muted;
+        margin: 0 0 0.75rem;
+    }
+
+    &__students {
+        font-size: 0.85rem;
+        color: $saec-text-muted;
+        margin: 0 0 1rem;
+
+        i {
+            margin-right: 0.35rem;
+            color: $saec-primary;
+        }
+    }
+
+    &__cta {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        margin-top: auto;
+        align-self: flex-end;
+        padding: 0.5rem 1.1rem;
+        min-height: 44px;
+        border-radius: 999px;
+        background-color: $saec-primary;
+        color: $saec-surface;
+        font-weight: 700;
+        font-size: 0.85rem;
+        text-decoration: none;
+        transition: background-color 0.15s ease-in-out;
+
+        &:hover,
+        &:focus {
+            background-color: $saec-primary-hover;
+            color: $saec-surface;
+            text-decoration: none;
+        }
+    }
+}

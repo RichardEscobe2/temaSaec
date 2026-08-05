@@ -1,0 +1,298 @@
+// -----------------------------------------------------------------------
+// ASSIGNMENT GRADER SPLIT-VIEW (/mod/assign/view.php?action=grader) —
+// Sprint 8. This app's layout is NOT flexbox/grid — mod/assign/styles.css
+// positions every panel (grading-navigation-panel, review-panel,
+// grade-panel, grade-actions-panel) with `position: absolute` and
+// percentage/pixel top/bottom/left/right/width, toggled between states by
+// JS adding/removing plain classes (.collapsed, .fullwidth,
+// .grade-panel-collapsed) — NOT inline styles (verified: getAttribute('style')
+// is null on all of them). That means:
+//   - The split ratio is safe to retune (just changing the % values core
+//     already uses), inherited by .collapsed/.fullwidth automatically.
+//   - Header/footer height changes are NOT safe in isolation — review-panel
+//     and grade-panel's `top: 85px` / `bottom: 60px` (see mod/assign/styles.css)
+//     are hardcoded to match grading-navigation-panel's real height (85px)
+//     and grade-actions-panel's real height (60px). This file keeps both
+//     at their current real values rather than growing them, so no offset
+//     math has to be duplicated/kept in sync here.
+//   - Mobile (<768px) already has full native stacking (core's own
+//     `@media (max-width: 767px)` block, same file) — left untouched.
+//   - Tablet (768–1023px) has NO native stacking — core's breakpoint stops
+//     at 767px, so a 60/40 (or even the original 70/30) split at e.g. 900px
+//     gives the grade-panel ~360-450px for a grading form, cramped but not
+//     core's problem to solve since it never claimed tablet support here.
+//     This file extends the same stacking treatment core already uses for
+//     mobile, up through the tablet range, rather than reimplementing it.
+// -----------------------------------------------------------------------
+
+.path-mod-assign {
+    // -- Desktop split ratio: 70/30 → 60/40, more room for the grading
+    // form's inputs/badges. Same properties core's own rules use — this
+    // is a straightforward value change, not a mechanism change, so the
+    // existing collapse/fullwidth/transition behavior is untouched.
+    [data-region="review-panel"] {
+        right: 40%;
+    }
+
+    [data-region="grade-panel"] {
+        left: 60%;
+        width: 40%;
+    }
+
+    // -------------------------------------------------------------------
+    // HEADER — [data-region="grading-navigation-panel"]
+    // -------------------------------------------------------------------
+    [data-region="grading-navigation-panel"] {
+        background-color: $saec-surface;
+        border-bottom: 1px solid $saec-border;
+        box-shadow: $saec-shadow-md;
+    }
+
+    // Deliberately no display/align-items override on grading-navigation
+    // or its 3 columns: Bootstrap's own .row is already display:flex with
+    // align-items:stretch, and each column's native content relies on
+    // that default flow — [data-region="user-info"]'s avatar uses a plain
+    // CSS float (core: `.img-rounded { float: left; }`), which flex items
+    // ignore entirely per spec, and [data-region="user-selector"] has two
+    // stacked lines (arrows+dropdown, then the "N de M" counter + reset-
+    // preferences link). Forcing display:flex + align-items:center on
+    // either column (an earlier pass here) vertically centered that
+    // second line far enough down to spill past grading-navigation-panel's
+    // fixed 85px clipped height (mod/assign/styles.css) — confirmed live
+    // via getBoundingClientRect, not assumed. Every rule below styles
+    // existing children in place instead, so the native block/float flow
+    // that already fits within 85px is never touched.
+    [data-region="grading-navigation"] {
+        height: 100%;
+    }
+
+    // Left: course/assignment breadcrumbs as a chip — background/radius
+    // on the existing block-level container, no display change.
+    [data-region="assignment-info"] {
+        padding: 0.5rem 0.9rem;
+        background-color: $saec-bg-main;
+        border-radius: $saec-radius;
+        font-size: 0.8rem;
+
+        a {
+            color: $saec-primary-hover;
+            font-weight: 600;
+        }
+    }
+
+    // Center: student avatar + name + email + due date.
+    [data-region="user-info"] {
+        padding: 0 1rem;
+
+        .img-rounded {
+            width: 40px;
+            height: 40px;
+            border: 2px solid $saec-primary-light;
+        }
+
+        em {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: $saec-text-dark;
+        }
+    }
+
+    // Right: prev/next arrows + user-switch dropdown + submission counter
+    // — cosmetic only (pill radius/hover tint), parent's own layout mode
+    // untouched.
+    [data-region="user-selector"] {
+        font-size: 0.8rem;
+        color: $saec-text-muted;
+
+        .btn {
+            border-radius: 999px;
+
+            &:hover,
+            &:focus {
+                background-color: $saec-primary-light;
+                border-color: $saec-primary;
+            }
+        }
+
+        select {
+            border: 1px solid $saec-border;
+            border-radius: 999px;
+            padding: 0.3rem 0.75rem;
+        }
+    }
+
+    // -------------------------------------------------------------------
+    // PDF/DOCUMENT ANNOTATION TOOLBAR — assignfeedback_editpdf's real
+    // .pageheader (button row) + .drawingregion (canvas viewport, whose
+    // overflow-x:auto/position:absolute JS-driven sizing is left alone —
+    // touching those would misalign the annotation-coordinate mapping).
+    // -------------------------------------------------------------------
+    [data-region="review-panel"] {
+        .pageheader {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.6rem 0.75rem;
+            background-color: $saec-bg-main;
+
+            .btn,
+            button {
+                border-radius: $saec-radius;
+                min-width: 36px;
+                min-height: 36px;
+
+                &:hover,
+                &:focus {
+                    background-color: $saec-primary-light;
+                }
+            }
+        }
+
+        .drawingregion {
+            border-radius: 0 0 $saec-radius $saec-radius;
+        }
+    }
+
+    // -------------------------------------------------------------------
+    // RIGHT GRADING PANEL — [data-region="grade-panel"]
+    // -------------------------------------------------------------------
+    [data-region="grade-panel"] {
+        background-color: $saec-bg-main;
+
+        // Submission status lines (grade/report/user's own real classes,
+        // set by mod_assign's renderer — not fabricated): each becomes its
+        // own pill instead of a stacked block of plain sentences.
+        .submissionstatustable > div {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.35rem 0.85rem;
+            margin: 0 0.4rem 0.4rem 0;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .submissionstatussubmitted {
+            background-color: $saec-primary-light;
+            color: $saec-primary-hover;
+        }
+
+        .submissiongraded {
+            background-color: $saec-primary-light;
+            color: $saec-primary-hover;
+        }
+
+        .earlysubmission {
+            background-color: rgba($saec-warning, 0.12);
+            color: $saec-warning;
+        }
+
+        .submissioneditable {
+            background-color: $saec-bg-main;
+            border: 1px solid $saec-border;
+            color: $saec-text-muted;
+        }
+
+        // Grade input — real, unique #id_grade / #fitem_id_grade (a
+        // standard Moodle mform id, safe to target directly rather than
+        // via a generic .form-control class that every other form on the
+        // site also carries).
+        #fitem_id_grade {
+            background-color: $saec-surface;
+            border: 1px solid $saec-border;
+            border-radius: $saec-radius;
+            padding: 0.75rem;
+        }
+
+        #id_grade {
+            border: 1px solid $saec-border;
+            border-radius: $saec-radius;
+            font-size: 1.1rem;
+            font-weight: 700;
+            padding: 0.5rem 0.75rem;
+
+            &:focus {
+                outline: none;
+                border-color: $saec-primary;
+                box-shadow: 0 0 0 2px $saec-primary-light;
+            }
+        }
+
+        // Feedback rich-text editor — real, unique fitem id.
+        #fitem_id_assignfeedbackcomments_editor {
+            background-color: $saec-surface;
+            border: 1px solid $saec-border;
+            border-radius: $saec-radius;
+            padding: 0.75rem;
+        }
+    }
+
+    // -------------------------------------------------------------------
+    // BOTTOM STICKY ACTION BAR — [data-region="grade-actions-panel"]
+    // -------------------------------------------------------------------
+    [data-region="grade-actions-panel"] {
+        background-color: $saec-surface;
+        border-top: 1px solid $saec-border;
+        box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    [data-region="grading-actions-form"] {
+        .btn-primary {
+            background-color: $saec-primary;
+            border-color: $saec-primary;
+            border-radius: 999px;
+            font-weight: 700;
+
+            &:hover,
+            &:focus {
+                background-color: $saec-primary-hover;
+                border-color: $saec-primary-hover;
+            }
+        }
+    }
+
+    .btn-toolbar.collapse-buttons .btn {
+        border-radius: $saec-radius;
+
+        &.active {
+            background-color: $saec-primary;
+            border-color: $saec-primary;
+            color: $saec-surface;
+        }
+    }
+
+    // -------------------------------------------------------------------
+    // TABLET (768–1023px): core's own stacking rule only kicks in below
+    // 768px (mod/assign/styles.css's `@media (max-width: 767px)`) — this
+    // extends the identical treatment (same properties core uses for
+    // mobile) up through the literal 1023px tablet ceiling this task
+    // specifies, rather than leaving the 60/40 desktop split to cram a
+    // grading form into ~350-450px. Explicit px values, not Bootstrap's
+    // named breakpoints (md=768/lg=992) — neither lands on 1023px.
+    // -------------------------------------------------------------------
+    @media (min-width: 768px) and (max-width: 1023.98px) {
+        [data-region="grading-navigation-panel"],
+        [data-region="review-panel"],
+        [data-region="grade-panel"],
+        [data-region="review-panel"].collapsed + [data-region="grade-panel"],
+        [data-region="grade-actions-panel"] {
+            position: static;
+            width: 100%;
+            top: auto;
+            left: auto;
+            right: auto;
+            bottom: auto;
+            height: auto;
+        }
+
+        [data-region="grade-panel"] {
+            margin-bottom: 2em;
+        }
+
+        [data-region="user-info"],
+        [data-region="assignment-info"],
+        [data-region="user-selector"] {
+            flex: 1 1 100%;
+        }
+    }
+}

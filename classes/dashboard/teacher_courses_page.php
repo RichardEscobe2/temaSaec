@@ -154,12 +154,13 @@ class teacher_courses_page {
      * at once — a single batched join rather than one count_enrolled_users()
      * call per course, per this page's explicit "efficient mdl_enrol/
      * mdl_user_enrolments" requirement. MUC-cached (see db/caches.php,
-     * 'teachercoursedetails' definition).
+     * 'teachercoursedetails' definition). Public: also reused by
+     * grader_hub_page for its own course cards, same cache.
      *
      * @param int[] $courseids
      * @return array<int, int> courseid => student count.
      */
-    private static function fetch_student_counts(array $courseids): array {
+    public static function fetch_student_counts(array $courseids): array {
         global $DB;
 
         sort($courseids);
@@ -196,13 +197,14 @@ class teacher_courses_page {
      * per-request pattern as courses_page::resolve_category_name(), kept as
      * its own copy rather than shared since that method is private to its
      * own class and this page's category cache has a different lifetime
-     * (function-local, not instance state).
+     * (function-local, not instance state). Public: also reused by
+     * grader_hub_page for its own course cards.
      *
      * @param int $categoryid
      * @param array $cache Passed by reference, shared across calls.
      * @return string
      */
-    private static function resolve_category_name(int $categoryid, array &$cache): string {
+    public static function resolve_category_name(int $categoryid, array &$cache): string {
         global $DB;
         if (!array_key_exists($categoryid, $cache)) {
             $name = $DB->get_field('course_categories', 'name', ['id' => $categoryid]);

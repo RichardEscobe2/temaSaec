@@ -1,0 +1,31 @@
+{{!
+    @template theme_saec/components/grader_hub_course_card
+
+    One course tile in the Gradebook "Course Selection Hub": category
+    badge, real active-student count, single "Ver Calificador" CTA. Unlike
+    components/teacher_course_card (My Courses catalog), this page is
+    grading-only, not course management — no visibility toggle, no
+    Enter/Attendance links. Context: one entry from
+    \theme_saec\dashboard\grader_hub_page::get_context()'s `courses`.
+
+    Example context (json):
+    {
+        "id": 4, "fullname": "Microcredencial de Desarrollo Web",
+        "shortname": "MDW-2026", "categoryname": "Educación Continua",
+        "studentcount": 12,
+        "gradebookurl": "https://example.org/grade/report/index.php?id=4"
+    }
+}}
+<article class="saec-grader-hub-card" data-course-name="{{fullname}} {{shortname}}">
+    <span class="saec-grader-hub-card__badge">{{ categoryname }}</span>
+    <h2 class="saec-grader-hub-card__title">{{ fullname }}</h2>
+    <p class="saec-grader-hub-card__code">{{ shortname }}</p>
+    <p class="saec-grader-hub-card__students">
+        <i class="icon fa fa-users" aria-hidden="true"></i>
+        {{#str}} teachercoursestudentcount, theme_saec, {{studentcount}} {{/str}}
+    </p>
+    <a href="{{{ gradebookurl }}}" class="saec-grader-hub-card__cta">
+        {{#str}} graderhubcta, theme_saec {{/str}}
+        <span aria-hidden="true">&rarr;</span>
+    </a>
+</article>

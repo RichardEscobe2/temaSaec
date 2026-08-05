@@ -296,3 +296,43 @@ $string['teacherherostudentsheading'] = 'Alumnos Inscritos';
 $string['coursequicktoolsheading'] = 'Herramientas Rápidas del Curso';
 $string['courseannouncementsheading'] = 'Avisos y Novedades';
 $string['coursepostannouncement'] = 'Publicar Anuncio';
+
+// Centro de Selección de Cursos del Calificador (/grade/report/overview/index.php) — Sprint 4.
+$string['graderhubheading'] = 'Selecciona un curso para calificar';
+$string['graderhubsubheading'] = 'Tienes {$a} cursos asignados';
+$string['graderhubcta'] = 'Ver Calificador';
+$string['graderhubsearchplaceholder'] = 'Buscar por materia...';
+$string['graderhubnomatch'] = 'Ningún curso coincide con tu búsqueda.';
+
+// Resumen "Boleta Digital" del Alumno (/grade/report/user/index.php) — Sprint 6.
+$string['boletaoverallgradelabel'] = 'Calificación General';
+$string['boletacompletedlabel'] = 'Actividades Completadas';
+$string['boletastatuslabel'] = 'Estado';
+$string['boletastatuspass'] = 'Aprobado';
+$string['boletastatusfail'] = 'Reprobado';
+$string['boletastatuspending'] = 'En Revisión';
+
+// Vista de Tarea SaaS, rama docente (/mod/assign/view.php) — Sprint 7.
+$string['assignkpiparticipants'] = 'Participantes';
+$string['assignkpiteams'] = 'Equipos';
+$string['assignkpidrafts'] = 'Borradores';
+$string['assignkpisubmitted'] = 'Entregados';
+$string['assignkpineedsgrading'] = 'Por Calificar';
+
+// Centro de Selección "Control de Asistencia" (theme/saec/pages/attendance_hub.php) — Sprint 9.
+$string['attendancehubtitle'] = 'Control de Asistencia';
+$string['attendancehubheading'] = 'Selecciona una actividad para gestionar asistencia';
+$string['attendancehubsubheading'] = 'Tienes {$a} actividades de asistencia';
+$string['attendancehubsessions'] = '{$a->total} sesiones · {$a->taken} tomadas';
+$string['attendancehubratelabel'] = 'Tasa General';
+$string['attendancehubnodata'] = 'Aún no hay sesiones tomadas';
+$string['attendancehubcta'] = 'Gestionar Asistencia';
+$string['attendancehubempty'] = 'Aún no tienes actividades de asistencia.';
+
+// Tarjetas del Panel de Gestión de Sesiones (mod/attendance/manage.php) — Sprint 9.
+$string['attendancemanagetaken'] = 'Completada';
+$string['attendancemanagepending'] = 'Pendiente';
+$string['attendancemanagepresent'] = 'Presentes';
+
+// Matriz Rápida de Asistencia (mod/attendance/take.php) — Sprint 9.
+$string['attendancemarkallpresent'] = 'Marcar todos como presentes';

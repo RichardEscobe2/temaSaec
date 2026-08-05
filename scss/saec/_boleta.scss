@@ -1,0 +1,81 @@
+// -----------------------------------------------------------------------
+// STUDENT "BOLETA DIGITAL" (/grade/report/user/index.php) — Sprint 6.
+// The native gradereport_user table is real, capability-gated, and
+// handles rowspan-nested categories + per-item hidden/locked/extra-credit
+// rules that are unsafe to reimplement in CSS alone — so unlike the Hub
+// (Sprint 4), this page keeps its native table. Two additive layers only:
+//   1. .saec-boleta-summary — 3 real-data metric cards injected above the
+//      table (\theme_saec\dashboard\boleta_page, templates/components/
+//      boleta_summary.mustache), reusing the existing .uptex-metric-card
+//      component (custom.scss) rather than a new one.
+//   2. Cosmetic-only polish of the table itself: pill-styled pass/fail
+//      cells using the REAL .gradepass/.gradefail classes the native
+//      renderer already sets (grade/report/user/classes/report/user.php),
+//      and a mobile column-hiding fallback instead of a full card reflow
+//      — the table's optional weight/range/percentage/lettergrade/rank/
+//      average/contributiontocoursetotal columns (each independently
+//      togglable in course settings) carry no data-label/column marker on
+//      their <td>s (verified: only the <thead> gets `column-X` classes),
+//      so a rowspan-safe per-cell label can't be derived without a
+//      fragile JS pass — hiding secondary columns below is honest and
+//      never misaligns data, which a labelless stacked reflow risks doing.
+// -----------------------------------------------------------------------
+.saec-boleta-summary {
+    margin-bottom: 1.5rem;
+}
+
+.path-grade-report-user {
+    table.user-grade {
+        border: 1px solid $saec-border;
+        border-radius: $saec-radius;
+        overflow: hidden;
+        box-shadow: $saec-shadow-md;
+
+        th.header {
+            background-color: $saec-primary-light;
+            color: $saec-primary-hover;
+            font-weight: 700;
+        }
+    }
+
+    // Real pass/fail classes (report/user.php: $gradestatusclass = $ispassinggrade
+    // ? 'gradepass' : 'gradefail'), not fabricated — only the visual pill
+    // treatment is new, the underlying grade value/text is untouched.
+    td.gradepass,
+    td.gradefail {
+        border-radius: 999px;
+        font-weight: 700;
+    }
+
+    td.gradepass {
+        background-color: $saec-primary-light;
+        color: $saec-primary-hover;
+    }
+
+    td.gradefail {
+        background-color: rgba($saec-accent, 0.08);
+        color: $saec-accent;
+    }
+
+    // Mobile: hide secondary columns rather than attempt an unlabeled card
+    // reflow (see file header) — itemname + grade + feedback stay, always
+    // fitting the viewport without horizontal scroll. [data-column], not
+    // .column-X: the renderer only puts column-X classes on <thead> <th>
+    // cells, never on body <td>s — layout/drawers.php registers a small
+    // JS pass (unconditional on this page, independent of whether the
+    // summary cards above render) that reads the real header text and
+    // tags each row's cells with the matching data-column attribute.
+    @include media-breakpoint-down(sm) {
+        table.user-grade {
+            [data-column="weight"],
+            [data-column="range"],
+            [data-column="percentage"],
+            [data-column="lettergrade"],
+            [data-column="rank"],
+            [data-column="average"],
+            [data-column="contributiontocoursetotal"] {
+                display: none;
+            }
+        }
+    }
+}

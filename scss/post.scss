@@ -111,6 +111,10 @@ $saec-primary:        #1b5e3b; // SAEC Green — primary actions, active states,
 $saec-primary-hover:  darken($saec-primary, 8%);
 $saec-primary-light:  rgba($saec-primary, 0.08);
 $saec-accent:         #a61c1c; // SAEC Red — urgent/negative states (e.g. late submissions).
+$saec-warning:        #a1690a; // SAEC Amber — caution/pending states (e.g. needs grading), distinct from $saec-accent's failure/danger red.
+$saec-warning-light:  rgba(#c8890a, 0.12);
+$saec-info:           #3b6ea5; // SAEC Slate Blue — neutral/informational states (e.g. justified/excused), distinct from primary green and warning amber.
+$saec-info-light:     rgba(#3b6ea5, 0.12);
 $saec-dark:           #212529; // Charcoal — controls, indicators, headings, outline borders.
 $saec-border:         #d1d5db; // Neutral border — card borders, dividers, structural outlines.
 $saec-surface:        #ffffff; // Cards / footer surface.
@@ -830,3 +834,40 @@ $saec-dashboard-content-maxwidth: 1600px;
 // UNIFIED SECONDARY NAVIGATION RIBBON — Sprint 5.
 // ---------------------------------------------------------------------
 @import "saec/navigation";
+
+// ---------------------------------------------------------------------
+// GRADER OVERVIEW "COURSE SELECTION HUB" (/grade/report/overview/index.php)
+// ---------------------------------------------------------------------
+@import "saec/grade_overview";
+
+// ---------------------------------------------------------------------
+// GRADEBOOK "COURSE SELECTION HUB" OVERLAY (teacher branch) — Sprint 4.
+// ---------------------------------------------------------------------
+@import "saec/grader_hub";
+
+// ---------------------------------------------------------------------
+// GRADER REPORT CONTROL BAR (/grade/report/grader/index.php) — Sprint 5.
+// ---------------------------------------------------------------------
+@import "saec/grader_controls";
+
+// ---------------------------------------------------------------------
+// STUDENT "BOLETA DIGITAL" (/grade/report/user/index.php) — Sprint 6.
+// ---------------------------------------------------------------------
+@import "saec/boleta";
+
+// ---------------------------------------------------------------------
+// ASSIGNMENT VIEW SaaS OVERLAY, TEACHER BRANCH (/mod/assign/view.php) — Sprint 7.
+// ---------------------------------------------------------------------
+@import "saec/assign_teacher";
+
+// ---------------------------------------------------------------------
+// ASSIGNMENT GRADER SPLIT-VIEW (/mod/assign/view.php?action=grader) — Sprint 8.
+// ---------------------------------------------------------------------
+@import "saec/assign_grader";
+
+// ---------------------------------------------------------------------
+// "CONTROL DE ASISTENCIA" 3-TIER WORKFLOW (mod_attendance) — Sprint 9.
+// ---------------------------------------------------------------------
+@import "saec/attendance_hub";
+@import "saec/attendance_manage";
+@import "saec/attendance_take";

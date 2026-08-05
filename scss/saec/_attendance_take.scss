@@ -1,0 +1,265 @@
+// -----------------------------------------------------------------------
+// QUICK ATTENDANCE MATRIX (/mod/attendance/take.php) — Sprint 9. Real
+// structure verified live: table.takelist, 7 cells per row (c0=avatar+name
+// link pair, c1=email, c2..c5=P/L/E/A status radios in that fixed column
+// order, c6=remarks input). Radios carry no wrapping <label> (verified:
+// bare <input class="stNN"> directly in the <td>, no click target beyond
+// the input itself) and their class is the status's real (arbitrary,
+// per-installation) database id — not a stable 'present'/'late' hook —
+// so colour-coding here targets column POSITION (c2..c5), matching
+// mod_attendance's own default P/L/E/A status-set order, the same
+// assumption documented in attendance_manage_page.php's "highest grade =
+// present" proxy.
+// -----------------------------------------------------------------------
+.path-mod-attendance {
+    table.takelist {
+        display: block;
+        width: 100%;
+        background-color: transparent;
+        border: none;
+        box-shadow: none;
+
+        thead {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        tbody {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        tr {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.6rem 1rem;
+            background-color: $saec-surface;
+            border: 1px solid $saec-border;
+            border-radius: $saec-radius;
+            padding: 0.85rem 1.1rem;
+        }
+
+        td {
+            border: none;
+            padding: 0;
+            background-color: transparent;
+        }
+
+        // Avatar + name — no wrap, ellipsis rather than letting a long
+        // name squeeze the status pills off the row.
+        td.cell.c0 {
+            order: 1;
+            flex: 1 1 200px;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+            color: $saec-text-dark;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+
+            a {
+                text-decoration: none;
+                color: inherit;
+
+                &:hover,
+                &:focus {
+                    color: $saec-primary;
+                }
+            }
+        }
+
+        // Email — own line on narrow viewports (flex-basis:100% forces a
+        // wrap point), inline on wide ones once there's room.
+        td.cell.c1 {
+            order: 2;
+            flex: 1 1 220px;
+            min-width: 0;
+            color: $saec-text-muted;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        // P/L/E/A — colour-coded circular pill buttons. Bare <input
+        // type="radio"> with no wrapping <label> (verified live), so this
+        // restyles the input itself via appearance:none rather than the
+        // usual hide-input/style-label technique — still a real, keyboard-
+        // and-click-accessible radio, just repainted.
+        td.cell.c2,
+        td.cell.c3,
+        td.cell.c4,
+        td.cell.c5 {
+            order: 3;
+            // flex: 0 0 auto, not cosmetic — same collapsing-flex-item bug
+            // fixed in scss/saec/_attendance_manage.scss's c1/c2 (verified
+            // live there via getBoundingClientRect); these radio cells
+            // have no flex-basis:100% escape hatch either, so they're
+            // exposed to the exact same default flex-shrink:1 collapse.
+            flex: 0 0 auto;
+
+            input[type="radio"] {
+                appearance: none;
+                width: 36px;
+                height: 36px;
+                min-width: 36px;
+                border-radius: 50%;
+                border: 2px solid $saec-border;
+                background-color: $saec-surface;
+                cursor: pointer;
+                transition: transform 0.1s ease-in-out;
+
+                &:hover {
+                    transform: scale(1.08);
+                }
+
+                &:focus {
+                    outline: none;
+                    box-shadow: 0 0 0 3px $saec-primary-light;
+                }
+            }
+        }
+
+        // Presente.
+        td.cell.c2 input[type="radio"]:checked {
+            border-color: $saec-primary;
+            background-color: $saec-primary;
+        }
+
+        // Retardo.
+        td.cell.c3 input[type="radio"]:checked {
+            border-color: $saec-warning;
+            background-color: $saec-warning;
+        }
+
+        // Justificado.
+        td.cell.c4 input[type="radio"]:checked {
+            border-color: $saec-info;
+            background-color: $saec-info;
+        }
+
+        // Falta.
+        td.cell.c5 input[type="radio"]:checked {
+            border-color: $saec-accent;
+            background-color: $saec-accent;
+        }
+
+        // Observaciones — own line, full-width input.
+        td.cell.c6.lastcol {
+            order: 4;
+            flex: 1 1 100%;
+
+            input {
+                width: 100%;
+                border: 1px solid $saec-border;
+                border-radius: $saec-radius;
+                padding: 0.45rem 0.75rem;
+
+                &:focus {
+                    outline: none;
+                    border-color: $saec-primary;
+                    box-shadow: 0 0 0 2px $saec-primary-light;
+                }
+            }
+        }
+    }
+
+    // Session context header (date/time + description box above the
+    // table) + the bottom submit button — cosmetic polish of real,
+    // generic containers already on this page.
+    .generalbox {
+        border: 1px solid $saec-border;
+        border-radius: $saec-radius;
+        box-shadow: $saec-shadow-md;
+    }
+
+    input[type="submit"].btn-primary {
+        border-radius: 999px;
+        font-weight: 700;
+        padding: 0.6rem 1.5rem;
+    }
+
+    // Floating sticky footer: the real save button's row, pinned to the
+    // viewport bottom with elevation — not a new container, the row that
+    // already holds it.
+    #region-main form > input[type="submit"].btn-primary,
+    #region-main input[type="submit"].btn-primary {
+        position: sticky;
+        bottom: 1rem;
+        box-shadow: $saec-shadow-md;
+    }
+
+    // "Marcar todos como presentes" quick action — injected by
+    // layout/drawers.php's JS pass (no native one-click equivalent; the
+    // closest native mechanism, the "Configurar estatus para" bulk-select
+    // row, needs a manual dropdown pick per use, not a single click).
+    .saec-attendance-mark-all-present {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        margin-left: 0.75rem;
+        padding: 0.6rem 1.25rem;
+        border-radius: 999px;
+        border: 1px solid $saec-primary;
+        background-color: $saec-surface;
+        color: $saec-primary;
+        font-weight: 700;
+        cursor: pointer;
+
+        &:hover,
+        &:focus {
+            background-color: $saec-primary-light;
+        }
+    }
+
+    // Tablet: compact status pills, 2-column-friendly wrapping.
+    @media (min-width: 768px) and (max-width: 1023.98px) {
+        table.takelist tr {
+            td.cell.c2,
+            td.cell.c3,
+            td.cell.c4,
+            td.cell.c5 {
+                input[type="radio"] {
+                    width: 32px;
+                    height: 32px;
+                    min-width: 32px;
+                }
+            }
+        }
+    }
+
+    // Mobile: full-width stacked rows, no horizontal scroll — each status
+    // group gets its own line instead of competing for space with the
+    // name/email columns.
+    @include media-breakpoint-down(sm) {
+        table.takelist tr {
+            flex-direction: column;
+            align-items: stretch;
+
+            td.cell.c0,
+            td.cell.c1 {
+                flex-basis: 100%;
+                white-space: normal;
+            }
+
+            td.cell.c2,
+            td.cell.c3,
+            td.cell.c4,
+            td.cell.c5 {
+                order: 3;
+            }
+        }
+    }
+}

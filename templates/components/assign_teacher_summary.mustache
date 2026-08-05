@@ -1,0 +1,48 @@
+{{!
+    @template theme_saec/components/assign_teacher_summary
+
+    Assignment View SaaS overlay, teacher branch (/mod/assign/view.php) —
+    replaces mod_assign's native "Sumario de calificaciones" key-value
+    table (hidden via scss/saec/_assign_teacher.scss's
+    body.saec-assign-teacher-summary-active rule) with due-date status
+    pills + real KPI cards. Every number comes from
+    \assign::get_assign_grading_summary_renderable() via
+    \theme_saec\dashboard\teacher_assign_view_page::get_context() — nothing
+    here is computed independently.
+
+    Example context (json):
+    {
+        "haspills": true,
+        "pills": [
+            {"variant": "primary", "label": "Tiempo restante", "value": "2 días 5 horas"},
+            {"variant": "warning", "label": "Envíos con retraso", "value": "Se aceptan envíos con retraso hasta el ..."}
+        ],
+        "kpis": [
+            {
+                "key": "participants", "icon": "<img src=\"...\" alt=\"\">",
+                "iconvariant": "primary", "label": "Participantes", "value": "24",
+                "hasvaluesuffix": false, "valuesuffix": null,
+                "hasfootnote": false, "footnote": null, "isalert": false
+            }
+        ]
+    }
+}}
+<div class="saec-assign-teacher-summary">
+    {{#haspills}}
+        <div class="saec-assign-teacher-summary__pills">
+            {{#pills}}
+                <span class="saec-assign-teacher-summary__pill saec-assign-teacher-summary__pill--{{variant}}">
+                    <strong>{{label}}:</strong> {{value}}
+                </span>
+            {{/pills}}
+        </div>
+    {{/haspills}}
+
+    <div class="saec-assign-kpis">
+        {{#kpis}}
+            <div class="saec-assign-kpis__item {{#isalert}}saec-assign-kpi--alert{{/isalert}}">
+                {{> theme_saec/components/metric_card }}
+            </div>
+        {{/kpis}}
+    </div>
+</div>

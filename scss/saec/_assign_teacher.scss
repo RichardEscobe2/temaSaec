@@ -1,0 +1,259 @@
+// -----------------------------------------------------------------------
+// ASSIGNMENT VIEW SaaS OVERLAY, TEACHER BRANCH (/mod/assign/view.php) —
+// Sprint 7. Counterpart to the existing student overlay (Fase 21,
+// .saec-assign-view-active / scss/custom.scss) which explicitly excludes
+// graders. This covers that gap: due-date pills + real KPI cards
+// (\theme_saec\dashboard\teacher_assign_view_page, templates/components/
+// assign_teacher_summary.mustache) replace the native "Sumario de
+// calificaciones" key-value table, which is hidden below rather than
+// touched. Also covers the primary action buttons (real markup:
+// mod_assign/submission_actionmenu.mustache) and the generic activity
+// navigation footer (core_course/activity_navigation.mustache, shared by
+// every activity module — scoped to .path-mod-assign only).
+// -----------------------------------------------------------------------
+body.saec-assign-teacher-summary-active.path-mod-assign {
+    .gradingsummary {
+        display: none;
+    }
+}
+
+.path-mod-assign {
+    // Open/close date info — core_course/activity_info's generic
+    // .activity-dates block (shared by every activity module, not
+    // assign-specific), shown to every viewer regardless of role. Verified
+    // live: renders as bare <div><strong>Abrió:</strong> ...</div> pairs
+    // with zero classes of their own on either the label or the row.
+    .activity-dates {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+
+        > div {
+            padding: 0.4rem 1rem;
+            border-radius: 999px;
+            background-color: $saec-bg-main;
+            color: $saec-text-dark;
+            font-size: 0.85rem;
+
+            strong {
+                margin-right: 0.35rem;
+                font-weight: 700;
+                color: $saec-primary-hover;
+            }
+        }
+    }
+
+    .saec-assign-teacher-summary {
+        margin-bottom: 1.5rem;
+
+        // Metadata strip: same card language as .activity-dates above (light
+        // surface, border, radius) so the two read as one consolidated
+        // metadata block rather than a floating, unstyled row of pills.
+        &__pills {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.85rem 1.1rem;
+            margin-bottom: 1.25rem;
+            background-color: $saec-surface;
+            border: 1px solid $saec-border;
+            border-radius: $saec-radius;
+        }
+
+        &__pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.4rem 1rem;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            background-color: $saec-bg-main;
+            color: $saec-text-dark;
+
+            strong {
+                margin-right: 0.35rem;
+                font-weight: 700;
+            }
+
+            &--primary {
+                background-color: $saec-primary-light;
+                color: $saec-primary-hover;
+            }
+
+            &--warning {
+                background-color: $saec-warning-light;
+                color: $saec-warning;
+            }
+
+            &--danger {
+                background-color: rgba($saec-accent, 0.08);
+                color: $saec-accent;
+            }
+        }
+    }
+
+    // -------------------------------------------------------------------
+    // KPI CARDS — flexible grid (flex: 1 1 200px, not Bootstrap's
+    // col-md-3): at ~180px a Bootstrap quarter-column left
+    // .uptex-metric-card__body only ~74px wide (icon + gap + padding ate
+    // the rest), which is narrower than "PARTICIPANTES" can render at any
+    // sane font-size — the browser's only remaining option was to split
+    // the word mid-letter. 200px+ per card resolves that at the source;
+    // the typography override below is the second, belt-and-suspenders
+    // half of the fix.
+    // -------------------------------------------------------------------
+    .saec-assign-kpis {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+
+        &__item {
+            flex: 1 1 200px;
+        }
+    }
+
+    // Scoped to this page's KPI row only — theme_saec/components/metric_card
+    // is shared by Calificador/Asistencia/Boleta/etc., none of which get
+    // this override. Icon/gap trimmed from the shared component's 48px/1rem
+    // to 40px/0.75rem: at the grid's 200px minimum card width, "Por
+    // Calificar" (the longest label) measured a 5px margin against the
+    // shared sizing — comfortable on this session's rendering, but thin
+    // enough that normal cross-platform font-metric variance could tip it
+    // back into overflow. This reclaims ~12px of body width for headroom.
+    .saec-assign-kpis .uptex-metric-card {
+        gap: 0.75rem;
+
+        &__icon {
+            width: 40px;
+            height: 40px;
+            font-size: 1.1rem;
+        }
+
+        &__label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: $saec-text-muted;
+            white-space: nowrap;
+            word-break: normal;
+            overflow-wrap: normal;
+        }
+
+        &__value {
+            white-space: nowrap;
+        }
+    }
+
+    // Needs-Grading KPI, alert state (pending count > 0) — amber/warning,
+    // not $saec-accent's failure red: a pending queue is a caution, not a
+    // failure. Wrapper class set by the mustache template (isalert), not
+    // the shared metric_card partial itself, so every other page reusing
+    // that component (Calificador/Asistencia/Boleta/...) stays untouched.
+    .saec-assign-kpi--alert .uptex-metric-card {
+        background-color: $saec-warning-light;
+        border-color: rgba($saec-warning, 0.35);
+    }
+
+    // Primary action buttons (mod_assign/submission_actionmenu.mustache —
+    // real classes, matched additionally by their real href action= value
+    // rather than the generic .tertiary-navigation wrapper alone, since
+    // that same wrapper class is also used by the unrelated generic
+    // "jump to activity" selector core can render on the same page).
+    .tertiary-navigation a.btn {
+        &[href*="action=grading"],
+        &[href*="action=grader"] {
+            border-radius: $saec-radius;
+            font-weight: 700;
+            padding: 0.6rem 1.4rem;
+            min-height: 44px;
+            transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+            &:hover,
+            &:focus {
+                transform: translateY(-2px);
+                box-shadow: $saec-shadow-md;
+            }
+        }
+
+        &[href*="action=grader"] {
+            background-color: $saec-primary;
+            border-color: $saec-primary;
+
+            &:hover,
+            &:focus {
+                background-color: $saec-primary-hover;
+                border-color: $saec-primary-hover;
+            }
+        }
+
+        &[href*="action=grading"] {
+            background-color: $saec-surface;
+            border-color: $saec-primary;
+            color: $saec-primary;
+
+            &:hover,
+            &:focus {
+                background-color: $saec-primary-light;
+                color: $saec-primary-hover;
+            }
+        }
+    }
+
+    // Bottom "Ir a..." activity selector + previous/next links — generic
+    // core class shared by every activity module, scoped to this page path
+    // only.
+    .activity-navigation {
+        padding: 1.25rem 1.5rem;
+        background-color: $saec-surface;
+        border: 1px solid $saec-border;
+        border-radius: $saec-radius;
+        box-shadow: $saec-shadow-md;
+
+        .btn.btn-link {
+            border-radius: 999px;
+            font-weight: 600;
+
+            &:hover,
+            &:focus {
+                background-color: $saec-primary-light;
+                color: $saec-primary;
+            }
+        }
+
+        select {
+            border: 1px solid $saec-border;
+            border-radius: 999px;
+            padding: 0.4rem 0.9rem;
+
+            &:focus {
+                outline: none;
+                border-color: $saec-primary;
+                box-shadow: 0 0 0 2px $saec-primary-light;
+            }
+        }
+    }
+
+    // Mobile: the 3-column float-left/float-right prev/next + centered
+    // dropdown layout overflows a narrow viewport — stack instead.
+    @include media-breakpoint-down(sm) {
+        .activity-navigation {
+            .float-left,
+            .float-right {
+                float: none;
+                width: 100%;
+                margin-bottom: 0.5rem;
+                text-align: center;
+            }
+        }
+
+        .saec-assign-teacher-summary__pill {
+            width: 100%;
+        }
+
+        .tertiary-navigation a.btn {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+    }
+}

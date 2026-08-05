@@ -6,6 +6,7 @@ require_once($CFG->libdir . '/behat/lib.php');
 use theme_saec\dashboard\analytics_page;
 use theme_saec\dashboard\badges_page;
 use theme_saec\dashboard\courses_page;
+use theme_saec\dashboard\grader_hub_page;
 use theme_saec\dashboard\student_dashboard;
 use theme_saec\dashboard\teacher_course_view_page;
 use theme_saec\dashboard\teacher_courses_page;
@@ -187,6 +188,131 @@ if ($isanalyticspage && isloggedin() && !isguestuser() && student_dashboard::is_
     $analyticspagehtml = $OUTPUT->render_from_template('theme_saec/analytics_page', $analyticspagecontext);
 }
 
+// 1g-bis. GRADEBOOK "COURSE SELECTION HUB" (/grade/report/overview/index.php,
+// Sprint 4): teacher-facing counterpart to 1g above, same URL. Gated on
+// $PAGE->course->id == SITEID rather than just $isanalyticspage, because
+// $isanalyticspage matches this page for ANY querystring (out_omit_querystring
+// ignores id/userid) — including ?id=<courseid>&userid=<studentid>, the URL a
+// teacher actually lands on after picking a student from graded_users_selector.
+// grade_report_overview::print_teacher_table() (what this overlay replaces)
+// only ever runs in core when $courseid == SITEID (see index.php's branching);
+// on a specific-course/specific-user request core instead builds #overview-grade
+// (that student's per-course grades), which must render untouched — already
+// styled by scss/saec/_grade_overview.scss and would be wrongly replaced by
+// this generic "pick a course" hub without this guard.
+// $analyticspagehtml === null keeps this mutually exclusive with 1g: a rare
+// dual-role account (Student somewhere AND teaches elsewhere) deterministically
+// keeps seeing the Student "Mi Rendimiento" overlay, matching 1g's own
+// existing precedence.
+$graderhubpagehtml = null;
+if ($isanalyticspage && $analyticspagehtml === null && isloggedin() && !isguestuser()
+        && $PAGE->course->id == SITEID) {
+    $graderhubpagecontext = grader_hub_page::get_context();
+    if ($graderhubpagecontext !== null) {
+        $graderhubpagehtml = $OUTPUT->render_from_template('theme_saec/grader_hub_page', $graderhubpagecontext);
+    }
+}
+
+// 1g-ter. ATTENDANCE SESSION CARDS (/mod/attendance/manage.php, Sprint 9):
+// unlike every overlay above, this does NOT hide or replace the native
+// session table — its real per-row action links (take/edit/delete) carry
+// a real sesskey the theme has no business reconstructing. A small JS
+// pass (below) reads each row's own "take attendance" link to recover its
+// real sessionid, then injects the real taken-status pill + attendee-count
+// badge \theme_saec\dashboard\attendance_manage_page::get_session_badges()
+// computes, keyed by sessionid, directly into that row — scss/saec/
+// _attendance_manage.scss reflows the table into cards, the native <a>
+// elements underneath are never touched.
+$isattendancemanagepage = ($PAGE->url->out_omit_querystring()
+    === (new moodle_url('/mod/attendance/manage.php'))->out_omit_querystring());
+if ($isattendancemanagepage && isloggedin() && !isguestuser()) {
+    $attendancecmid = optional_param('id', 0, PARAM_INT);
+    if ($attendancecmid) {
+        $attendancebadges = \theme_saec\dashboard\attendance_manage_page::get_session_badges($attendancecmid);
+        if (!empty($attendancebadges)) {
+            $attendancebadgesjson = json_encode($attendancebadges);
+            $attendancetakenlabel = json_encode(get_string('attendancemanagetaken', 'theme_saec'));
+            $attendancependinglabel = json_encode(get_string('attendancemanagepending', 'theme_saec'));
+            $attendancepresentlabel = json_encode(get_string('attendancemanagepresent', 'theme_saec'));
+            $PAGE->requires->js_init_code(<<<JS
+require(['jquery'], function(\$) {
+    var badges = {$attendancebadgesjson};
+    var takenLabel = {$attendancetakenlabel};
+    var pendingLabel = {$attendancependinglabel};
+    var presentLabel = {$attendancepresentlabel};
+
+    document.querySelectorAll('.attsessions_manage_table table.generaltable tbody tr').forEach(function(row) {
+        if (row.children.length < 6) {
+            return; // the bulk-actions footer row, not a real session row.
+        }
+        var takelink = row.querySelector('a');
+        if (!takelink) {
+            return;
+        }
+        var match = takelink.href.match(/sessionid=(\d+)/);
+        if (!match || !badges[match[1]]) {
+            return;
+        }
+        var info = badges[match[1]];
+        var descCell = row.children[4];
+
+        var statusPill = document.createElement('span');
+        statusPill.className = 'saec-attendance-session-card__status ' +
+            (info.taken ? 'saec-attendance-session-card__status--taken' : 'saec-attendance-session-card__status--pending');
+        statusPill.textContent = info.taken ? takenLabel : pendingLabel;
+        descCell.appendChild(statusPill);
+
+        if (info.taken) {
+            var countBadge = document.createElement('span');
+            countBadge.className = 'saec-attendance-session-card__count';
+            countBadge.textContent = info.present + '/' + info.total + ' ' + presentLabel;
+            descCell.appendChild(countBadge);
+        }
+    });
+});
+JS);
+        }
+    }
+}
+
+// 1g-quater. "MARCAR TODOS COMO PRESENTES" (/mod/attendance/take.php,
+// Sprint 9): mod_attendance's only native bulk-marking mechanism is the
+// "Configurar estatus para" dropdown (pick a status, applies to the
+// selected/all rows) — a real feature, but not the one-click utility this
+// task asks for. Rather than reconstruct/duplicate that dropdown's own
+// apply logic, this button directly checks every real radio in column c2
+// (the "Presente" column — same fixed-position assumption documented in
+// scss/saec/_attendance_take.scss) and dispatches a real change event, so
+// anything else listening for it still fires. The teacher still has to
+// press the native "Guardar" button themselves — this only pre-fills the
+// form, it never submits on its own.
+$isattendancetakepage = ($PAGE->url->out_omit_querystring()
+    === (new moodle_url('/mod/attendance/take.php'))->out_omit_querystring());
+if ($isattendancetakepage && isloggedin() && !isguestuser()) {
+    $attendancemarkalllabel = json_encode(get_string('attendancemarkallpresent', 'theme_saec'));
+    $PAGE->requires->js_init_code(<<<JS
+require(['jquery'], function(\$) {
+    var table = document.querySelector('table.takelist');
+    var submitbtn = document.querySelector('input[type="submit"].btn-primary');
+    if (!table || !submitbtn) {
+        return;
+    }
+
+    var button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'saec-attendance-mark-all-present';
+    button.textContent = {$attendancemarkalllabel};
+    button.addEventListener('click', function() {
+        table.querySelectorAll('td.cell.c2 input[type="radio"]').forEach(function(radio) {
+            radio.checked = true;
+            radio.dispatchEvent(new Event('change', {bubbles: true}));
+        });
+    });
+    submitbtn.insertAdjacentElement('afterend', button);
+});
+JS);
+}
+
 // 1h. PORTAL DE CONFIGURACIÓN DE CUENTA (/user/preferences.php, Fase 16):
 // a diferencia de las páginas anteriores, ésta aplica a CUALQUIER usuario
 // logueado (alumno, docente o administrador), no sólo a Alumnos — por eso
@@ -295,12 +421,97 @@ if ($iscourseviewpage && $PAGE->course->id != SITEID) {
 // calificación sin ninguna interferencia de este tema).
 $assignheaderhtml = null;
 $assignworkspacehtml = null;
+$assignteachersummaryhtml = null;
 $isassignviewpage = ($PAGE->url->out_omit_querystring() === (new moodle_url('/mod/assign/view.php'))->out_omit_querystring());
-if ($isassignviewpage && $PAGE->cm && $PAGE->cm->modname === 'assign') {
+// mod/assign/view.php renders entirely different UI per ?action= (the
+// submissions table for 'grading', the single-grading iframe for
+// 'grader', the submission mform for 'editsubmission', ...) — the native
+// "Sumario de calificaciones" block this teacher overlay replaces (1j-bis
+// below) and assign_view_page's student overlay both only ever render on
+// the DEFAULT landing action (empty or 'view'), so out_omit_querystring()
+// alone (which strips ?action= too) isn't enough of a guard on its own.
+$isassignlandingaction = in_array(optional_param('action', '', PARAM_ALPHA), ['', 'view'], true);
+if ($isassignviewpage && $isassignlandingaction && $PAGE->cm && $PAGE->cm->modname === 'assign') {
     $assignviewcontext = \theme_saec\dashboard\assign_view_page::get_context($PAGE->cm->id);
     if ($assignviewcontext !== null) {
         $assignheaderhtml = $OUTPUT->render_from_template('theme_saec/components/assign_header', $assignviewcontext['header']);
         $assignworkspacehtml = $OUTPUT->render_from_template('theme_saec/components/assign_workspace', $assignviewcontext['workspace']);
+    } else {
+        // 1j-bis. VISTA DE TAREA — SaaS OVERLAY, RAMA DOCENTE (Sprint 7):
+        // assign_view_page::get_context() returns null here for graders by
+        // design (see its docblock) — this is exactly that gap. Native
+        // "Sumario de calificaciones" table + its numbers are hidden via
+        // CSS (body.saec-assign-teacher-summary-active) and replaced with
+        // due-date pills + real KPI cards, all sourced from
+        // \assign::get_assign_grading_summary_renderable() — never
+        // reimplemented.
+        $assignteachercontext = \theme_saec\dashboard\teacher_assign_view_page::get_context($PAGE->cm->id);
+        if ($assignteachercontext !== null) {
+            $assignteachersummaryhtml = $OUTPUT->render_from_template(
+                'theme_saec/components/assign_teacher_summary',
+                $assignteachercontext
+            );
+        }
+    }
+}
+
+// 1k. STUDENT "BOLETA DIGITAL" SUMMARY (/grade/report/user/index.php,
+// Sprint 6): additive only, same non-destructive pattern as 1j above — the
+// native gradereport_user table is never touched (its rowspan/hidden-item/
+// configurable-column logic is real core complexity, unsafe to
+// reimplement), this only injects 3 real-data metric cards above it.
+// Renders for whoever the table is actually showing (student viewing their
+// own report, or a teacher/parent viewing a specific student's) — skipped
+// for the teacher "zero state" (no student picked yet) and "view all"
+// (userid=0, loops every student's table in sequence) branches of
+// grade/report/user/index.php, where there's no single user to summarize.
+$boletasummaryhtml = null;
+$isuserreportpage = ($PAGE->url->out_omit_querystring() === (new moodle_url('/grade/report/user/index.php'))->out_omit_querystring());
+if ($isuserreportpage) {
+    // Registered unconditionally (not inside templates/components/
+    // boleta_summary.mustache's own {{#js}}) so the mobile column-hiding
+    // in scss/saec/_boleta.scss still works even when boleta_page::get_context()
+    // returns null below (e.g. an empty gradebook) — that native table
+    // still renders and still needs its columns tagged.
+    $PAGE->requires->js_init_code(<<<'JS'
+require(['jquery'], function($) {
+    var table = document.querySelector('.path-grade-report-user table.user-grade');
+    if (!table) {
+        return;
+    }
+    var columnKeys = Array.from(table.querySelectorAll('thead th')).map(function(th) {
+        var match = Array.from(th.classList).find(function(c) { return c.indexOf('column-') === 0; });
+        return match ? match.replace('column-', '') : null;
+    });
+    table.querySelectorAll('tbody tr').forEach(function(row) {
+        var cells = Array.from(row.children);
+        var anchor = cells.findIndex(function(c) { return c.tagName === 'TH'; });
+        if (anchor === -1) {
+            return;
+        }
+        columnKeys.forEach(function(key, i) {
+            var cell = cells[anchor + i];
+            if (cell && key) {
+                cell.setAttribute('data-column', key);
+            }
+        });
+    });
+});
+JS);
+}
+if ($isuserreportpage && isloggedin() && !isguestuser() && $PAGE->course->id) {
+    $boletacourseid = $PAGE->course->id;
+    $boletarequesteduserid = optional_param('userid', null, PARAM_INT);
+    if (has_capability('moodle/grade:viewall', context_course::instance($boletacourseid))) {
+        $boletauserid = (empty($boletarequesteduserid)) ? null : $boletarequesteduserid;
+    } else {
+        $boletauserid = $boletarequesteduserid ?: $USER->id;
+    }
+    if ($boletauserid) {
+        $boletacontext = \theme_saec\dashboard\boleta_page::get_context($boletacourseid, $boletauserid);
+        if ($boletacontext !== null) {
+            $boletasummaryhtml = $OUTPUT->render_from_template('theme_saec/components/boleta_summary', $boletacontext);
+        }
     }
 }
 
@@ -319,6 +530,9 @@ if ($isbadgeverifypage) {
 if ($analyticspagehtml !== null) {
     $extraclasses[] = 'page-analytics';
 }
+if ($graderhubpagehtml !== null) {
+    $extraclasses[] = 'page-grader-hub';
+}
 if ($settingspagehtml !== null) {
     $extraclasses[] = 'page-settings';
 }
@@ -330,6 +544,9 @@ if ($teachercourseviewheaderhtml !== null) {
 }
 if ($assignheaderhtml !== null) {
     $extraclasses[] = 'saec-assign-view-active';
+}
+if ($assignteachersummaryhtml !== null) {
+    $extraclasses[] = 'saec-assign-teacher-summary-active';
 }
 $bodyattributes = $OUTPUT->body_attributes($extraclasses);
 
@@ -399,7 +616,19 @@ $showmainnav = $isloggedin;
 $navitems = [];
 if ($showmainnav) {
     $currentpath = $PAGE->url->get_path();
-    $incourse = (!empty($PAGE->course) && $PAGE->course->id != SITEID);
+    // NOT !empty($PAGE->course): moodle_page defines __get() (delegating to
+    // magic_get_course()) but no __isset() — per PHP's overloading rules,
+    // empty()/isset() on a property that only has __get() always evaluate
+    // to "not set", regardless of what __get() would actually return
+    // (verified: $PAGE->course->id resolves the real course correctly even
+    // while !empty($PAGE->course) is false). That silently broke $courseid
+    // (and therefore the Calificador/Asistencia/Progreso sidebar links)
+    // wherever $PAGE->course->id != SITEID no longer had to be reached
+    // through a truthiness check on the object itself — e.g. every
+    // mod/*/view.php page. magic_get_course() always returns a real course
+    // object (defaults to $SITE, never null), so there's nothing to guard
+    // against here beyond the actual SITEID comparison.
+    $incourse = ($PAGE->course->id != SITEID);
     $courseid = $incourse ? $PAGE->course->id : null;
     $isstudentrole = !$is_teacher && !$is_admin;
 
@@ -438,13 +667,18 @@ if ($showmainnav) {
             ? new moodle_url('/grade/report/index.php', ['id' => $courseid])
             : new moodle_url('/grade/report/overview/index.php');
 
+        // Sprint 9: was a per-course link (mod/attendance/index.php?id=courseid,
+        // a bare 2-column table with no metrics — real, but not a "hub").
+        // Now points at the theme's own cross-course Course Selection Hub
+        // (theme/saec/pages/attendance_hub.php) instead — mod_attendance has
+        // no cross-course landing page of its own to link to.
         $attendanceinstalled = file_exists($CFG->dirroot . '/mod/attendance/version.php');
-        $attendanceurl = ($courseid && $attendanceinstalled)
-            ? new moodle_url('/mod/attendance/index.php', ['id' => $courseid])
+        $attendanceurl = $attendanceinstalled
+            ? new moodle_url('/theme/saec/pages/attendance_hub.php')
             : new moodle_url('/my/courses.php');
 
         $progressurl = $courseid
-            ? new moodle_url('/report/progress/index.php', ['course' => $courseid])
+            ? new moodle_url('/grade/report/user/index.php', ['id' => $courseid])
             : new moodle_url('/my/courses.php');
 
         $navitems = [
@@ -460,14 +694,15 @@ if ($showmainnav) {
                 'label' => get_string('navattendance', 'theme_saec'),
                 'url' => $attendanceurl->out(false),
                 'icon' => $attendanceinstalled ? $icon('monologo', 'mod_attendance') : $icon('i/calendar'),
-                'isactive' => (strpos($currentpath, '/mod/attendance/') !== false),
-                'disabled' => !($courseid && $attendanceinstalled),
+                'isactive' => (strpos($currentpath, '/mod/attendance/') !== false
+                    || strpos($currentpath, '/theme/saec/pages/attendance_hub.php') !== false),
+                'disabled' => !$attendanceinstalled,
             ],
             [
                 'label' => get_string('navstudentprogress', 'theme_saec'),
                 'url' => $progressurl->out(false),
                 'icon' => $icon('i/report'),
-                'isactive' => (strpos($currentpath, '/report/progress/') !== false),
+                'isactive' => (strpos($currentpath, '/grade/report/user/') !== false),
                 'disabled' => !$courseid,
             ],
             [
@@ -560,6 +795,8 @@ $templatecontext = [
     'badgespagehtml' => $badgespagehtml,
     'showanalyticspage' => ($analyticspagehtml !== null),
     'analyticspagehtml' => $analyticspagehtml,
+    'showgraderhubpage' => ($graderhubpagehtml !== null),
+    'graderhubpagehtml' => $graderhubpagehtml,
     'showsettingspage' => ($settingspagehtml !== null),
     'settingspagehtml' => $settingspagehtml,
     'showcourseviewpage' => ($courseviewheaderhtml !== null),
@@ -571,6 +808,10 @@ $templatecontext = [
     'showassignviewpage' => ($assignheaderhtml !== null),
     'assignheaderhtml' => $assignheaderhtml,
     'assignworkspacehtml' => $assignworkspacehtml,
+    'showassignteachersummary' => ($assignteachersummaryhtml !== null),
+    'assignteachersummaryhtml' => $assignteachersummaryhtml,
+    'showboletasummary' => ($boletasummaryhtml !== null),
+    'boletasummaryhtml' => $boletasummaryhtml,
     'baseUrl' => $CFG->wwwroot,
     'isDashboard' => ($PAGE->pagelayout === 'mydashboard'),
     'isFrontpage' => ($PAGE->pagelayout === 'frontpage'),

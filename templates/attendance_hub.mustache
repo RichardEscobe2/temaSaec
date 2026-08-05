@@ -1,0 +1,47 @@
+{{!
+    @template theme_saec/attendance_hub
+
+    "Control de Asistencia" Course Selection Hub — a standalone theme_saec
+    page (theme/saec/pages/attendance_hub.php), not an overlay on a native
+    page: mod_attendance has no cross-course landing page of its own.
+    Context from \theme_saec\dashboard\attendance_hub_page::get_context().
+
+    Example context (json):
+    {
+        "fullname": "Carlos Gomez",
+        "avatarurl": "https://example.org/avatar.jpg",
+        "activitycount": 3,
+        "hasactivities": true,
+        "activities": [
+            {
+                "cmid": 16, "coursename": "Microcredencial de Desarrollo Web",
+                "activityname": "lista parcial", "sessionssummary": "27 sesiones · 3 tomadas",
+                "hasrate": true, "rate": "70.8",
+                "manageurl": "https://example.org/mod/attendance/manage.php?id=16"
+            }
+        ]
+    }
+}}
+<div class="saec-attendance-hub">
+    <header class="saec-attendance-hub__hero">
+        <img class="saec-attendance-hub__avatar" src="{{{ avatarurl }}}" alt="">
+        <div>
+            <h1 class="saec-attendance-hub__title">{{#str}} attendancehubheading, theme_saec {{/str}}</h1>
+            <p class="saec-attendance-hub__subtitle">{{#str}} attendancehubsubheading, theme_saec, {{activitycount}} {{/str}}</p>
+        </div>
+    </header>
+
+    {{#hasactivities}}
+        <div class="saec-attendance-hub__grid">
+            {{#activities}}
+                {{> theme_saec/components/attendance_hub_card }}
+            {{/activities}}
+        </div>
+    {{/hasactivities}}
+    {{^hasactivities}}
+        <div class="saec-attendance-hub__empty">
+            <i class="icon fa fa-calendar-o" aria-hidden="true"></i>
+            <p>{{#str}} attendancehubempty, theme_saec {{/str}}</p>
+        </div>
+    {{/hasactivities}}
+</div>

@@ -1,0 +1,30 @@
+{{!
+    @template theme_saec/components/boleta_summary
+
+    Student "Boleta Digital" summary row (/grade/report/user/index.php) —
+    three real-data metric cards (overall course-total %, completed items,
+    status) injected ABOVE the native gradereport_user table, not replacing
+    it. Reuses the shared theme_saec/components/metric_card partial (same
+    one used by Calificador/Asistencia/Rendimiento Académico) rather than
+    inventing a new card component. Context from
+    \theme_saec\dashboard\boleta_page::get_context().
+
+    Example context (json):
+    {
+        "cards": [
+            {
+                "key": "overallgrade", "icon": "<img src=\"...\" alt=\"\">",
+                "iconvariant": "primary", "label": "Calificación General",
+                "value": "72.5", "hasvaluesuffix": true, "valuesuffix": "%",
+                "hasfootnote": false, "footnote": null
+            }
+        ]
+    }
+}}
+<div class="saec-boleta-summary row">
+    {{#cards}}
+        <div class="col-12 col-md-4 mb-3">
+            {{> theme_saec/components/metric_card }}
+        </div>
+    {{/cards}}
+</div>

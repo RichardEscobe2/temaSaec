@@ -1,0 +1,94 @@
+{{!
+    @template theme_saec/grader_hub_page
+
+    Gradebook "Course Selection Hub" (/grade/report/overview/index.php),
+    teacher-facing branch — replaces grade_report_overview::print_teacher_table()'s
+    bare course-name list (hidden via scss/saec/_grader_hub.scss's
+    body.page-grader-hub rule, same strategy as templates/analytics_page.mustache
+    uses for the Student branch of this exact page). Context from
+    \theme_saec\dashboard\grader_hub_page::get_context().
+
+    Instant client-side search (Sprint 5): filters .saec-grader-hub-card
+    elements on keyup by their data-course-name attribute (fullname +
+    shortname) — same plain-JS-over-prerendered-cards approach as
+    teacher_courses_page.mustache's own search box, no AJAX dependency.
+
+    Example context (json):
+    {
+        "fullname": "Carlos Gomez",
+        "avatarurl": "https://example.org/avatar.jpg",
+        "coursecount": 3,
+        "hascourses": true,
+        "courses": [
+            {
+                "id": 4, "fullname": "Microcredencial de Desarrollo Web",
+                "shortname": "MDW-2026", "categoryname": "Educación Continua",
+                "studentcount": 12,
+                "gradebookurl": "https://example.org/grade/report/index.php?id=4"
+            }
+        ]
+    }
+}}
+<div class="saec-grader-hub" id="saec-grader-hub-{{uniqid}}">
+    <header class="saec-grader-hub__hero">
+        <img class="saec-grader-hub__avatar" src="{{{ avatarurl }}}" alt="">
+        <div>
+            <h1 class="saec-grader-hub__title">{{#str}} graderhubheading, theme_saec {{/str}}</h1>
+            <p class="saec-grader-hub__subtitle">{{#str}} graderhubsubheading, theme_saec, {{coursecount}} {{/str}}</p>
+        </div>
+        {{#hascourses}}
+            <div class="saec-grader-hub__search">
+                <span class="saec-grader-hub__search-icon" aria-hidden="true">
+                    <i class="icon fa fa-search"></i>
+                </span>
+                <label class="sr-only" for="saec-grader-hub-search-{{uniqid}}">{{#str}} graderhubsearchplaceholder, theme_saec {{/str}}</label>
+                <input type="search" id="saec-grader-hub-search-{{uniqid}}"
+                       class="saec-grader-hub__search-input"
+                       placeholder="{{#str}} graderhubsearchplaceholder, theme_saec {{/str}}"
+                       data-saec-grader-hub-search>
+            </div>
+        {{/hascourses}}
+    </header>
+
+    {{#hascourses}}
+        <div class="saec-grader-hub__grid">
+            {{#courses}}
+                {{> theme_saec/components/grader_hub_course_card }}
+            {{/courses}}
+        </div>
+        <p class="saec-grader-hub__empty-filtered d-none" data-saec-grader-hub-empty-filtered>
+            {{#str}} graderhubnomatch, theme_saec {{/str}}
+        </p>
+    {{/hascourses}}
+    {{^hascourses}}
+        <div class="saec-grader-hub__empty">
+            <i class="icon fa fa-graduation-cap" aria-hidden="true"></i>
+            <p>{{#str}} teachercoursesempty, theme_saec {{/str}}</p>
+        </div>
+    {{/hascourses}}
+</div>
+{{#js}}
+require(['jquery'], function($) {
+    var root = $('#saec-grader-hub-{{uniqid}}');
+    var search = root.find('[data-saec-grader-hub-search]');
+    var cards = root.find('.saec-grader-hub-card');
+    var emptyfiltered = root.find('[data-saec-grader-hub-empty-filtered]');
+
+    search.on('keyup input', function() {
+        var query = (search.val() || '').toLowerCase();
+        var visiblecount = 0;
+
+        cards.each(function() {
+            var card = $(this);
+            var name = (card.attr('data-course-name') || '').toLowerCase();
+            var show = name.indexOf(query) !== -1;
+            card.toggle(show);
+            if (show) {
+                visiblecount++;
+            }
+        });
+
+        emptyfiltered.toggleClass('d-none', visiblecount !== 0);
+    });
+});
+{{/js}}

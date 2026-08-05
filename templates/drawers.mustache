@@ -158,6 +158,9 @@
                             {{#showanalyticspage}}
                                 {{{ analyticspagehtml }}}
                             {{/showanalyticspage}}
+                            {{#showgraderhubpage}}
+                                {{{ graderhubpagehtml }}}
+                            {{/showgraderhubpage}}
                             {{#showsettingspage}}
                                 {{{ settingspagehtml }}}
                             {{/showsettingspage}}
@@ -170,6 +173,12 @@
                             {{#showassignviewpage}}
                                 {{{ assignheaderhtml }}}
                             {{/showassignviewpage}}
+                            {{#showassignteachersummary}}
+                                {{{ assignteachersummaryhtml }}}
+                            {{/showassignteachersummary}}
+                            {{#showboletasummary}}
+                                {{{ boletasummaryhtml }}}
+                            {{/showboletasummary}}
                             {{! output.main_content() does not return real page HTML — it
                                 returns a one-time placeholder token. core_renderer::header()
                                 renders this ENTIRE layout once, then does a raw string search

@@ -1,0 +1,37 @@
+{{!
+    @template theme_saec/components/attendance_hub_card
+
+    One attendance activity tile in the "Control de Asistencia" hub —
+    category-style course badge, activity title, real session/rate
+    metrics, and the "Gestionar Asistencia" CTA. Context: one entry from
+    \theme_saec\dashboard\attendance_hub_page::get_context()'s `activities`.
+
+    Example context (json):
+    {
+        "cmid": 16, "coursename": "Microcredencial de Desarrollo Web",
+        "activityname": "lista parcial", "sessionssummary": "27 sesiones · 3 tomadas",
+        "hasrate": true, "rate": "70.8",
+        "manageurl": "https://example.org/mod/attendance/manage.php?id=16"
+    }
+}}
+<article class="saec-attendance-hub-card">
+    <span class="saec-attendance-hub-card__badge">{{ coursename }}</span>
+    <h2 class="saec-attendance-hub-card__title">{{ activityname }}</h2>
+    <p class="saec-attendance-hub-card__sessions">
+        <i class="icon fa fa-calendar-check-o" aria-hidden="true"></i>
+        {{ sessionssummary }}
+    </p>
+    <p class="saec-attendance-hub-card__rate">
+        {{#hasrate}}
+            <span class="saec-attendance-hub-card__rate-value">{{ rate }}<small>%</small></span>
+            <span class="saec-attendance-hub-card__rate-label">{{#str}} attendancehubratelabel, theme_saec {{/str}}</span>
+        {{/hasrate}}
+        {{^hasrate}}
+            <span class="saec-attendance-hub-card__rate-empty">{{#str}} attendancehubnodata, theme_saec {{/str}}</span>
+        {{/hasrate}}
+    </p>
+    <a href="{{{ manageurl }}}" class="saec-attendance-hub-card__cta">
+        {{#str}} attendancehubcta, theme_saec {{/str}}
+        <span aria-hidden="true">&rarr;</span>
+    </a>
+</article>

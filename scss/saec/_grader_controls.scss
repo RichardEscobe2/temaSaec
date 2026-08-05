@@ -1,0 +1,191 @@
+// -----------------------------------------------------------------------
+// GRADER REPORT CONTROL BAR (/grade/report/grader/index.php) — Sprint 5.
+// Cosmetic-only pill restyle of the native tertiary-navigation action bar
+// (gradereport_grader/action_bar.mustache + core/comboboxsearch +
+// core/tertiary_navigation_selector). No markup override — the real DOM
+// was audited directly (grade/renderer.php, core/comboboxsearch.mustache,
+// lib/templates/search_input_auto.mustache) rather than assumed, because
+// this control bar is a set of Bootstrap-dropdown JS widgets (initials
+// filter, group selector, live user search, column-collapse menu), not
+// plain <select>/<input> elements — only non-interactive-logic properties
+// are touched here (border/radius/color/background/shadow/spacing).
+// Deliberately NOT touched: pointer-events/z-index on .user-search input
+// (grade/report/grader/styles.css relies on those to route clicks through
+// a pointer-events:none ancestor to the input specifically), any
+// position/transform/display used for Bootstrap's dropdown positioning,
+// and the grading grid itself (autosave/quick-grading JS out of scope).
+// -----------------------------------------------------------------------
+.path-grade-report-grader {
+    .tertiary-navigation {
+        .row {
+            gap: 0.75rem 0.5rem;
+        }
+
+        // Bootstrap's vertical-line separators between controls read as
+        // visual clutter once every control below becomes its own pill —
+        // softened rather than removed outright (still a real, if subtler,
+        // grouping cue).
+        .navitem-divider {
+            border-color: $saec-border;
+            opacity: 0.6;
+        }
+    }
+
+    // View switcher (Grader report / Single view / Grades setup / ...) —
+    // a real <select> via core/select_menu.
+    .tertiary-navigation-selector select {
+        min-height: 44px;
+        border: 1px solid $saec-border;
+        border-radius: 999px;
+        padding: 0.5rem 1rem;
+        background-color: $saec-surface;
+        color: $saec-text-dark;
+        font-weight: 600;
+
+        &:focus {
+            outline: none;
+            border-color: $saec-primary;
+            box-shadow: 0 0 0 2px $saec-primary-light;
+        }
+    }
+
+    // Initials filter / Group selector dropdown-toggle buttons — real
+    // classes confirmed in grade/renderer.php (buttonclasses passed into
+    // core\output\comboboxsearch), NOT the ".initials-selector" wrapper
+    // class the original brief guessed at (that one only wraps the button
+    // + its popover panel, it isn't the clickable/focusable element).
+    .initialswidget,
+    .groupsearchwidget {
+        min-height: 44px;
+        padding: 0.5rem 1rem;
+        border: 1px solid $saec-border;
+        border-radius: 999px;
+        background-color: $saec-surface;
+        color: $saec-text-dark;
+
+        &:hover,
+        &:focus,
+        &[aria-expanded="true"] {
+            border-color: $saec-primary;
+            box-shadow: 0 0 0 2px $saec-primary-light;
+        }
+    }
+
+    // Live user-search box — core/search_input_auto's real input, reached
+    // via the .user-search parent (its OWN class list has no unique hook,
+    // .usersearchwidget in core's own styles.css is stale/unused — verified
+    // it is never emitted by any template in this Moodle version).
+    .user-search {
+        .searchbar {
+            border: 1px solid $saec-border;
+            border-radius: 999px;
+            background-color: $saec-surface;
+            overflow: hidden;
+
+            &:focus-within {
+                border-color: $saec-primary;
+                box-shadow: 0 0 0 2px $saec-primary-light;
+            }
+        }
+
+        input.form-control {
+            min-height: 44px;
+            border: none;
+            background-color: transparent;
+            padding-left: 1.1rem;
+
+            &:focus {
+                outline: none;
+                box-shadow: none;
+            }
+        }
+    }
+
+    // Collapsed-columns button — buttonclasses='collapsecolumn' in
+    // action_bar.php's $collapse comboboxsearch (usebutton=true, so it
+    // lands on the real dropdown-toggle element).
+    .collapsecolumn {
+        min-height: 44px;
+        padding: 0.5rem 1rem;
+        border: 1px solid $saec-border;
+        border-radius: 999px;
+        background-color: $saec-surface;
+
+        &:hover,
+        &:focus,
+        &[aria-expanded="true"] {
+            border-color: $saec-primary;
+            box-shadow: 0 0 0 2px $saec-primary-light;
+        }
+    }
+
+    // Dropdown popover panels (initials bar, live-search results, group
+    // list, column-collapse list) — cosmetic surface only, their own
+    // position/show-hide classes are untouched.
+    .initialsdropdown,
+    .usersearchdropdown,
+    .groupsearchdropdown,
+    .collapsecolumndropdown {
+        border: 1px solid $saec-border;
+        border-radius: $saec-radius;
+        box-shadow: $saec-shadow-md;
+    }
+
+    // -------------------------------------------------------------------
+    // STUDENT NAME → BOLETA DIGITAL SHORTCUT — Sprint 7. The student-name
+    // link itself (.username, grade/report/grader/lib.php) goes to the
+    // plain profile page (core_user::get_profile_url()) — that destination
+    // is core routing, not something a "Zero Core Hacks" theme can
+    // redirect. What's real and already correct is the per-student "..."
+    // action menu (core_grades/cellmenu.mustache) sitting right next to
+    // it: grade/report/user/lib.php's gradereport_user_get_report_link()
+    // callback already adds a genuine dropdown-item linking straight to
+    // /grade/report/user/index.php?userid=X&id=Y (the Boleta Digital) —
+    // it's just visually buried as a plain grey ellipsis. This only makes
+    // that already-correct, already-native link discoverable.
+    // -------------------------------------------------------------------
+    .username {
+        font-weight: 600;
+
+        &:hover,
+        &:focus {
+            color: $saec-primary;
+        }
+    }
+
+    // Kebab trigger: from a barely-visible grey ellipsis to an always-
+    // visible pill affordance, so students realize there's more here than
+    // their name.
+    .action-menu.moodle-actionmenu.grader .cellmenubtn {
+        border: 1px solid $saec-border;
+        border-radius: 999px;
+        background-color: $saec-surface;
+
+        &:hover,
+        &:focus,
+        &[aria-expanded="true"] {
+            border-color: $saec-primary;
+            background-color: $saec-primary-light;
+        }
+    }
+
+    // The real Boleta Digital entry inside that menu — matched on its
+    // actual href (grade/report/{$CFG->grade_profilereport}/index.php,
+    // 'user' by default), not its translatable label text, so this stays
+    // correct across languages and doesn't depend on guessing string keys.
+    .dropdown-menu a.dropdown-item[href*="/grade/report/user/"] {
+        color: $saec-primary-hover;
+        font-weight: 700;
+
+        &::before {
+            content: "\2192"; // decorative arrow only — same convention as the grade-pill CTA in _grade_overview.scss.
+            margin-right: 0.4rem;
+        }
+
+        &:hover,
+        &:focus {
+            background-color: $saec-primary-light;
+            color: $saec-primary-hover;
+        }
+    }
+}
