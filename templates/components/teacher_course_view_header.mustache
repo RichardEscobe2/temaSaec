@@ -1,0 +1,53 @@
+{{!
+    @template theme_saec/components/teacher_course_view_header
+
+    Hero banner for the "Teacher Course View" SaaS overlay
+    (/course/view.php — Sprint 3). Injected by layout/drawers.php ABOVE
+    Moodle's own native section/activity content, which stays fully
+    untouched — including in edit mode, since this overlay (unlike the
+    student one) does NOT hide when $PAGE->user_is_editing() is true.
+    editbuttonhtml is core's own real "Activar edición"/"Dejar de editar"
+    control (via $OUTPUT->page_heading_button()), relocated here rather than
+    left in its native #page-header slot (hidden for this page only — see
+    scss/saec/_teacher_course_view.scss) to avoid showing it twice. Context
+    comes from \theme_saec\dashboard\teacher_course_view_page::get_context().
+
+    NOTE (Sprint 6 — nav unification): this template previously rendered
+    its own curated .saec-course-tabs bar below the hero. That's been
+    removed so the page falls through to Moodle's native
+    .secondary-navigation ribbon (already restyled in
+    scss/saec/_navigation.scss), the same one every course sub-page shows —
+    eliminating the menu-format switch a teacher used to hit navigating
+    from Curso into Participantes/Calificador.
+
+    Example context (json):
+    {
+        "coursename": "Curso de Regularización Universitaria",
+        "coursecode": "REG-2026",
+        "categoryname": "Educación Continua",
+        "editbuttonhtml": "<a class=\"btn btn-primary\" href=\"...\">Activar edición</a>",
+        "studentcount": 28,
+        "pendinggradingcount": 3
+    }
+}}
+<div class="saec-teacher-course-hero">
+    <div class="saec-teacher-course-hero__main">
+        {{#categoryname}}<span class="saec-teacher-course-hero__code">{{ categoryname }} &middot; {{ coursecode }}</span>{{/categoryname}}
+        <h1 class="saec-teacher-course-hero__title">{{ coursename }}</h1>
+    </div>
+
+    <div class="saec-teacher-course-hero__stats">
+        <div class="saec-teacher-course-hero__stat">
+            <span class="saec-teacher-course-hero__stat-label">{{#str}} teacherherostudentsheading, theme_saec {{/str}}</span>
+            <span class="saec-teacher-course-hero__stat-value">{{ studentcount }}</span>
+        </div>
+        <div class="saec-teacher-course-hero__stat">
+            <span class="saec-teacher-course-hero__stat-label">{{#str}} kpipendingsubmissions, theme_saec {{/str}}</span>
+            <span class="saec-teacher-course-hero__stat-value {{#pendinggradingcount}}saec-teacher-course-hero__stat-value--accent{{/pendinggradingcount}}">{{ pendinggradingcount }}</span>
+        </div>
+    </div>
+
+    <div class="saec-teacher-course-hero__editbutton">
+        {{{ editbuttonhtml }}}
+    </div>
+</div>

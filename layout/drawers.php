@@ -7,6 +7,9 @@ use theme_saec\dashboard\analytics_page;
 use theme_saec\dashboard\badges_page;
 use theme_saec\dashboard\courses_page;
 use theme_saec\dashboard\student_dashboard;
+use theme_saec\dashboard\teacher_course_view_page;
+use theme_saec\dashboard\teacher_courses_page;
+use theme_saec\dashboard\teacher_dashboard;
 
 // NOTA CRÍTICA (Fase 18 — bug de "doctype() no llamado" en mod_assign):
 // $PAGE y $OUTPUT NO se globalizan aquí a propósito. core_renderer::
@@ -86,6 +89,28 @@ if (isloggedin() && !isguestuser() && $PAGE->pagelayout === 'mydashboard') {
     }
 }
 
+// 1c-bis. PANEL DEL DOCENTE (/my/, Sprint 1): mismo principio que el bloque
+// 1c de arriba, pero para el rol Docente — construye el contexto completo
+// de \theme_saec\dashboard\teacher_dashboard y pre-renderiza
+// theme_saec/teacher_dashboard sólo cuando el usuario logueado es Docente.
+// teacher_dashboard::get_dashboard_context() ya hace su propia
+// comprobación de rol y devuelve null para Alumno/Administrador, así que
+// esos roles no se ven afectados — ver el condicional showteacherdashboard
+// en drawers.mustache.
+$teacherdashboardhtml = null;
+if (isloggedin() && !isguestuser() && $PAGE->pagelayout === 'mydashboard') {
+    $teacherdashboardcontext = teacher_dashboard::get_dashboard_context();
+    if ($teacherdashboardcontext !== null) {
+        $teacherdashboardcontext['mycoursesurl'] = (new moodle_url('/my/courses.php'))->out(false);
+        $teacherdashboardcontext['calendarurl'] = (new moodle_url('/calendar/view.php'))->out(false);
+        $teacherdashboardhtml = $OUTPUT->render_from_template('theme_saec/teacher_dashboard', $teacherdashboardcontext);
+
+        // Same rationale as the student dashboard block above: no block
+        // region is left for a teacher to customise on this replaced view.
+        $PAGE->set_button('');
+    }
+}
+
 // 1d. PÁGINA "MIS CURSOS" (/my/courses.php, Fase 8): construye el contexto
 // de \theme_saec\dashboard\courses_page y pre-renderiza
 // theme_saec/my_courses_page sólo para Alumnos. block_myoverview sigue
@@ -98,6 +123,22 @@ $coursespagehtml = null;
 if (isloggedin() && !isguestuser() && $PAGE->pagelayout === 'mycourses' && student_dashboard::is_student()) {
     $coursespagecontext = courses_page::get_context();
     $coursespagehtml = $OUTPUT->render_from_template('theme_saec/my_courses_page', $coursespagecontext);
+}
+
+// 1d-bis. PÁGINA "MIS CURSOS" PARA DOCENTES (/my/courses.php, Sprint 1):
+// mismo slot que el bloque 1d de arriba, pero para el rol Docente. Antes de
+// esto, un Docente en esta página no obtenía NI el catálogo propio (guardado
+// a is_student()) NI el bloque nativo block_myoverview (oculto de forma
+// incondicional por la regla `body.page-mycourses .block_myoverview` de
+// scss/custom.scss, sin importar el rol) — resultado: área de contenido en
+// blanco. teacher_courses_page::get_context() ya hace su propia
+// comprobación de rol y devuelve null para Alumno/Administrador.
+$teachercoursespagehtml = null;
+if (isloggedin() && !isguestuser() && $PAGE->pagelayout === 'mycourses') {
+    $teachercoursespagecontext = teacher_courses_page::get_context();
+    if ($teachercoursespagecontext !== null) {
+        $teachercoursespagehtml = $OUTPUT->render_from_template('theme_saec/teacher_courses_page', $teachercoursespagecontext);
+    }
 }
 
 // 1e. PÁGINA "MI MOCHILA DE INSIGNIAS" (/badges/mybadges.php, Fase 9):
@@ -209,6 +250,33 @@ if ($iscourseviewpage && $PAGE->course->id != SITEID) {
     }
 }
 
+// 1i-bis. VISTA DE CURSO PARA DOCENTES — SaaS OVERLAY (/course/view.php,
+// Sprint 3): mismo principio que el bloque 1i de arriba, pero para el rol
+// Docente. A diferencia de la variante de Alumno, esta NO se desactiva
+// durante $PAGE->user_is_editing() — para un Docente el modo edición es un
+// estado cotidiano, no un caso excepcional, y el propio botón "Activar
+// edición" vive dentro de este header (editbuttonhtml, reubicado vía
+// $OUTPUT->page_heading_button() — la misma API pública que usan los layouts
+// nativos, nunca reimplementado). El contenido nativo de secciones/
+// actividades permanece 100% intacto tanto en modo edición como fuera de
+// él — teacher_course_view_page::get_context() sólo se activa para Docentes
+// reales (is_teacher()), nunca para Alumnos ni Administradores.
+$teachercourseviewheaderhtml = null;
+$teachercourseviewsidebarhtml = null;
+if ($iscourseviewpage && $PAGE->course->id != SITEID) {
+    $teachercourseviewcontext = teacher_course_view_page::get_context($PAGE->course->id);
+    if ($teachercourseviewcontext !== null) {
+        $teachercourseviewheaderhtml = $OUTPUT->render_from_template(
+            'theme_saec/components/teacher_course_view_header',
+            $teachercourseviewcontext
+        );
+        $teachercourseviewsidebarhtml = $OUTPUT->render_from_template(
+            'theme_saec/components/teacher_course_view_sidebar',
+            $teachercourseviewcontext['sidebar']
+        );
+    }
+}
+
 // 1j. VISTA DE TAREA — SaaS OVERLAY (/mod/assign/view.php, Fase 21): mismo
 // principio que 1i — el formulario de envío nativo (filemanager, mform,
 // botones Guardar cambios/Cancelar) NUNCA se toca ni se restructura en el
@@ -256,6 +324,9 @@ if ($settingspagehtml !== null) {
 }
 if ($courseviewheaderhtml !== null) {
     $extraclasses[] = 'saec-course-view-active';
+}
+if ($teachercourseviewheaderhtml !== null) {
+    $extraclasses[] = 'saec-teacher-course-view-active';
 }
 if ($assignheaderhtml !== null) {
     $extraclasses[] = 'saec-assign-view-active';
@@ -399,6 +470,12 @@ if ($showmainnav) {
                 'isactive' => (strpos($currentpath, '/report/progress/') !== false),
                 'disabled' => !$courseid,
             ],
+            [
+                'label' => get_string('navsettings', 'theme_saec'),
+                'url' => (new moodle_url('/user/preferences.php'))->out(false),
+                'icon' => $icon('i/settings'),
+                'isactive' => (strpos($currentpath, '/user/preferences.php') !== false),
+            ],
         ];
     } else if ($isstudentrole) {
         // ---- ALUMNO -------------------------------------------------------
@@ -473,8 +550,12 @@ $templatecontext = [
     'dashboardkpi' => $dashboardkpi,
     'showstudentdashboard' => ($studentdashboardhtml !== null),
     'studentdashboardhtml' => $studentdashboardhtml,
+    'showteacherdashboard' => ($teacherdashboardhtml !== null),
+    'teacherdashboardhtml' => $teacherdashboardhtml,
     'showcoursespage' => ($coursespagehtml !== null),
     'coursespagehtml' => $coursespagehtml,
+    'showteachercoursespage' => ($teachercoursespagehtml !== null),
+    'teachercoursespagehtml' => $teachercoursespagehtml,
     'showbadgespage' => ($badgespagehtml !== null),
     'badgespagehtml' => $badgespagehtml,
     'showanalyticspage' => ($analyticspagehtml !== null),
@@ -484,6 +565,9 @@ $templatecontext = [
     'showcourseviewpage' => ($courseviewheaderhtml !== null),
     'courseviewheaderhtml' => $courseviewheaderhtml,
     'courseviewsidebarhtml' => $courseviewsidebarhtml,
+    'showteachercourseviewpage' => ($teachercourseviewheaderhtml !== null),
+    'teachercourseviewheaderhtml' => $teachercourseviewheaderhtml,
+    'teachercourseviewsidebarhtml' => $teachercourseviewsidebarhtml,
     'showassignviewpage' => ($assignheaderhtml !== null),
     'assignheaderhtml' => $assignheaderhtml,
     'assignworkspacehtml' => $assignworkspacehtml,

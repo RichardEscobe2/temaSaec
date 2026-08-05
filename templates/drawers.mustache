@@ -97,6 +97,7 @@
                         comentario termina en la primera ocurrencia, cierre
                         prematuro y fuga de texto literal al DOM. }}
                     {{^showstudentdashboard}}
+                    {{^showteacherdashboard}}
                     {{#isDashboard}}
                     <div class="uptex-card mb-4">
                         <div class="p-4">
@@ -121,6 +122,7 @@
                         </div>
                     </div>
                     {{/isDashboard}}
+                    {{/showteacherdashboard}}
                     {{/showstudentdashboard}}
                     {{! --- FIN: BANNER DE BIENVENIDA UPTEX/SAEC --- }}
 
@@ -141,9 +143,15 @@
                             {{#showstudentdashboard}}
                                 {{{ studentdashboardhtml }}}
                             {{/showstudentdashboard}}
+                            {{#showteacherdashboard}}
+                                {{{ teacherdashboardhtml }}}
+                            {{/showteacherdashboard}}
                             {{#showcoursespage}}
                                 {{{ coursespagehtml }}}
                             {{/showcoursespage}}
+                            {{#showteachercoursespage}}
+                                {{{ teachercoursespagehtml }}}
+                            {{/showteachercoursespage}}
                             {{#showbadgespage}}
                                 {{{ badgespagehtml }}}
                             {{/showbadgespage}}
@@ -156,6 +164,9 @@
                             {{#showcourseviewpage}}
                                 {{{ courseviewheaderhtml }}}
                             {{/showcourseviewpage}}
+                            {{#showteachercourseviewpage}}
+                                {{{ teachercourseviewheaderhtml }}}
+                            {{/showteachercourseviewpage}}
                             {{#showassignviewpage}}
                                 {{{ assignheaderhtml }}}
                             {{/showassignviewpage}}
@@ -179,6 +190,10 @@
                                 <div class="saec-course-view-grid">
                                     <div class="saec-course-view-grid__main">
                             {{/showcourseviewpage}}
+                            {{#showteachercourseviewpage}}
+                                <div class="saec-teacher-course-view-grid">
+                                    <div class="saec-teacher-course-view-grid__main">
+                            {{/showteachercourseviewpage}}
                             {{#showassignviewpage}}
                                 <div class="saec-assign-view-grid">
                                     <div class="saec-assign-view-grid__workspace">
@@ -194,6 +209,13 @@
                                     </div>
                                 </div>
                             {{/showcourseviewpage}}
+                            {{#showteachercourseviewpage}}
+                                    </div>
+                                    <div class="saec-teacher-course-view-grid__sidebar">
+                                        {{{ teachercourseviewsidebarhtml }}}
+                                    </div>
+                                </div>
+                            {{/showteachercourseviewpage}}
                             {{#showassignviewpage}}
                                     </div>
                                 </div>

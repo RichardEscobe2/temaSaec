@@ -1,0 +1,346 @@
+// -----------------------------------------------------------------------
+// UNIFIED SECONDARY NAVIGATION RIBBON (Sprint 5) — restyles Moodle's own
+// native course context nav (core/moremenu.mustache, rendered inside
+// .secondary-navigation on every course sub-page: Curso, Participantes,
+// Calificaciones, Finalización del curso, Competencias, etc.) into the
+// same SaaS pill design already used by .saec-course-tabs on the
+// course/view.php overlay — CSS-only, the core template itself is never
+// touched or overridden, per Zero Core Hacks.
+//
+// .secondary-navigation is a GENERIC Moodle region also used outside real
+// course context (category management, some admin screens); every rule
+// below is scoped under body:not(.course-1) — course-1 is Moodle's fixed
+// SITEID constant Moodle always adds to <body> when there's no real course
+// in context, confirmed absent on every real course-N page and present on
+// /user/preferences.php (verified live) — so this reliably limits the
+// whole file to actual course pages without touching anything else.
+//
+// NOTE (Sprint 6 — nav unification): course/view.php previously hid this
+// ribbon entirely and showed its own curated .saec-course-tabs bar instead,
+// which meant navigating between Curso and any sub-page (Participantes,
+// Calificador...) swapped to a visually different ribbon — a real
+// "menu format switch". .saec-course-tabs has been removed (mustache +
+// SCSS + PHP get_tabs()); course/view.php now renders this SAME native
+// ribbon as every sub-page, so no exclusion for
+// .saec-course-view-active / .saec-teacher-course-view-active is needed
+// here anymore.
+// -----------------------------------------------------------------------
+
+body:not(.course-1) .secondary-navigation {
+    display: flex;
+    justify-content: center;
+    margin: 0 0 1.5rem;
+
+    .moremenu {
+        // display:flex + align-items:center is the actual fix for the
+        // active-pill vertical overflow bug: core Boost's own `.moremenu`
+        // rule sets `height: 60px` with the browser default `display:
+        // block` (nav is a block-level element), so its child .nav-tabs/
+        // .nav-link — ALSO forced to `height: 60px` by core's own
+        // `.moremenu .nav-link` rule — has zero room left after this
+        // element's own 0.35rem top+bottom padding and pokes out past the
+        // rounded silhouette on both edges (confirmed live via
+        // getBoundingClientRect: link height 60px vs only ~48.8px of
+        // available content-box height). Centering here — combined with
+        // `height: auto` on .nav-link below — lets the pill size itself
+        // from its own padding and float centered inside the fixed bar,
+        // instead of being stretched into an overflow.
+        display: flex;
+        align-items: center;
+        background-color: $saec-surface;
+        border: 1px solid $saec-nav-border;
+        border-radius: 999px;
+        box-shadow: $saec-shadow-md;
+        padding: 0.35rem;
+        max-width: 100%;
+        // NOTE: no overflow:hidden here — the "Más" dropdown-menu panel is
+        // a descendant of this element and extends well below its 60px-ish
+        // bar height when open; clipping overflow here silently hides that
+        // panel entirely (confirmed live: it was rendering, "display:
+        // block", fully positioned, just invisible — clipped by this
+        // container). Rounded-pill clipping at the ends isn't needed in
+        // practice since .nav-tabs already fits within the pill's padding.
+    }
+
+    ul.nav-tabs {
+        // Core Boost paints `.moremenu .nav-tabs { background-color: #fff;
+        // }` — an opaque, square-cornered white rectangle sitting directly
+        // inside this rounded pill. Because .moremenu never gets
+        // overflow:hidden (breaks the "Más" dropdown, see above), that
+        // square white layer showed through past the pill's rounded
+        // corners instead of being clipped to match them. Neutralising it
+        // to transparent removes the extra layer entirely rather than
+        // trying to round it to match — .moremenu already supplies the
+        // pill's own white background one level up.
+        background-color: transparent;
+        align-items: center;
+        border-bottom: none;
+        flex-wrap: nowrap;
+        gap: 0.25rem;
+    }
+
+    // Selector deliberately mirrors Boost core's own
+    // `.secondary-navigation .navigation .nav-tabs .nav-link` chain
+    // (theme/boost/scss/moodle/navigation.scss) rather than the plain
+    // `.nav-link` used elsewhere in this file — that core rule sets
+    // `border-radius: initial` at 4-class specificity (0,4,0), which beats
+    // a plain `.secondary-navigation .nav-link` override (0,3,1) regardless
+    // of source order, flattening every tab (active, hover AND inactive
+    // alike) to sharp corners despite this file's `border-radius: 999px`
+    // (confirmed live via computed styles — every .nav-link reported
+    // `border-radius: 0px` before this fix). Repeating the same
+    // `.navigation .nav-tabs` ancestry here raises this rule to (0,5,1),
+    // safely above core's, without resorting to `!important`.
+    .navigation .nav-tabs .nav-link {
+        // height:auto overrides core's `.moremenu .nav-link { height:
+        // 60px; }` — the direct cause of the pill bursting out of
+        // .moremenu's rounded bounds (see the .moremenu comment above);
+        // letting the pill size itself from padding + line-height instead
+        // keeps it well inside the bar once .moremenu centers it.
+        // margin:0 clears Bootstrap's `.nav-tabs .nav-link { margin-bottom:
+        // -1px; }` underline-tab overlap trick, meaningless for a filled
+        // pill and only nudging it further out of alignment.
+        display: inline-flex;
+        align-items: center;
+        height: auto;
+        margin: 0;
+        background-color: transparent;
+        border: none;
+        border-radius: 999px;
+        padding: 0.55rem 1rem;
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: $saec-nav-text-muted;
+        white-space: nowrap;
+        text-decoration: none;
+        transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+
+        &::before {
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            margin-right: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        &:hover,
+        &:focus {
+            background-color: $saec-nav-hover-bg;
+            color: $saec-primary;
+            text-decoration: none;
+        }
+
+        &.active {
+            background-color: $saec-primary;
+            color: $saec-surface;
+            font-weight: 700;
+        }
+
+        // "Más" overflow toggle — no data-key of its own (a generated
+        // control, not a real nav item), matched by its dropdown role.
+        // Content values below are literal FontAwesome 6 Free codepoints
+        // (theme/boost/scss/fontawesome/_variables.scss) rather than the
+        // $fa-var-* Sass variables — those variables turned out to be
+        // internal to fontawesome.scss's own icon-map generation and never
+        // reach this file's global scope; referencing one compiles to an
+        // empty `content:` with no error (confirmed live via the served
+        // CSS), so the icon silently never appeared instead of failing loudly.
+        &.dropdown-toggle::before {
+            content: "\f141";
+        }
+    }
+
+    // -- Iconos por data-key real (confirmado vía inspección en vivo de
+    // /user/index.php — no se inventan claves que core no emite). Códigos
+    // literales por la misma razón que el toggle "Más" arriba.
+    //
+    // Cada regla apunta tanto a .nav-link como a .dropdown-item: cuando el
+    // moremenu nativo de core empuja un ítem al panel "Más" por falta de
+    // espacio (data-forceintomoremenu="true"), su <a> interno cambia de
+    // clase de .nav-link a .dropdown-item — confirmado en vivo (los íconos
+    // no aparecían dentro del panel "Más" hasta añadir este segundo
+    // selector). Mismo data-key, dos posibles clases de enlace según dónde
+    // termine renderizado.
+    // ---------------------------------------------------------------------
+    [data-key="coursehome"] .nav-link::before,
+    [data-key="coursehome"] .dropdown-item::before { content: "\f518"; }        // book-open
+
+    [data-key="editsettings"] .nav-link::before,
+    [data-key="editsettings"] .dropdown-item::before { content: "\f013"; }      // cog
+
+    [data-key="participants"] .nav-link::before,
+    [data-key="participants"] .dropdown-item::before { content: "\f0c0"; }      // users
+
+    [data-key="grades"] .nav-link::before,
+    [data-key="grades"] .dropdown-item::before { content: "\f1ec"; }            // calculator
+
+    [data-key="coursereports"] .nav-link::before,
+    [data-key="coursereports"] .dropdown-item::before { content: "\f080"; }     // chart-bar
+
+    [data-key="questionbank"] .nav-link::before,
+    [data-key="questionbank"] .dropdown-item::before { content: "\f059"; }      // question-circle
+
+    [data-key="contentbank"] .nav-link::before,
+    [data-key="contentbank"] .dropdown-item::before { content: "\f07c"; }       // folder-open
+
+    [data-key="coursecompletion"] .nav-link::before,
+    [data-key="coursecompletion"] .dropdown-item::before { content: "\f560"; }  // check-double
+
+    [data-key="badgesview"] .nav-link::before,
+    [data-key="badgesview"] .dropdown-item::before { content: "\f559"; }        // award
+
+    [data-key="competencies"] .nav-link::before,
+    [data-key="competencies"] .dropdown-item::before { content: "\f0a3"; }      // certificate
+
+    [data-key="filtermanagement"] .nav-link::before,
+    [data-key="filtermanagement"] .dropdown-item::before { content: "\f0b0"; }  // filter
+
+    [data-key="coursetools"] .nav-link::before,
+    [data-key="coursetools"] .dropdown-item::before { content: "\f1e6"; }       // plug
+
+    [data-key="coursereuse"] .nav-link::before,
+    [data-key="coursereuse"] .dropdown-item::before { content: "\f0c5"; }       // copy
+}
+
+// -----------------------------------------------------------------------
+// MOBILE (Sprint 7, <= md/768px) — touch-scrollable ribbon.
+//
+// ROOT CAUSE (confirmed live, not guessed): `ul.nav-tabs` is
+// `flex-wrap: nowrap` with 6+ nav-links whose combined min-content width is
+// ~769px (measured live via getBoundingClientRect). A flex row never
+// shrinks its children below their own min-content size unless explicitly
+// told to, so on any viewport narrower than ~769px the ribbon's true
+// rendered width silently exceeds its container regardless of this file's
+// existing `max-width: 100%` on .moremenu — that property caps growth, it
+// doesn't force shrinkage below intrinsic content size. Confirmed live by
+// constraining `.main-inner` (the ribbon's real containing block) to
+// 375px: `.secondary-navigation`/`.moremenu` still measured 814px/769px
+// wide with zero visual escape hatch (`overflow-x: visible` everywhere),
+// which is what causes the reported clipping ("Participan...") on real
+// mobile viewports — some ancestor's own overflow handling silently cuts
+// the ribbon's tail instead of letting the page scroll wide open.
+//
+// core's own moremenu.js *does* ship a "move overflow into the Más
+// dropdown" mechanism (confirmed live: 8 of 13 items already carry
+// data-forceintomoremenu="true" today, at desktop width) — but it did NOT
+// re-run when the container was narrowed live in devtools (waited 5s +
+// dispatched a resize event, zero change to any item's force attribute),
+// so it cannot be relied on as the sole mobile-safe mechanism. This
+// touch-scroll layer is the deterministic, always-correct fallback.
+// -----------------------------------------------------------------------
+@include media-breakpoint-down(md) {
+    body:not(.course-1) .secondary-navigation {
+        .moremenu {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            // Hidden scrollbar for a native-app feel — the ribbon is still
+            // fully scrollable via touch/trackpad/arrow keys, this only
+            // hides the visible scrollbar track/thumb chrome.
+            scrollbar-width: none;
+
+            &::-webkit-scrollbar {
+                display: none;
+            }
+        }
+
+        ul.nav-tabs {
+            // Let the row size to its natural (un-shrunk) content width —
+            // .moremenu's own overflow-x:auto above is what turns that
+            // into a scrollable area instead of a layout-breaking overflow.
+            width: max-content;
+            min-width: 100%;
+        }
+
+        .navigation .nav-tabs .nav-link {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+
+            &::before {
+                margin-right: 0.4rem;
+            }
+        }
+    }
+
+    // "Más" overflow panel → mobile bottom sheet.
+    //
+    // `overflow-x: auto` on .moremenu above has an unavoidable side effect
+    // per the CSS Overflow spec: an axis left at the `visible` default
+    // computes to `auto` as soon as the OTHER axis is anything but
+    // `visible` — so .moremenu's overflow-y also becomes `auto`. Confirmed
+    // live: with plain overflow-x:auto and no further changes, opening
+    // "Más" rendered the dropdown-menu completely invisible (correct
+    // background/text-color/8-children confirmed via getComputedStyle, but
+    // clipped to the ~60px bar height). There is no combination of
+    // overflow-x/overflow-y that scrolls one axis while leaving the other
+    // truly unclipped on the SAME element — this is a hard CSS constraint,
+    // not a selector/specificity problem this file can out-rank its way
+    // around like the earlier boost-vs-theme fixes above.
+    //
+    // Fix: stop asking the dropdown to be positioned *inside* the
+    // scrolling ribbon at all. Bootstrap's Popper.js writes this panel's
+    // position as an inline `transform: translate3d(x, y, 0)` computed for
+    // `position: absolute` relative to its <li> (confirmed live via
+    // getComputedStyle — position:absolute, a real translate3d offset).
+    // Switching it to `position: fixed` moves its containing block to the
+    // viewport itself, which is never subject to an ancestor's overflow
+    // clipping regardless of z-index (confirmed live via
+    // getBoundingClientRect — the panel's rect correctly reflected
+    // viewport-relative coordinates, fully unclipped, once switched).
+    // `transform: none` cancels Popper's absolute-strategy offset, which
+    // would otherwise misplace the fixed panel using coordinates meant for
+    // a different reference frame. `!important` is required only because
+    // Popper reapplies its own inline style on every open/scroll/resize —
+    // there is no selector-specificity way to out-rank an inline style.
+    body:not(.course-1) .secondary-navigation .dropdown-menu {
+        position: fixed !important;
+        transform: none !important;
+        top: auto !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100%;
+        max-width: 100%;
+        max-height: 60vh;
+        overflow-y: auto;
+        margin: 0;
+        border-radius: $saec-radius $saec-radius 0 0;
+        z-index: 1050;
+    }
+}
+
+// -- Panel desplegable "Más" — mismos tokens que el resto del sistema ----
+body:not(.course-1) .secondary-navigation .dropdown-menu {
+    border: 1px solid $saec-nav-border;
+    border-radius: $saec-radius;
+    box-shadow: $saec-shadow-md;
+    padding: 0.35rem;
+
+    .dropdown-item {
+        display: flex;
+        align-items: center;
+        border-radius: $saec-radius;
+        font-size: 0.85rem;
+        color: $saec-nav-text-muted;
+
+        &::before {
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            margin-right: 0.6rem;
+            font-size: 0.8rem;
+            width: 1rem;
+        }
+
+        &:hover,
+        &:focus {
+            background-color: $saec-nav-hover-bg;
+            color: $saec-primary;
+        }
+
+        &.active {
+            background-color: $saec-primary-light;
+            color: $saec-primary;
+            font-weight: 700;
+        }
+    }
+}

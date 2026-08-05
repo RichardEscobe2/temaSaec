@@ -1,11 +1,19 @@
 {{!
     @template theme_saec/components/course_view_header
 
-    Hero banner + real-navigation tab bar for the "Course Inner View" SaaS
-    overlay (/course/view.php — Fase 17). Injected by layout/drawers.php
-    ABOVE Moodle's own native section/activity content, which stays fully
+    Hero banner for the "Course Inner View" SaaS overlay
+    (/course/view.php — Fase 17). Injected by layout/drawers.php ABOVE
+    Moodle's own native section/activity content, which stays fully
     untouched. Context comes from
     \theme_saec\dashboard\course_view_page::get_context().
+
+    NOTE (Sprint 6 — nav unification): this template previously rendered
+    its own curated .saec-course-tabs bar below the hero. That's been
+    removed so the page falls through to Moodle's native
+    .secondary-navigation ribbon (already restyled in
+    scss/saec/_navigation.scss), the same one every course sub-page shows —
+    eliminating the menu-format switch a student used to hit navigating
+    from Curso into Participantes/Calificaciones.
 
     Example context (json):
     {
@@ -18,11 +26,7 @@
         "hasprogress": true,
         "progresspercent": 100,
         "hasgrade": true,
-        "grade": "7.7",
-        "tabs": [
-            {"label": "Curso", "url": "https://example.org/course/view.php?id=3", "active": true},
-            {"label": "Participantes", "url": "https://example.org/user/index.php?id=3", "active": false}
-        ]
+        "grade": "7.7"
     }
 }}
 <div class="saec-course-hero">
@@ -59,12 +63,4 @@
             </div>
         {{/hasgrade}}
     </div>
-</div>
-
-<div class="saec-course-tabs" role="tablist">
-    {{#tabs}}
-        <a href="{{{ url }}}" class="saec-course-tabs__tab {{#active}}active{{/active}}" role="tab" aria-selected="{{#active}}true{{/active}}{{^active}}false{{/active}}">
-            {{ label }}
-        </a>
-    {{/tabs}}
 </div>

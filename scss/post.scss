@@ -110,9 +110,11 @@ h1, .h1, h2, .h2, h3, .h3 {
 $saec-primary:        #1b5e3b; // SAEC Green — primary actions, active states, brand highlights.
 $saec-primary-hover:  darken($saec-primary, 8%);
 $saec-primary-light:  rgba($saec-primary, 0.08);
+$saec-accent:         #a61c1c; // SAEC Red — urgent/negative states (e.g. late submissions).
 $saec-dark:           #212529; // Charcoal — controls, indicators, headings, outline borders.
 $saec-border:         #d1d5db; // Neutral border — card borders, dividers, structural outlines.
 $saec-surface:        #ffffff; // Cards / footer surface.
+$saec-bg-main:        #f8fafc; // Light slate page/panel background.
 $saec-img-bg:         #f8f9fa; // Off-white image container background.
 $saec-text-dark:      #111827; // Primary text.
 $saec-text-muted:     #6b7280; // Secondary / muted text.
@@ -120,6 +122,9 @@ $saec-radius:         10px;
 $saec-radius-lg:      12px; // Hero carousel image stage.
 $saec-shadow-md:      0 4px 12px rgba(0, 0, 0, 0.08);
 $saec-shadow-elevated: 0 10px 25px -5px rgba(0, 0, 0, 0.1); // Hero carousel container shadow.
+$saec-nav-border:     #e5e7eb; // Secondary-navigation ribbon container border.
+$saec-nav-text-muted: #4b5563; // Secondary-navigation inactive tab text.
+$saec-nav-hover-bg:   #f0fdf4; // Secondary-navigation inactive tab hover tint.
 
 // ---------------------------------------------------------------------
 // SHARED BUTTON — .saec-btn
@@ -799,3 +804,29 @@ $saec-dashboard-content-maxwidth: 1600px;
         padding-right: 1rem;
     }
 }
+
+// ---------------------------------------------------------------------
+// TEACHER DASHBOARD (/my/) — Sprint 1. Imported last so it can use every
+// $saec-* token defined above (Sass requires definition-before-use).
+// ---------------------------------------------------------------------
+@import "saec/teacher_dashboard";
+
+// ---------------------------------------------------------------------
+// TEACHER "MIS CURSOS" (/my/courses.php) — Sprint 2.
+// ---------------------------------------------------------------------
+@import "saec/teacher_courses";
+
+// ---------------------------------------------------------------------
+// TEACHER COURSE VIEW (/course/view.php) — Sprint 3.
+// ---------------------------------------------------------------------
+@import "saec/teacher_course_view";
+
+// ---------------------------------------------------------------------
+// COURSE SUB-PAGES POLISH (Participantes/Calificador/Competencias) — Sprint 4.
+// ---------------------------------------------------------------------
+@import "saec/course_subpages";
+
+// ---------------------------------------------------------------------
+// UNIFIED SECONDARY NAVIGATION RIBBON — Sprint 5.
+// ---------------------------------------------------------------------
+@import "saec/navigation";

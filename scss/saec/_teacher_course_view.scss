@@ -1,0 +1,191 @@
+// -----------------------------------------------------------------------
+// TEACHER COURSE VIEW (/course/view.php) — Sprint 3: the teacher-role
+// counterpart of scss/saec/_course_view.scss's student overlay. Same two
+// halves as that file:
+//
+// 1. Our OWN new components (hero, tabs, 65/35 grid, sidebar widgets) —
+//    freely styled under their own saec-teacher-course-* classnames, no
+//    isolation concerns.
+// 2. A tiny CSS-only restyle of native chrome (#page-header duplicate,
+//    tertiary/secondary nav), nested under `body.saec-teacher-course-view-active`
+//    — the class layout/drawers.php only adds when
+//    teacher_course_view_page::get_context() actually applies (a teacher,
+//    real course). Never touches .course-content/.section/.activity-item —
+//    those stay 100% native so drag-and-drop, AJAX completion toggles and
+//    inline editing keep working exactly as core intended, in and out of
+//    edit mode alike.
+// -----------------------------------------------------------------------
+
+.saec-teacher-course-view-grid {
+    display: grid;
+    grid-template-columns: 65fr 35fr;
+    gap: 1.75rem;
+    align-items: start;
+
+    @include media-breakpoint-down(md) {
+        grid-template-columns: 1fr;
+    }
+
+    &__main,
+    &__sidebar {
+        min-width: 0;
+    }
+}
+
+// ---------------------------------------------------------------------
+// HERO BANNER
+// ---------------------------------------------------------------------
+.saec-teacher-course-hero {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1.5rem;
+    background-color: $saec-surface;
+    border: 1px solid $saec-border;
+    border-top: 3px solid $saec-primary;
+    border-radius: $saec-radius;
+    box-shadow: $saec-shadow-md;
+    padding: 1.75rem;
+    margin-bottom: 1rem;
+
+    &__main {
+        flex: 1 1 320px;
+        min-width: 0;
+    }
+
+    &__code {
+        display: inline-block;
+        background-color: $saec-primary-light;
+        color: $saec-primary-hover;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 0.3rem 0.7rem;
+        border-radius: 999px;
+        margin-bottom: 0.6rem;
+    }
+
+    &__title {
+        font-weight: 800;
+        margin: 0;
+        overflow-wrap: break-word;
+        color: $saec-text-dark;
+    }
+
+    &__stats {
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+        flex-shrink: 0;
+    }
+
+    &__stat {
+        min-width: 100px;
+    }
+
+    &__stat-label {
+        display: block;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        color: $saec-text-muted;
+        margin-bottom: 0.35rem;
+    }
+
+    &__stat-value {
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: $saec-text-dark;
+
+        &--accent {
+            color: $saec-accent;
+        }
+    }
+
+    &__editbutton {
+        flex-shrink: 0;
+    }
+}
+
+// ---------------------------------------------------------------------
+// SIDEBAR WIDGETS
+// ---------------------------------------------------------------------
+.saec-teacher-course-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+
+    &__widget {
+        background-color: $saec-surface;
+        border: 1px solid $saec-border;
+        border-radius: $saec-radius;
+        box-shadow: $saec-shadow-md;
+        padding: 1.25rem;
+    }
+
+    &__heading {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: $saec-text-dark;
+        margin-bottom: 1rem;
+    }
+
+    &__tool-link {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.6rem 0;
+        border-bottom: 1px solid $saec-border;
+        color: $saec-text-dark;
+        text-decoration: none;
+
+        &:last-child {
+            border-bottom: none;
+        }
+
+        i {
+            color: $saec-primary;
+            width: 1.25rem;
+            text-align: center;
+        }
+
+        &:hover,
+        &:focus {
+            color: $saec-primary;
+            text-decoration: none;
+        }
+    }
+
+    &__empty {
+        color: $saec-text-muted;
+        font-size: 0.85rem;
+        margin: 0;
+    }
+}
+
+// ---------------------------------------------------------------------
+// NATIVE CHROME CLEANUP — scoped ONLY to body.saec-teacher-course-view-active
+// (teachers, real course, exactly per teacher_course_view_page::get_context()).
+// Every other page/role keeps its native header/nav untouched.
+//
+// NOTE (Sprint 6 — nav unification): .secondary-navigation is deliberately
+// NOT hidden here anymore — see the matching note in scss/saec/_course_view.scss
+// for the student variant. This page's own curated .saec-course-tabs bar
+// (4 items) has been removed so the teacher sees the exact same native
+// ribbon (6+ items, "Más" overflow) on course/view.php as on every sub-page,
+// eliminating the menu-format switch a teacher would otherwise hit when
+// clicking from Curso into Participantes/Calificador.
+// ---------------------------------------------------------------------
+body.saec-teacher-course-view-active {
+    // Repeats the course name as a plain H1 above .saec-teacher-course-hero
+    // (which already shows the title) and, more importantly, would show
+    // core's edit-mode button a SECOND time — editbuttonhtml relocates that
+    // exact same button into the hero instead of duplicating it.
+    #page-header,
+    .tertiary-navigation {
+        display: none;
+    }
+}

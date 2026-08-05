@@ -1,0 +1,225 @@
+{{!
+    @template theme_saec/teacher_courses_page
+
+    Teacher "Mis Cursos" (/my/courses.php) — replaces block_myoverview's
+    rendered output for teachers (hidden via scss/custom.scss's
+    `body.page-mycourses .block_myoverview` rule — see courses_page.php's
+    docblock for why that block's markup still has to render at all). Same
+    principle as the student catalog (templates/my_courses_page.mustache):
+    plain client-side search/filter over pre-rendered cards, no AJAX
+    dependency on block_myoverview. The one real network call this page
+    makes is the visibility-toggle POST below.
+
+    Asymmetric 65/35 grid (.saec-teacher-courses-grid, scss/saec/_teacher_courses.scss):
+    left column (65%) is the search/filter bar + course card grid; right
+    column (35%) is the "Management Tools" quick-links card. Context comes
+    from \theme_saec\dashboard\teacher_courses_page::get_context().
+
+    Example context (json):
+    {
+        "sesskey": "abc123",
+        "hascourses": true,
+        "courses": [
+            {
+                "id": 3, "fullname": "Curso de Regularización Universitaria",
+                "shortname": "REG-2026", "categoryname": "Educación Continua",
+                "period": "2026", "studentcount": 28,
+                "isvisible": true, "canchangevisibility": true,
+                "courseurl": "https://example.org/course/view.php?id=3",
+                "gradebookurl": "https://example.org/grade/report/index.php?id=3",
+                "hasattendance": true,
+                "attendanceurl": "https://example.org/mod/attendance/index.php?id=3"
+            }
+        ],
+        "hasperiods": true,
+        "periods": ["2026", "2025"],
+        "searchplaceholder": "Buscar por materia...",
+        "hasmanagementtools": true,
+        "managementtoolcourses": [
+            {
+                "id": 3, "label": "REG-2026 — Curso de Regularización Universitaria",
+                "importurl": "https://example.org/backup/import.php?id=3",
+                "questionbankurl": "https://example.org/question/edit.php?courseid=3",
+                "gradesettingsurl": "https://example.org/grade/edit/tree/index.php?id=3",
+                "completionsettingsurl": "https://example.org/course/completion.php?id=3"
+            }
+        ]
+    }
+}}
+<div class="saec-teacher-courses-page" id="saec-teacher-courses-page-{{uniqid}}" data-sesskey="{{ sesskey }}">
+    <div class="saec-teacher-courses-grid">
+        <div class="saec-teacher-courses-grid__main">
+            <div class="saec-teacher-courses-page__topbar">
+                <div class="saec-teacher-courses-page__search">
+                    <span class="saec-teacher-courses-page__search-icon" aria-hidden="true">
+                        <i class="icon fa fa-search"></i>
+                    </span>
+                    <label class="sr-only" for="saec-teacher-courses-search-{{uniqid}}">{{ searchplaceholder }}</label>
+                    <input type="search" id="saec-teacher-courses-search-{{uniqid}}"
+                           class="saec-teacher-courses-page__search-input"
+                           placeholder="{{ searchplaceholder }}"
+                           data-saec-courses-search>
+                </div>
+                {{#hasperiods}}
+                    <select class="saec-teacher-courses-page__period-filter" data-saec-period-filter>
+                        <option value="">{{#str}} teachercoursesallperiods, theme_saec {{/str}}</option>
+                        {{#periods}}
+                            <option value="{{ . }}">{{ . }}</option>
+                        {{/periods}}
+                    </select>
+                {{/hasperiods}}
+            </div>
+
+            {{#hascourses}}
+                <div class="saec-teacher-courses-grid-cards">
+                    {{#courses}}
+                        <div class="saec-teacher-courses-grid-cards__item" data-course-period="{{ period }}">
+                            {{> theme_saec/components/teacher_course_card }}
+                        </div>
+                    {{/courses}}
+                </div>
+                <p class="saec-teacher-courses-page__empty-filtered d-none" data-saec-empty-filtered>
+                    {{#str}} teachercoursesnomatch, theme_saec {{/str}}
+                </p>
+            {{/hascourses}}
+            {{^hascourses}}
+                <div class="saec-teacher-courses-page__empty">
+                    <i class="icon fa fa-graduation-cap" aria-hidden="true"></i>
+                    <p>{{#str}} teachercoursesempty, theme_saec {{/str}}</p>
+                </div>
+            {{/hascourses}}
+        </div>
+
+        <div class="saec-teacher-courses-grid__sidebar">
+            <section class="saec-teacher-courses-page__tools">
+                <h2 class="saec-teacher-courses-page__tools-heading">{{#str}} managementtoolsheading, theme_saec {{/str}}</h2>
+                {{#hasmanagementtools}}
+                    <label class="sr-only" for="saec-tool-course-picker-{{uniqid}}">{{#str}} managementtoolspickercourse, theme_saec {{/str}}</label>
+                    <select id="saec-tool-course-picker-{{uniqid}}" class="saec-teacher-courses-page__tool-course-picker" data-saec-tool-course-picker>
+                        <option value="">{{#str}} managementtoolspickerplaceholder, theme_saec {{/str}}</option>
+                        {{#managementtoolcourses}}
+                            <option value="{{ id }}"
+                                    data-import="{{{ importurl }}}"
+                                    data-questionbank="{{{ questionbankurl }}}"
+                                    data-gradesettings="{{{ gradesettingsurl }}}"
+                                    data-completionsettings="{{{ completionsettingsurl }}}">
+                                {{ label }}
+                            </option>
+                        {{/managementtoolcourses}}
+                    </select>
+
+                    <a href="#" class="saec-teacher-courses-page__tool-link saec-teacher-courses-page__tool-link--disabled"
+                       aria-disabled="true" data-saec-tool="import">
+                        <i class="icon fa fa-copy" aria-hidden="true"></i>
+                        <span>{{#str}} managementtoolimport, theme_saec {{/str}}</span>
+                    </a>
+                    <a href="#" class="saec-teacher-courses-page__tool-link saec-teacher-courses-page__tool-link--disabled"
+                       aria-disabled="true" data-saec-tool="questionbank">
+                        <i class="icon fa fa-question-circle" aria-hidden="true"></i>
+                        <span>{{#str}} managementtoolquestionbank, theme_saec {{/str}}</span>
+                    </a>
+                    <a href="#" class="saec-teacher-courses-page__tool-link saec-teacher-courses-page__tool-link--disabled"
+                       aria-disabled="true" data-saec-tool="gradesettings">
+                        <i class="icon fa fa-sliders-h" aria-hidden="true"></i>
+                        <span>{{#str}} managementtoolgradesettings, theme_saec {{/str}}</span>
+                    </a>
+                    <a href="#" class="saec-teacher-courses-page__tool-link saec-teacher-courses-page__tool-link--disabled"
+                       aria-disabled="true" data-saec-tool="completionsettings">
+                        <i class="icon fa fa-check-double" aria-hidden="true"></i>
+                        <span>{{#str}} managementtoolcompletionsettings, theme_saec {{/str}}</span>
+                    </a>
+                {{/hasmanagementtools}}
+            </section>
+        </div>
+    </div>
+</div>
+{{#js}}
+require(['jquery'], function($) {
+    var root = $('#saec-teacher-courses-page-{{uniqid}}');
+    var sesskey = root.attr('data-sesskey');
+    var search = root.find('[data-saec-courses-search]');
+    var periodfilter = root.find('[data-saec-period-filter]');
+    var cards = root.find('.saec-teacher-courses-grid-cards__item');
+    var emptyfiltered = root.find('[data-saec-empty-filtered]');
+
+    function applyFilters() {
+        var query = (search.val() || '').toLowerCase();
+        var period = periodfilter.val() || '';
+        var visiblecount = 0;
+
+        cards.each(function() {
+            var card = $(this);
+            var name = (card.find('.saec-teacher-course-card').attr('data-course-name') || '').toLowerCase();
+            var matchesquery = name.indexOf(query) !== -1;
+            var matchesperiod = !period || card.attr('data-course-period') === period;
+            var show = matchesquery && matchesperiod;
+            card.toggle(show);
+            if (show) {
+                visiblecount++;
+            }
+        });
+
+        emptyfiltered.toggleClass('d-none', visiblecount !== 0);
+    }
+
+    search.on('input', applyFilters);
+    periodfilter.on('change', applyFilters);
+
+    root.on('change', '[data-saec-toggle-visibility]', function() {
+        var input = $(this);
+        var courseid = input.attr('data-course-id');
+        var visible = input.is(':checked');
+
+        input.prop('disabled', true);
+
+        $.ajax({
+            url: M.cfg.wwwroot + '/theme/saec/ajax/toggle_course_visibility.php',
+            method: 'POST',
+            data: {
+                courseid: courseid,
+                visible: visible ? 1 : 0,
+                sesskey: sesskey
+            }
+        }).done(function() {
+            input.prop('disabled', false);
+        }).fail(function() {
+            // Revert the switch to its last known-good state — the request
+            // didn't take effect server-side, so the UI shouldn't claim it did.
+            input.prop('checked', !visible);
+            input.prop('disabled', false);
+        });
+    });
+
+    // Management Tools course picker: the 4 tool links have no real target
+    // until the teacher explicitly chooses which course they're configuring
+    // (previously these silently defaulted to whichever course happened to
+    // be first in the list). Each <option> already carries its own 4 real
+    // URLs as data-* attributes — this only ever swaps hrefs to values the
+    // server rendered, it never builds a URL itself.
+    var picker = root.find('[data-saec-tool-course-picker]');
+    var toollinks = root.find('[data-saec-tool]');
+
+    picker.on('change', function() {
+        var selected = picker.find('option:selected');
+        var courseid = picker.val();
+
+        toollinks.each(function() {
+            var link = $(this);
+            var tool = link.attr('data-saec-tool');
+            var url = selected.attr('data-' + tool);
+            if (courseid && url) {
+                link.attr('href', url).removeAttr('aria-disabled').removeClass('saec-teacher-courses-page__tool-link--disabled');
+            } else {
+                link.attr('href', '#').attr('aria-disabled', 'true').addClass('saec-teacher-courses-page__tool-link--disabled');
+            }
+        });
+    });
+
+    // Exactly one course: there's no real choice to make, so pre-select it
+    // rather than making the teacher click through a picker with one option.
+    if (picker.find('option').length === 2) {
+        picker.find('option:last').prop('selected', true);
+        picker.trigger('change');
+    }
+});
+{{/js}}

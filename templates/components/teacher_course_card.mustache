@@ -1,0 +1,63 @@
+{{!
+    @template theme_saec/components/teacher_course_card
+
+    Teacher "Mis Cursos" (/my/courses.php) catalog tile: category badge,
+    real active-student count, a visibility toggle switch (POSTs to
+    theme_saec/ajax/toggle_course_visibility.php — see the page-level
+    inline script block in teacher_courses_page.mustache that wires it up),
+    and the Enter/Gradebook/Attendance action row. Context comes from
+    \theme_saec\dashboard\teacher_courses_page::get_context().
+
+    NOTE: never write two closing curly braces in a row inside a Mustache
+    comment, including as part of a quoted tag name — the comment ends at
+    the first occurrence, causing a premature close and literal text
+    leaking to the DOM.
+
+    Example context (json):
+    {
+        "id": 3, "fullname": "Curso de Regularización Universitaria",
+        "shortname": "REG-2026", "categoryname": "Educación Continua",
+        "period": "2026", "studentcount": 28,
+        "isvisible": true, "canchangevisibility": true,
+        "courseurl": "https://example.org/course/view.php?id=3",
+        "gradebookurl": "https://example.org/grade/report/index.php?id=3",
+        "hasattendance": true,
+        "attendanceurl": "https://example.org/mod/attendance/index.php?id=3"
+    }
+}}
+<div class="saec-teacher-course-card" data-course-name="{{fullname}} {{shortname}}">
+    <div class="saec-teacher-course-card__header">
+        <span class="saec-teacher-course-card__badge">{{ categoryname }}</span>
+        <div class="custom-control custom-switch saec-visibility-switch">
+            <input
+                type="checkbox"
+                class="custom-control-input"
+                id="saec-visibility-{{ id }}"
+                data-saec-toggle-visibility
+                data-course-id="{{ id }}"
+                {{#isvisible}}checked{{/isvisible}}
+                {{^canchangevisibility}}disabled{{/canchangevisibility}}
+            >
+            <label class="custom-control-label" for="saec-visibility-{{ id }}">
+                <span class="sr-only">{{#str}} togglecoursevisibility, theme_saec {{/str}}</span>
+            </label>
+        </div>
+    </div>
+
+    <h3 class="saec-teacher-course-card__title">
+        <a href="{{{ courseurl }}}">{{ fullname }}</a>
+    </h3>
+    <p class="saec-teacher-course-card__code">{{ shortname }}</p>
+    <p class="saec-teacher-course-card__students">
+        <i class="icon fa fa-users" aria-hidden="true"></i>
+        {{#str}} teachercoursestudentcount, theme_saec, {{studentcount}} {{/str}}
+    </p>
+
+    <div class="saec-teacher-course-card__actions">
+        <a href="{{{ courseurl }}}" class="btn btn-primary btn-sm">{{#str}} entercoursebutton, theme_saec {{/str}}</a>
+        <a href="{{{ gradebookurl }}}" class="btn btn-outline-primary btn-sm">{{#str}} navgradebook, theme_saec {{/str}}</a>
+        {{#hasattendance}}
+            <a href="{{{ attendanceurl }}}" class="btn btn-outline-primary btn-sm">{{#str}} navattendance, theme_saec {{/str}}</a>
+        {{/hasattendance}}
+    </div>
+</div>

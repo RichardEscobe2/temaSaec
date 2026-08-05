@@ -1,0 +1,37 @@
+{{!
+    @template theme_saec/components/teacher_grading_kpi_card
+
+    Pending-submissions KPI + grading-efficiency progress bar for the
+    Teacher Dashboard (templates/teacher_dashboard.mustache). A bespoke
+    sibling of theme_saec/components/metric_card rather than an extension of
+    it — metric_card has no progress-bar slot and is reused verbatim by the
+    Student Dashboard and the Calificador/Asistencia/Rendimiento pages, so
+    it's left untouched. Context comes from
+    \theme_saec\dashboard\teacher_dashboard::get_teacher_grading_kpi().
+
+    Example context (json):
+    {
+        "icon": "<img src=\"https://example.org/pix/i/scheduled.svg\" alt=\"\">",
+        "label": "Entregas Pendientes", "value": "3",
+        "hasefficiency": true, "efficiencypercent": 85,
+        "efficiencylabel": "85% calificado"
+    }
+}}
+<div class="uptex-metric-card saec-grading-kpi-card">
+    <div class="uptex-metric-card__icon uptex-metric-card__icon--accent" aria-hidden="true">
+        {{{ icon }}}
+    </div>
+    <div class="uptex-metric-card__body">
+        <p class="uptex-metric-card__label">{{ label }}</p>
+        <p class="uptex-metric-card__value">{{ value }}</p>
+        {{#hasefficiency}}
+            <div class="saec-grading-kpi-card__progress">
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" style="width: {{ efficiencypercent }}%"
+                         aria-valuenow="{{ efficiencypercent }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <span class="saec-grading-kpi-card__progress-label">{{ efficiencylabel }}</span>
+            </div>
+        {{/hasefficiency}}
+    </div>
+</div>

@@ -1,0 +1,203 @@
+{{!
+    @template theme_saec/teacher_dashboard
+
+    Teacher Dashboard (/my/) main content — Sprint 1, teacher portal. Mirrors
+    student_dashboard.mustache's role: replaces core's block-based my_index
+    content for logged-in users whom
+    \theme_saec\dashboard\teacher_dashboard::is_teacher() identifies as
+    teachers. Rendered into layout/drawers.php's page-content region (see
+    templates/drawers.mustache, showteacherdashboard branch).
+
+    NOTE: never write two closing braces in a row inside a Mustache comment
+    (not even as part of a quoted tag name) — the comment ends at the first
+    occurrence, causing a premature close and literal text leaking to the DOM.
+
+    Structural parity target: stitch_uptex/panel_del_docente_moodle_native_refactor.
+    Asymmetric 65/35 grid (.saec-teacher-dashboard-grid, scss/saec/_teacher_dashboard.scss):
+    left column (65%) is welcome header + KPI cards + "Por Calificar" table;
+    right column (35%) is upcoming deadlines + institutional announcements.
+    Every value is bound to the context array returned by
+    \theme_saec\dashboard\teacher_dashboard::get_dashboard_context() (plus
+    mycoursesurl/calendarurl, added by layout/drawers.php) — no hardcoded
+    text or example numbers.
+
+    Example context (json):
+    {
+        "fullname": "Prof. Alejandro Ruiz",
+        "avatarurl": "https://example.org/pluginfile.php/1/user/icon/f1.jpg",
+        "greeting": "Bienvenido de nuevo, Prof. Alejandro Ruiz. Aquí está el resumen de sus cursos.",
+        "mycoursesurl": "https://example.org/my/courses.php",
+        "calendarurl": "https://example.org/calendar/view.php",
+        "hasnextclass": true,
+        "nextclass": {
+            "coursename": "DW-2024-B1", "time": "12:00 PM", "daylabel": "HOY",
+            "inprogress": false,
+            "takeattendanceurl": "https://example.org/mod/attendance/take.php?id=8&sessionid=84&grouptype=0"
+        },
+        "activecourseskpi": {
+            "icon": "<i class=\"icon fa fa-graduation-cap\" aria-hidden=\"true\"></i>",
+            "iconvariant": "primary", "label": "Cursos Activos", "value": "3",
+            "hasvaluesuffix": false, "hasfootnote": false
+        },
+        "gradingkpi": {
+            "icon": "<i class=\"icon fa fa-hourglass-half\" aria-hidden=\"true\"></i>",
+            "label": "Entregas Pendientes", "value": "3",
+            "hasefficiency": true, "efficiencypercent": 85, "efficiencylabel": "85% calificado"
+        },
+        "haspendinggrading": true,
+        "pendinggrading": [
+            {
+                "studentname": "Ana García Méndez", "assignmentname": "Proyecto Final: Fase 1",
+                "coursename": "DW-2024-B1", "submittedon": "24 Oct, 11:59",
+                "isoverdue": false, "statuslabel": "A tiempo",
+                "gradeurl": "https://example.org/mod/assign/view.php?id=5&action=grading"
+            }
+        ],
+        "hasdeadlines": true,
+        "deadlines": [
+            {
+                "title": "Examen Parcial 1", "coursename": "MAT-402-24",
+                "daytag": "HOY", "daynumber": 24, "isurgent": true,
+                "hasclosingnote": true, "closingnote": "Cierra en 4 horas"
+            }
+        ],
+        "hasannouncements": true,
+        "announcements": [
+            {
+                "title": "Suspensión de clases", "snippet": "Se informa a la comunidad...",
+                "date": "20 oct 2026", "url": "https://example.org/mod/forum/discuss.php?d=1"
+            }
+        ]
+    }
+}}
+<div class="saec-teacher-dashboard">
+    <div class="uptex-dashboard-hero">
+        <div class="uptex-dashboard-hero__avatar">
+            {{#avatarurl}}
+                <img src="{{{ avatarurl }}}" alt="">
+            {{/avatarurl}}
+        </div>
+        <div>
+            <h1 class="uptex-dashboard-hero__title">{{#str}} teacherdashheading, theme_saec {{/str}}</h1>
+            <p class="uptex-dashboard-hero__subtitle">{{ greeting }}</p>
+            {{#hasnextclass}}
+                <div class="saec-next-class-badge {{#nextclass.inprogress}}saec-next-class-badge--inprogress{{/nextclass.inprogress}}">
+                    <i class="icon fa fa-clock-o" aria-hidden="true"></i>
+                    <span class="saec-next-class-badge__text">
+                        {{#nextclass.inprogress}}
+                            {{#str}} nextclassinprogress, theme_saec, {{nextclass.coursename}} {{/str}}
+                        {{/nextclass.inprogress}}
+                        {{^nextclass.inprogress}}
+                            {{#str}} nextclassupcoming, theme_saec {{/str}}
+                            {{ nextclass.coursename }} &middot; {{ nextclass.daylabel }} {{ nextclass.time }}
+                        {{/nextclass.inprogress}}
+                    </span>
+                    <a href="{{{ nextclass.takeattendanceurl }}}" class="saec-btn saec-btn--outline saec-next-class-badge__cta">
+                        {{#str}} takeattendanceaction, theme_saec {{/str}}
+                    </a>
+                </div>
+            {{/hasnextclass}}
+        </div>
+    </div>
+
+    <div class="saec-teacher-dashboard-grid">
+        <div class="saec-teacher-dashboard-grid__main">
+            <section class="uptex-dashboard-section mb-4">
+                <div class="row">
+                    <div class="col-12 col-md-6 mb-4 mb-md-0">
+                        {{#gradingkpi}}
+                            {{> theme_saec/components/teacher_grading_kpi_card }}
+                        {{/gradingkpi}}
+                    </div>
+                    <div class="col-12 col-md-6 mb-4 mb-md-0">
+                        {{#activecourseskpi}}
+                            {{> theme_saec/components/metric_card }}
+                        {{/activecourseskpi}}
+                    </div>
+                </div>
+            </section>
+
+            <section class="uptex-dashboard-section">
+                <div class="uptex-dashboard-section__header">
+                    <h2>{{#str}} pendinggradingheading, theme_saec {{/str}}</h2>
+                </div>
+                {{#haspendinggrading}}
+                    <div class="uptex-table-container">
+                        <div class="table-responsive">
+                            <table class="table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>{{#str}} colstudent, theme_saec {{/str}}</th>
+                                        <th>{{#str}} colassignment, theme_saec {{/str}}</th>
+                                        <th>{{#str}} colcourse, theme_saec {{/str}}</th>
+                                        <th>{{#str}} colsubmitted, theme_saec {{/str}}</th>
+                                        <th>{{#str}} colstatus, theme_saec {{/str}}</th>
+                                        <th class="text-right">{{#str}} actions, moodle {{/str}}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {{#pendinggrading}}
+                                        <tr>
+                                            <td>{{ studentname }}</td>
+                                            <td>{{ assignmentname }}</td>
+                                            <td>{{ coursename }}</td>
+                                            <td>{{ submittedon }}</td>
+                                            <td>
+                                                <span class="saec-status-pill {{#isoverdue}}saec-status-pill--late{{/isoverdue}} {{^isoverdue}}saec-status-pill--ontime{{/isoverdue}}">
+                                                    {{ statuslabel }}
+                                                </span>
+                                            </td>
+                                            <td class="text-right">
+                                                <a href="{{{ gradeurl }}}" class="saec-btn saec-btn--outline">{{#str}} gradesubmissionaction, theme_saec {{/str}}</a>
+                                            </td>
+                                        </tr>
+                                    {{/pendinggrading}}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                {{/haspendinggrading}}
+                {{^haspendinggrading}}
+                    <div class="uptex-dashboard-empty">{{#str}} pendinggradingempty, theme_saec {{/str}}</div>
+                {{/haspendinggrading}}
+            </section>
+        </div>
+
+        <div class="saec-teacher-dashboard-grid__sidebar">
+            <section class="uptex-dashboard-section uptex-dashboard-section--sidebar mb-4">
+                <div class="uptex-dashboard-section__header">
+                    <h2>{{#str}} upcomingdeadlinesheading, theme_saec {{/str}}</h2>
+                </div>
+                {{#hasdeadlines}}
+                    <div class="uptex-deadline-list">
+                        {{#deadlines}}
+                            {{> theme_saec/components/deadline_item }}
+                        {{/deadlines}}
+                    </div>
+                {{/hasdeadlines}}
+                {{^hasdeadlines}}
+                    <div class="uptex-dashboard-empty">{{#str}} nodeadlines, theme_saec {{/str}}</div>
+                {{/hasdeadlines}}
+                <a href="{{{ calendarurl }}}" class="btn btn-outline-primary btn-block mt-3">{{#str}} opencalendar, theme_saec {{/str}}</a>
+            </section>
+
+            <section class="uptex-dashboard-section uptex-dashboard-section--sidebar">
+                <div class="uptex-dashboard-section__header">
+                    <h2>{{#str}} institutionalannouncementsheading, theme_saec {{/str}}</h2>
+                </div>
+                {{#hasannouncements}}
+                    {{#announcements}}
+                        <a href="{{{ url }}}" class="saec-announcement-item">
+                            <p class="saec-announcement-item__title">{{ title }}</p>
+                            <p class="saec-announcement-item__snippet">{{ snippet }}</p>
+                            <span class="saec-announcement-item__date">{{ date }}</span>
+                        </a>
+                    {{/announcements}}
+                {{/hasannouncements}}
+                {{^hasannouncements}}
+                    <div class="uptex-dashboard-empty">{{#str}} noinstitutionalannouncements, theme_saec {{/str}}</div>
+                {{/hasannouncements}}
+            </section>
+        </div>
+    </div>
+</div>

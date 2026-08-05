@@ -246,3 +246,47 @@ $string['assignrubric'] = 'Grading Rubric';
 $string['assignrubriccriterio'] = 'Criterion';
 $string['assignrubricpeso'] = 'Weight';
 $string['assignrubricnivel'] = 'Achievement Level';
+
+// Teacher Dashboard (/my/) — Sprint 1.
+$string['teacherdashheading'] = 'Teacher Dashboard';
+$string['teacherdashwelcome'] = 'Welcome back, {$a}. Here is a summary of your courses.';
+$string['kpipendingsubmissions'] = 'Pending Submissions';
+$string['kpiactivecourses'] = 'Active Courses';
+$string['pendinggradingheading'] = 'Grading & Pending Submissions';
+$string['pendinggradingempty'] = 'No submissions are waiting for grading. Great job!';
+$string['colstudent'] = 'Student';
+$string['colassignment'] = 'Assignment';
+$string['colcourse'] = 'Course';
+$string['colsubmitted'] = 'Submitted';
+$string['colstatus'] = 'Status';
+$string['gradesubmissionaction'] = 'Grade';
+$string['statusontime'] = 'On time';
+$string['statuslate'] = 'Late';
+$string['institutionalannouncementsheading'] = 'Institutional Announcements';
+$string['noinstitutionalannouncements'] = 'No announcements have been published yet.';
+$string['nextclassinprogress'] = 'Class in progress: {$a}';
+$string['nextclassupcoming'] = 'Next class:';
+$string['takeattendanceaction'] = 'Take Attendance';
+$string['gradingefficiencylabel'] = '{$a}% graded';
+
+// Teacher "My Courses" (/my/courses.php) — Sprint 2.
+$string['teachercoursessearchplaceholder'] = 'Search by subject...';
+$string['teachercoursesallperiods'] = 'All periods';
+$string['teachercoursesnomatch'] = 'No course matches your search.';
+$string['teachercoursesempty'] = 'You don\'t have any assigned courses yet.';
+$string['teachercoursestudentcount'] = '{$a} Students';
+$string['togglecoursevisibility'] = 'Show or hide this course from students';
+$string['entercoursebutton'] = 'Enter Course';
+$string['managementtoolsheading'] = 'Management Tools';
+$string['managementtoolimport'] = 'Clone / Import Course';
+$string['managementtoolquestionbank'] = 'Question Bank';
+$string['managementtoolgradesettings'] = 'Grade Settings';
+$string['managementtoolcompletionsettings'] = 'Configure Completion';
+$string['managementtoolspickercourse'] = 'Course to configure';
+$string['managementtoolspickerplaceholder'] = 'Select a course...';
+
+// Teacher Course View (/course/view.php) — Sprint 3.
+$string['teacherherostudentsheading'] = 'Enrolled Students';
+$string['coursequicktoolsheading'] = 'Quick Course Tools';
+$string['courseannouncementsheading'] = 'News & Announcements';
+$string['coursepostannouncement'] = 'Post Announcement';

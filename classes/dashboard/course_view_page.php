@@ -70,41 +70,8 @@ class course_view_page {
         return [
             'coursename' => format_string($course->fullname, true, ['context' => $context]),
             'coursecode' => $course->shortname,
-            'tabs' => self::get_tabs($courseid),
         ] + self::get_hero($course, $userid) + [
             'sidebar' => self::get_sidebar($course, $userid),
-        ];
-    }
-
-    /**
-     * Real navigation to Moodle's own separate pages — not in-page tabs.
-     * Every URL is a genuine, already-existing Moodle route for this course.
-     *
-     * @param int $courseid
-     * @return array
-     */
-    private static function get_tabs(int $courseid): array {
-        return [
-            [
-                'label' => get_string('coursetabcourse', 'theme_saec'),
-                'url' => (new moodle_url('/course/view.php', ['id' => $courseid]))->out(false),
-                'active' => true,
-            ],
-            [
-                'label' => get_string('coursetabparticipants', 'theme_saec'),
-                'url' => (new moodle_url('/user/index.php', ['id' => $courseid]))->out(false),
-                'active' => false,
-            ],
-            [
-                'label' => get_string('coursetabgrades', 'theme_saec'),
-                'url' => (new moodle_url('/grade/report/user/index.php', ['id' => $courseid]))->out(false),
-                'active' => false,
-            ],
-            [
-                'label' => get_string('coursetabcompetencies', 'theme_saec'),
-                'url' => (new moodle_url('/admin/tool/lp/coursecompetencies.php', ['courseid' => $courseid]))->out(false),
-                'active' => false,
-            ],
         ];
     }
 

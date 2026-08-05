@@ -1,0 +1,284 @@
+// -----------------------------------------------------------------------
+// TEACHER DASHBOARD (/my/) — Sprint 1: asymmetric 65/35 grid wrapping the
+// welcome hero, KPI cards and "Por Calificar" table (left) beside the
+// upcoming-deadlines and institutional-announcements widgets (right).
+//
+// Scoped entirely under .saec-teacher-dashboard, mirroring how
+// scss/custom.scss scopes the equivalent student-dashboard visuals under
+// .uptex-student-dashboard: reused shared components (.uptex-metric-card,
+// .uptex-table-container, .saec-announcement-item, .saec-btn) come from
+// their own global rules and are NOT redeclared here; only the hero/
+// section/list chrome that custom.scss happens to scope to the student
+// dashboard is re-implemented, using $saec-* tokens per the design system
+// (custom.scss's equivalents predate that token set and use $uptex-*).
+// -----------------------------------------------------------------------
+
+.saec-teacher-dashboard-grid {
+    display: grid;
+    grid-template-columns: 65fr 35fr;
+    gap: 1.75rem;
+    align-items: start;
+
+    @include media-breakpoint-down(md) {
+        grid-template-columns: 1fr;
+    }
+
+    &__main,
+    &__sidebar {
+        min-width: 0;
+    }
+
+    &__sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+}
+
+.saec-teacher-dashboard {
+    .uptex-dashboard-hero {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        background-color: $saec-surface;
+        border: 1px solid $saec-border;
+        border-radius: $saec-radius;
+        box-shadow: $saec-shadow-md;
+
+        &__avatar img {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid $saec-primary;
+            box-shadow: 0 0 0 3px $saec-primary-light;
+        }
+
+        &__title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: $saec-text-dark;
+            margin: 0 0 0.2rem;
+        }
+
+        &__subtitle {
+            color: $saec-text-muted;
+            margin: 0;
+        }
+    }
+
+    .uptex-dashboard-section {
+        &__header {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+
+            h2 {
+                font-size: 1.15rem;
+                margin: 0;
+                color: $saec-text-dark;
+            }
+        }
+
+        &--sidebar {
+            background-color: $saec-surface;
+            border: 1px solid $saec-border;
+            border-radius: $saec-radius;
+            padding: 1.25rem;
+            box-shadow: $saec-shadow-md;
+        }
+    }
+
+    .uptex-dashboard-empty {
+        color: $saec-text-muted;
+        font-size: 0.85rem;
+        padding: 1rem 0;
+        text-align: center;
+    }
+
+    // -- Próximas Entregas (shared theme_saec/components/deadline_item) --
+    .uptex-deadline-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .uptex-deadline-item {
+        display: flex;
+        gap: 0.75rem;
+        padding: 0.6rem;
+        background-color: $saec-bg-main;
+        border-radius: $saec-radius;
+        border-left: 4px solid $saec-border;
+        transition: background-color 0.15s ease-in-out;
+
+        &:hover {
+            background-color: darken($saec-bg-main, 3%);
+        }
+
+        &__daybox {
+            flex-shrink: 0;
+            min-width: 48px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: $saec-radius;
+            padding: 0.3rem 0;
+            background-color: rgba($saec-text-muted, 0.1);
+            color: $saec-text-muted;
+        }
+
+        // Nota: no anidar "&--urgent &__daybox" en una sola línea — dentro de
+        // .saec-teacher-dashboard cada referencia & se expandiría por
+        // separado y duplicaría el selector ancestro sin matchear el DOM
+        // real. Anidar &--urgent y usar el nombre de clase literal del
+        // descendiente evita el problema (mismo cuidado que custom.scss
+        // documenta para .uptex-deadline-item--urgent).
+        &--urgent {
+            border-left-color: $saec-accent;
+            background-color: rgba($saec-accent, 0.08);
+
+            .uptex-deadline-item__daybox {
+                background-color: rgba($saec-accent, 0.12);
+                color: $saec-accent;
+            }
+        }
+
+        &__daytag {
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        &__daynumber {
+            font-size: 1.1rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        &__body {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        &__title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: $saec-text-dark;
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        &__course {
+            font-size: 0.75rem;
+            color: $saec-text-muted;
+            margin: 0.1rem 0 0;
+        }
+
+        &__time {
+            margin-top: 0.25rem;
+            font-size: 0.7rem;
+            color: $saec-text-muted;
+        }
+
+        &__urgent-note {
+            color: $saec-accent;
+            font-weight: 700;
+        }
+    }
+}
+
+// -----------------------------------------------------------------------
+// STATUS PILL — .saec-status-pill ("Por Calificar" table: on-time vs late)
+// -----------------------------------------------------------------------
+.saec-status-pill {
+    display: inline-block;
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+
+    &--ontime {
+        color: $saec-primary;
+        background-color: $saec-primary-light;
+    }
+
+    &--late {
+        color: $saec-accent;
+        background-color: rgba($saec-accent, 0.1);
+    }
+}
+
+// -----------------------------------------------------------------------
+// NEXT-CLASS BADGE — .saec-next-class-badge (welcome hero micro-badge +
+// "Iniciar Pase de Lista" quick action)
+// -----------------------------------------------------------------------
+.saec-next-class-badge {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 0.75rem;
+    padding: 0.45rem 0.9rem;
+    background-color: $saec-primary-light;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    color: $saec-primary-hover;
+
+    i {
+        color: $saec-primary;
+    }
+
+    &--inprogress {
+        background-color: rgba($saec-accent, 0.1);
+        color: $saec-accent;
+
+        i {
+            color: $saec-accent;
+        }
+    }
+
+    &__text {
+        font-weight: 600;
+    }
+
+    &__cta {
+        margin-left: auto;
+        padding: 0.3rem 0.85rem;
+        font-size: 0.75rem;
+    }
+}
+
+// -----------------------------------------------------------------------
+// GRADING EFFICIENCY BAR — .saec-grading-kpi-card (nested inside the
+// shared .uptex-metric-card body, "Entregas Pendientes" KPI)
+// -----------------------------------------------------------------------
+.saec-grading-kpi-card {
+    &__progress {
+        margin-top: 0.5rem;
+
+        .progress {
+            height: 6px;
+            border-radius: 999px;
+            background-color: $saec-bg-main;
+        }
+
+        .progress-bar {
+            background-color: $saec-primary;
+        }
+    }
+
+    &__progress-label {
+        display: block;
+        margin-top: 0.35rem;
+        font-size: 0.75rem;
+        color: $saec-text-muted;
+    }
+}

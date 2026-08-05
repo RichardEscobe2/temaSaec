@@ -1,0 +1,65 @@
+{{!
+    @template theme_saec/components/teacher_course_view_sidebar
+
+    Right-column sidebar widgets for the "Teacher Course View" SaaS overlay
+    (/course/view.php — Sprint 3): quick tool links bound to THIS course id
+    ("Herramientas Rápidas del Curso") and this course's own announcements
+    ("Avisos y Novedades"). Context comes from
+    \theme_saec\dashboard\teacher_course_view_page::get_context()['sidebar'].
+
+    Example context (json):
+    {
+        "gradebookurl": "https://example.org/grade/report/index.php?id=3",
+        "hasattendance": true,
+        "attendanceurl": "https://example.org/mod/attendance/index.php?id=3",
+        "questionbankurl": "https://example.org/question/edit.php?courseid=3",
+        "completionsettingsurl": "https://example.org/course/completion.php?id=3",
+        "hasannouncements": true,
+        "announcements": [
+            {"title": "Bienvenida", "snippet": "Iniciamos el ciclo...", "date": "1 jun 2026, 10:00", "url": "https://example.org/mod/forum/discuss.php?d=1"}
+        ],
+        "announcementsforumurl": "https://example.org/mod/forum/view.php?id=7"
+    }
+}}
+<div class="saec-teacher-course-sidebar">
+    <div class="saec-teacher-course-sidebar__widget">
+        <h3 class="saec-teacher-course-sidebar__heading">{{#str}} coursequicktoolsheading, theme_saec {{/str}}</h3>
+        <a href="{{{ gradebookurl }}}" class="saec-teacher-course-sidebar__tool-link">
+            <i class="icon fa fa-table" aria-hidden="true"></i>
+            <span>{{#str}} navgradebook, theme_saec {{/str}}</span>
+        </a>
+        {{#hasattendance}}
+            <a href="{{{ attendanceurl }}}" class="saec-teacher-course-sidebar__tool-link">
+                <i class="icon fa fa-calendar-check-o" aria-hidden="true"></i>
+                <span>{{#str}} navattendance, theme_saec {{/str}}</span>
+            </a>
+        {{/hasattendance}}
+        <a href="{{{ questionbankurl }}}" class="saec-teacher-course-sidebar__tool-link">
+            <i class="icon fa fa-question-circle" aria-hidden="true"></i>
+            <span>{{#str}} managementtoolquestionbank, theme_saec {{/str}}</span>
+        </a>
+        <a href="{{{ completionsettingsurl }}}" class="saec-teacher-course-sidebar__tool-link">
+            <i class="icon fa fa-check-double" aria-hidden="true"></i>
+            <span>{{#str}} managementtoolcompletionsettings, theme_saec {{/str}}</span>
+        </a>
+    </div>
+
+    <div class="saec-teacher-course-sidebar__widget">
+        <h3 class="saec-teacher-course-sidebar__heading">{{#str}} courseannouncementsheading, theme_saec {{/str}}</h3>
+        {{#hasannouncements}}
+            {{#announcements}}
+                <a href="{{{ url }}}" class="saec-announcement-item">
+                    <p class="saec-announcement-item__title">{{ title }}</p>
+                    <p class="saec-announcement-item__snippet">{{ snippet }}</p>
+                    <span class="saec-announcement-item__date">{{ date }}</span>
+                </a>
+            {{/announcements}}
+        {{/hasannouncements}}
+        {{^hasannouncements}}
+            <p class="saec-teacher-course-sidebar__empty">{{#str}} noannouncements, theme_saec {{/str}}</p>
+        {{/hasannouncements}}
+        {{#announcementsforumurl}}
+            <a href="{{{ announcementsforumurl }}}" class="btn btn-outline-primary btn-sm btn-block mt-2">{{#str}} coursepostannouncement, theme_saec {{/str}}</a>
+        {{/announcementsforumurl}}
+    </div>
+</div>

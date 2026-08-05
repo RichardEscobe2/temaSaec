@@ -1,0 +1,264 @@
+// -----------------------------------------------------------------------
+// TEACHER "MIS CURSOS" (/my/courses.php) — asymmetric 65/35 grid: search/
+// period-filter bar + course card grid (left) beside the "Management
+// Tools" quick-links card (right).
+//
+// Scoped entirely under .saec-teacher-courses-page / .saec-teacher-courses-grid,
+// deliberately separate from the student catalog's .saec-courses-page
+// (custom.scss) — that page is a single-column search+tabs layout, this
+// one is an asymmetric grid, so no selectors are shared and neither page
+// can affect the other. Only one of the two ever renders per request
+// (role-gated in layout/drawers.php), but keeping the CSS isolated too
+// means neither page can regress if the other's markup ever changes.
+// -----------------------------------------------------------------------
+
+.saec-teacher-courses-grid {
+    display: grid;
+    grid-template-columns: 65fr 35fr;
+    gap: 1.75rem;
+    align-items: start;
+
+    @include media-breakpoint-down(md) {
+        grid-template-columns: 1fr;
+    }
+
+    &__main,
+    &__sidebar {
+        min-width: 0;
+    }
+}
+
+.saec-teacher-courses-page {
+    &__topbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    &__search {
+        position: relative;
+        flex: 1 1 260px;
+        min-width: 220px;
+    }
+
+    &__search-icon {
+        position: absolute;
+        left: 0.85rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: $saec-text-muted;
+        font-size: 0.85rem;
+        pointer-events: none;
+    }
+
+    &__search-input {
+        width: 100%;
+        border: 1px solid $saec-border;
+        border-radius: 999px;
+        padding: 0.55rem 1rem 0.55rem 2.25rem;
+        font-size: 0.9rem;
+        color: $saec-text-dark;
+        background-color: $saec-surface;
+
+        &:focus {
+            outline: none;
+            border-color: $saec-primary;
+            box-shadow: 0 0 0 2px $saec-primary-light;
+        }
+    }
+
+    &__period-filter {
+        border: 1px solid $saec-border;
+        border-radius: $saec-radius;
+        padding: 0.55rem 1rem;
+        font-size: 0.9rem;
+        color: $saec-text-dark;
+        background-color: $saec-surface;
+    }
+
+    &__empty,
+    &__empty-filtered {
+        color: $saec-text-muted;
+        text-align: center;
+        padding: 3rem 1rem;
+    }
+
+    &__empty {
+        background-color: $saec-surface;
+        border: 1px dashed $saec-border;
+        border-radius: $saec-radius;
+
+        i {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 0.75rem;
+            color: $saec-border;
+        }
+    }
+
+    &__tools {
+        background-color: $saec-surface;
+        border: 1px solid $saec-border;
+        border-radius: $saec-radius;
+        padding: 1.25rem;
+        box-shadow: $saec-shadow-md;
+    }
+
+    &__tools-heading {
+        font-size: 1.05rem;
+        margin: 0 0 1rem;
+        color: $saec-text-dark;
+    }
+
+    &__tool-course-picker {
+        width: 100%;
+        border: 1px solid $saec-border;
+        border-radius: $saec-radius;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+        color: $saec-text-dark;
+        background-color: $saec-bg-main;
+        margin-bottom: 0.75rem;
+
+        &:focus {
+            outline: none;
+            border-color: $saec-primary;
+            box-shadow: 0 0 0 2px $saec-primary-light;
+        }
+    }
+
+    &__tool-link {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.65rem 0;
+        border-bottom: 1px solid $saec-border;
+        color: $saec-text-dark;
+        text-decoration: none;
+
+        &:last-child {
+            border-bottom: none;
+        }
+
+        i {
+            color: $saec-primary;
+            width: 1.25rem;
+            text-align: center;
+        }
+
+        &:hover,
+        &:focus {
+            color: $saec-primary;
+            text-decoration: none;
+        }
+
+        // Disabled until a course is chosen from the picker above — greyed
+        // out and inert rather than a live link to nowhere (href="#").
+        &--disabled {
+            color: $saec-text-muted;
+            cursor: not-allowed;
+            pointer-events: none;
+
+            i {
+                color: $saec-border;
+            }
+        }
+    }
+}
+
+.saec-teacher-courses-grid-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.saec-teacher-course-card {
+    background-color: $saec-surface;
+    border: 1px solid $saec-border;
+    border-top: 3px solid $saec-primary;
+    border-radius: $saec-radius;
+    box-shadow: $saec-shadow-md;
+    padding: 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+
+    &:hover {
+        transform: translateY(-2px);
+    }
+
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+    }
+
+    &__badge {
+        background-color: $saec-primary-light;
+        color: $saec-primary-hover;
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 0.3rem 0.7rem;
+        border-radius: 999px;
+    }
+
+    &__title {
+        font-size: 1rem;
+        font-weight: 700;
+        margin: 0.2rem 0 0;
+
+        a {
+            color: $saec-text-dark;
+            text-decoration: none;
+        }
+
+        a:hover,
+        a:focus {
+            color: $saec-primary;
+        }
+    }
+
+    &__code {
+        font-size: 0.75rem;
+        color: $saec-text-muted;
+        margin: 0;
+    }
+
+    &__students {
+        font-size: 0.85rem;
+        color: $saec-text-muted;
+        margin: 0.25rem 0 0.5rem;
+
+        i {
+            margin-right: 0.35rem;
+            color: $saec-primary;
+        }
+    }
+
+    &__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: auto;
+    }
+}
+
+// Visibility switch — Bootstrap's own .custom-switch markup, re-tinted to
+// the design system's green instead of Bootstrap's default blue. Scoped to
+// .saec-visibility-switch only, so no other .custom-switch elsewhere on the
+// site is affected by this override.
+.saec-visibility-switch {
+    .custom-control-input:checked ~ .custom-control-label::before {
+        border-color: $saec-primary;
+        background-color: $saec-primary;
+    }
+
+    .custom-control-input:focus ~ .custom-control-label::before {
+        box-shadow: 0 0 0 1px $saec-bg-main, 0 0 0 3px $saec-primary-light;
+    }
+}

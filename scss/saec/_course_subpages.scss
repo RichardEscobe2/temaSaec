@@ -1,0 +1,191 @@
+// -----------------------------------------------------------------------
+// COURSE SUB-PAGES POLISH (Sprint 4) — Participantes (/user/index.php),
+// Calificador grader report (/grade/report/grader/index.php) and
+// Competencias (/admin/tool/lp/coursecompetencies.php).
+//
+// Unlike the SaaS overlay pages (course/view.php, teacher dashboard, etc.),
+// these three are 100% native Moodle controllers with no theme_saec
+// PHP/Mustache layer at all — every rule below is pure CSS restyling of
+// core's own markup, scoped under each page's own pagetype body class
+// (body.path-user / body.path-grade-report-grader / body.path-admin-tool-lp
+// — set automatically by Moodle for exactly one controller each) so
+// nothing here can leak onto any other page, including other pages that
+// happen to reuse the same Bootstrap classes (.filter-group, .badge,
+// .alert-info are all shared core UI components used site-wide).
+// -----------------------------------------------------------------------
+
+// =========================================================================
+// PARTICIPANTES (/user/index.php)
+// =========================================================================
+body.path-user {
+    // -- Filtros: caja "Coincidir con / Añadir condición" (core_reportbuilder
+    // filter widget, shared with Question Bank etc. — scoped here only) --
+    .filter-group {
+        background-color: $saec-surface;
+        border: 1px solid $saec-border !important;
+        border-radius: $saec-radius;
+        box-shadow: $saec-shadow-md;
+        padding: 1.25rem !important;
+    }
+
+    // -- Tabla de participantes: refuerzo del hover ya global (.table) con
+    // un acento verde a la izquierda de la fila activa --
+    #participants {
+        tbody tr {
+            transition: background-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+            &:hover {
+                box-shadow: inset 3px 0 0 $saec-primary;
+            }
+        }
+
+        // -- Roles: los roles de un usuario llegan como texto separado por
+        // comas dentro de un único span editable-en-línea (core no envuelve
+        // cada rol por separado), así que se trata como una sola pastilla —
+        // no se fabrican pastillas individuales que el DOM real no tiene.
+        td:nth-child(4) .inplaceeditable-autocomplete .quickeditlink {
+            display: inline-flex;
+            align-items: center;
+            background-color: $saec-primary-light;
+            color: $saec-primary-hover;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.25rem 0.65rem;
+            border-radius: 999px;
+        }
+
+        // -- Estatus: ya es un .badge.bg-success nativo de Bootstrap — sólo
+        // se suaviza el verde sólido a la paleta del sistema de diseño.
+        td:last-child .badge.bg-success {
+            background-color: $saec-primary-light !important;
+            color: $saec-primary-hover !important;
+            font-weight: 700;
+        }
+    }
+}
+
+// =========================================================================
+// CALIFICADOR — REPORTE DEL CALIFICADOR (/grade/report/grader/index.php)
+// =========================================================================
+body.path-grade-report-grader {
+    // La tabla no trae ningún contenedor con scroll horizontal propio —
+    // con muchas columnas de calificación se desborda del layout. Esto NO
+    // toca el DOM, sólo permite que .gradeparent se desplace lateralmente
+    // por sí mismo en vez de romper el ancho de la página.
+    .gradeparent {
+        overflow-x: auto;
+        border: 1px solid $saec-border;
+        border-radius: $saec-radius;
+        box-shadow: $saec-shadow-md;
+    }
+
+    #user-grades.gradereport-grader-table {
+        border-collapse: separate;
+        border-spacing: 0;
+
+        // -- Encabezados pegajosos: las 3 filas de cabecera nativas
+        // (categoría/curso, subcategoría, nombres de ítem — ninguna lleva
+        // <thead>, así que se seleccionan por exclusión de .userrow) se
+        // quedan visibles al hacer scroll vertical, justo debajo de la
+        // navbar fija (top coincide con su alto real).
+        //
+        // :not(.avg) es obligatorio aquí — la fila de resumen "Promedio
+        // general" (core la marca con class="avg r0 lastrow", nunca
+        // "userrow") también cumplía ":not(.userrow)" y por lo tanto
+        // heredaba position:sticky + top:0 de la regla de abajo, tirando de
+        // ella hacia arriba hasta quedar superpuesta sobre la última fila
+        // de alumno (confirmado en vivo: el rect de .avg quedaba
+        // completamente contenido dentro del rect de la última .userrow).
+        // Sólo las filas de cabecera reales — arriba de la tabla — deben
+        // pegarse al hacer scroll; la fila de resumen, al final, nunca.
+        tr:not(.userrow):not(.avg) {
+            position: sticky;
+            z-index: 2;
+
+            th {
+                background-color: $saec-bg-main;
+                border-bottom: 1px solid $saec-border;
+            }
+        }
+
+        tr.heading {
+            top: 64px;
+
+            th {
+                font-weight: 700;
+                color: $saec-text-dark;
+            }
+        }
+
+        tr:not(.userrow):not(.heading):not(.avg) {
+            top: 0;
+
+            th {
+                background-color: $saec-primary-light;
+                color: $saec-primary-hover;
+            }
+        }
+
+        .userrow {
+            transition: background-color 0.15s ease-in-out;
+
+            &:hover {
+                background-color: $saec-bg-main;
+            }
+        }
+
+        // -- Fila de resumen "Promedio general" — estática (nunca sticky,
+        // ver nota arriba), con separación visual clara de la última fila
+        // de alumno mediante un borde superior más marcado y fondo propio.
+        .avg {
+            position: static;
+
+            th,
+            td {
+                background-color: $saec-bg-main;
+                border-top: 2px solid $saec-border;
+                font-weight: 700;
+                color: $saec-text-dark;
+            }
+        }
+
+        .gradecell {
+            transition: background-color 0.15s ease-in-out;
+
+            &:hover {
+                background-color: $saec-primary-light;
+            }
+        }
+    }
+}
+
+// =========================================================================
+// COMPETENCIAS (/admin/tool/lp/coursecompetencies.php)
+// =========================================================================
+body.path-admin-tool-lp {
+    // -- Estado vacío ("No se han enlazado competencias a este curso") —
+    // ya es un .alert.alert-info nativo de Bootstrap; se convierte en una
+    // tarjeta moderna en vez de la barra azul plana por defecto.
+    .alert.alert-info {
+        background-color: $saec-bg-main;
+        border: 1px dashed $saec-border;
+        color: $saec-text-muted;
+        border-radius: $saec-radius;
+        padding: 1.5rem;
+        text-align: center;
+        font-size: 0.9rem;
+    }
+
+    // -- Filtro "Filtrar competencias por recurso o actividad" —
+    .user-competency-course-navigation {
+        background-color: $saec-surface !important;
+        border: 1px solid $saec-border !important;
+        border-radius: $saec-radius;
+        box-shadow: $saec-shadow-md;
+        padding: 1rem !important;
+
+        select {
+            border-radius: $saec-radius;
+        }
+    }
+}

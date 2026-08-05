@@ -246,3 +246,47 @@ $string['assignrubric'] = 'Rúbrica de Evaluación';
 $string['assignrubriccriterio'] = 'Criterio';
 $string['assignrubricpeso'] = 'Peso';
 $string['assignrubricnivel'] = 'Nivel de Logro';
+
+// Panel del Docente (/my/) — Sprint 1.
+$string['teacherdashheading'] = 'Panel del Docente';
+$string['teacherdashwelcome'] = 'Bienvenido de nuevo, {$a}. Aquí está el resumen de sus cursos.';
+$string['kpipendingsubmissions'] = 'Entregas Pendientes';
+$string['kpiactivecourses'] = 'Cursos Activos';
+$string['pendinggradingheading'] = 'Calificador y Entregas Pendientes';
+$string['pendinggradingempty'] = 'No hay entregas pendientes por calificar. ¡Buen trabajo!';
+$string['colstudent'] = 'Estudiante';
+$string['colassignment'] = 'Tarea';
+$string['colcourse'] = 'Curso';
+$string['colsubmitted'] = 'Entregado';
+$string['colstatus'] = 'Estado';
+$string['gradesubmissionaction'] = 'Calificar';
+$string['statusontime'] = 'A tiempo';
+$string['statuslate'] = 'Con retraso';
+$string['institutionalannouncementsheading'] = 'Anuncios Institucionales';
+$string['noinstitutionalannouncements'] = 'Aún no hay anuncios publicados.';
+$string['nextclassinprogress'] = 'Clase en curso: {$a}';
+$string['nextclassupcoming'] = 'Próxima clase:';
+$string['takeattendanceaction'] = 'Iniciar Pase de Lista';
+$string['gradingefficiencylabel'] = '{$a}% calificado';
+
+// Mis Cursos del Docente (/my/courses.php) — Sprint 2.
+$string['teachercoursessearchplaceholder'] = 'Buscar por materia...';
+$string['teachercoursesallperiods'] = 'Todos los periodos';
+$string['teachercoursesnomatch'] = 'Ningún curso coincide con tu búsqueda.';
+$string['teachercoursesempty'] = 'Aún no tienes cursos asignados.';
+$string['teachercoursestudentcount'] = '{$a} Alumnos';
+$string['togglecoursevisibility'] = 'Mostrar u ocultar este curso a los estudiantes';
+$string['entercoursebutton'] = 'Entrar';
+$string['managementtoolsheading'] = 'Herramientas de Gestión';
+$string['managementtoolimport'] = 'Clonar / Importar Curso';
+$string['managementtoolquestionbank'] = 'Banco de Preguntas';
+$string['managementtoolgradesettings'] = 'Configuración de Calificaciones';
+$string['managementtoolcompletionsettings'] = 'Configurar Finalización';
+$string['managementtoolspickercourse'] = 'Curso a configurar';
+$string['managementtoolspickerplaceholder'] = 'Selecciona un curso...';
+
+// Vista de Curso del Docente (/course/view.php) — Sprint 3.
+$string['teacherherostudentsheading'] = 'Alumnos Inscritos';
+$string['coursequicktoolsheading'] = 'Herramientas Rápidas del Curso';
+$string['courseannouncementsheading'] = 'Avisos y Novedades';
+$string['coursepostannouncement'] = 'Publicar Anuncio';
