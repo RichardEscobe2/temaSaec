@@ -1,0 +1,29 @@
+// -----------------------------------------------------------------------
+// SINGLE VIEW (/grade/report/singleview/index.php) — Step 4. Verified
+// against grade/report/singleview/templates/report.mustache,
+// page_toggler.mustache and classes/local/ui/checkbox_attribute.php:
+//
+//   - The grade table itself is a plain <table class="generaltable"
+//     id="singleview-grades"> — already fully covered by the generic
+//     .generaltable rules (scss/saec/_core_tables.scss), zero extra work.
+//   - The Users/Grade items view switcher (.page-toggler) is a real
+//     Bootstrap .btn-group of .btn.btn-outline-primary — already
+//     institutional green natively from scss/pre.scss's Bootstrap
+//     variable override (Step 1), zero extra work.
+//   - "Override"/"Exclude" are plain <input type="checkbox"> with no
+//     class of their own (name="override[...]"/"exclude[...]"), already
+//     accent-color themed by the generic checkbox rule
+//     (scss/saec/_global_ui.scss) — this only enlarges the hit area,
+//     same reasoning as .weightoverride in _gradebook_setup.scss.
+// -----------------------------------------------------------------------
+#singleview-grades {
+    input[name^="override"],
+    input[name^="exclude"] {
+        width: 1.1rem;
+        height: 1.1rem;
+    }
+}
+
+.page-toggler {
+    margin-bottom: 1.25rem;
+}

@@ -66,6 +66,13 @@ $uptex-border-soft:        rgba(0, 0, 0, 0.05); // Borde ultra-sutil bajo elevac
 
 $uptex-transition: all 0.15s ease-in-out;
 
+// -- One-off tokens: not part of the green/institutional palette above,
+// each kept as its own named value rather than reusing an existing
+// token, per their own call sites' documented reasoning (see each rule
+// below) rather than the usual $uptex-* semantic-state palette. --
+$uptex-linkedin-blue: #0a66c2; // LinkedIn's own brand blue — deliberately NOT tinted institutional green (see .saec-btn-linkedin).
+$uptex-trend-down:    #f59e0b; // Soft amber for a grade-trending-down signal — deliberately distinct from $uptex-danger (see .saec-trend-card--down).
+
 /* ===========================================================================
    2. Sobrescritura de Componentes Bootstrap / Boost
    =========================================================================== */
@@ -2363,14 +2370,14 @@ body.page-mybadges {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    background-color: #0a66c2;
-    border-color: #0a66c2;
+    background-color: $uptex-linkedin-blue;
+    border-color: $uptex-linkedin-blue;
     color: $uptex-surface;
 
     &:hover,
     &:focus {
-        background-color: darken(#0a66c2, 8%);
-        border-color: darken(#0a66c2, 8%);
+        background-color: darken($uptex-linkedin-blue, 8%);
+        border-color: darken($uptex-linkedin-blue, 8%);
         color: $uptex-surface;
     }
 
@@ -2870,7 +2877,7 @@ body.page-analytics {
         // Deliberately a soft amber/red, not the flat $uptex-danger-light
         // used for hard errors elsewhere — a grade dip is a signal to
         // watch, not a system failure.
-        background-color: rgba(#f59e0b, 0.14);
+        background-color: rgba($uptex-trend-down, 0.14);
     }
 
     &--neutral {
@@ -2912,7 +2919,7 @@ body.page-analytics {
     }
 
     &--down &__bar--current {
-        background-color: darken(#f59e0b, 15%);
+        background-color: darken($uptex-trend-down, 15%);
     }
 
     &__note {
@@ -2930,7 +2937,7 @@ body.page-analytics {
     }
 
     &--down &__note {
-        color: darken(#f59e0b, 20%);
+        color: darken($uptex-trend-down, 20%);
     }
 
     &--neutral &__note {

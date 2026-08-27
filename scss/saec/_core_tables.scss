@@ -32,12 +32,72 @@
         vertical-align: middle;
     }
 
+    // Zebra striping via :nth-child rather than Moodle's own r0/r1 row
+    // classes — this Moodle version's core table renderer doesn't apply
+    // r0/r1 consistently across every table (grepped clean in
+    // lib/outputrenderers.php), so a pure-CSS rule is the only one
+    // guaranteed to work on every .generaltable/.flexible regardless of
+    // which controller rendered it. Scoped to tbody so the header row is
+    // never candidate for striping.
+    tbody tr:nth-child(odd) {
+        background-color: $uptex-surface;
+    }
+
+    tbody tr:nth-child(even) {
+        background-color: $uptex-bg-alt;
+    }
+
     tbody tr {
         transition: background-color 0.15s ease-in-out;
 
+        // Wins over the zebra rule above by source order (same 0-1-0
+        // specificity, declared later) — hover always reads as "active
+        // row" regardless of which stripe it started on.
         &:hover {
-            background-color: $uptex-bg-alt;
+            background-color: $uptex-primary-light;
         }
+    }
+}
+
+// -----------------------------------------------------------------------
+// PAGINATION — Bootstrap's standard .pagination/.page-item/.page-link,
+// used by every paginated .generaltable/.flexible report (Directorio de
+// Usuarios, Bitácoras, etc.) and by core_renderer::paging_bar() elsewhere.
+// $pagination-active-bg/$pagination-active-color already derive from
+// $component-active-bg/$component-active-color (scss/pre.scss, Step 1),
+// so the active page is already institutional green with zero rules here
+// — this only adds the pill shape and hover polish this round's spec asks
+// for on top of that existing colour cascade.
+// -----------------------------------------------------------------------
+.pagination {
+    gap: 0.35rem;
+}
+
+.page-item {
+    .page-link {
+        border-radius: $uptex-radius-pill;
+        border-color: $uptex-border-color;
+        color: $uptex-text-dark;
+        font-weight: 600;
+        transition: $uptex-transition;
+
+        &:hover,
+        &:focus {
+            background-color: $uptex-primary-light;
+            border-color: $uptex-primary;
+            color: $uptex-primary;
+            z-index: 1;
+        }
+    }
+
+    &.active .page-link {
+        border-color: $uptex-primary;
+        box-shadow: none;
+    }
+
+    &.disabled .page-link {
+        color: $uptex-text-muted;
+        border-color: $uptex-divider-color;
     }
 }
 

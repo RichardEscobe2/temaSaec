@@ -134,3 +134,94 @@ fieldset.collapsible {
         }
     }
 }
+
+// -- Inline validation states ---------------------------------------------
+// Verified against core's own mform element templates (lib/form/templates/
+// element-*.mustache): a failed element gets `.is-invalid` on the actual
+// <input>/<select>/<textarea> (Bootstrap 4's own validation-state class,
+// not a theme_saec invention) and a sibling `.invalid-feedback` (or, on a
+// few older element types, `.form-control-feedback`) carrying the message
+// text; checkbox/radio fitem wrappers instead get `.has-danger` on the
+// wrapping <label>/.fitem. All four are restyled here in one place so any
+// mform, on any native page or third-party plugin, gets the same accent
+// automatically — no per-page rule needed.
+.is-invalid,
+.form-control.is-invalid,
+.custom-select.is-invalid {
+    border-color: $uptex-danger;
+
+    &:focus {
+        border-color: $uptex-danger;
+        box-shadow: 0 0 0 3px $uptex-danger-light;
+    }
+}
+
+.invalid-feedback,
+.form-control-feedback {
+    color: $uptex-danger;
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-top: 0.35rem;
+}
+
+.has-danger {
+    .form-check-label,
+    .fitemtitle {
+        color: $uptex-danger;
+    }
+}
+
+// -- Form footer action bar (.fitem_actionbuttons) -------------------------
+// The wrapping .fitem MoodleQuickForm gives the Save/Cancel button group
+// specifically (lib/form/submit.php / group.php: getElementType() ===
+// 'actionbuttons' -> fitem_actionbuttons) — real core class, not
+// theme-specific markup. Colour needs nothing here: .btn-primary/
+// .btn-secondary already inherit $saec-primary/$saec-text-muted natively
+// from scss/pre.scss's Bootstrap variable overrides (Step 1) — this rule
+// is spacing/alignment only, separating the action row from the fields
+// above it and giving Save/Cancel a consistent gap regardless of which
+// mform renders them.
+.fitem_actionbuttons {
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid $uptex-divider-color;
+
+    .felement {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+}
+
+// -- Generic filemanager / filepicker dropzone -----------------------------
+// Same "Zona de Carga" treatment scss/saec/_assign.scss already applies to
+// the assignment submission page's own filemanager, generalized here (no
+// body/page scoping) so every OTHER form using this widget — course
+// settings' file resources, badge image upload, user profile picture,
+// third-party plugin file fields — gets it too, instead of only the one
+// page that happened to need it first.
+.filemanager-container {
+    background-color: $uptex-surface;
+    border: 1px solid $uptex-border-color;
+    border-radius: $uptex-radius-lg;
+    padding: 1rem;
+}
+
+.filemanager-container .dndupload-target {
+    background-color: $uptex-primary-light;
+    border: 2px dashed rgba($uptex-primary, 0.35);
+    border-radius: $uptex-radius-sm;
+    box-shadow: none;
+    transition: border-color 0.15s ease-in-out, background-color 0.15s ease-in-out;
+}
+
+.filemanager-container.dndupload-over .dndupload-target {
+    background-color: rgba($uptex-primary, 0.16);
+    border-color: $uptex-primary;
+}
+
+.filemanager-container .dndupload-message,
+.filemanager-container .dnduploadnotsupported-message {
+    color: $uptex-text-muted;
+    font-weight: 600;
+}

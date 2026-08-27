@@ -16,6 +16,13 @@ $THEME->scss = function($theme) {
     return theme_boost_get_main_scss_content($theme) . theme_saec_get_extra_scss($theme);
 };
 
+// Pre-SCSS: se ejecuta ANTES de que Boost compile Bootstrap (vía
+// lib/outputlib.php's theme_config::get_pre_scss_code(), que antepone el
+// resultado al contenido de $THEME->scss de arriba). Aquí es donde
+// $primary/$link-color/$border-radius/etc. de Bootstrap heredan la marca
+// SAEC de forma nativa — ver scss/pre.scss.
+$THEME->prescsscallback = 'theme_saec_get_pre_scss';
+
 // MAPEO COMPLETO DE LAYOUTS DE MOODLE
 // Incluye todos los contextos de página para no perder la barra de navegación principal
 $THEME->layouts = [

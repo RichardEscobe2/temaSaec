@@ -415,8 +415,8 @@
     // "Sin Docente Asignado" (Admin Global Course Catalog) — a soft warning,
     // not an error: an unassigned course isn't broken, just incomplete.
     &--warning {
-        background-color: rgba(#C8890A, 0.12); // Same amber tone _global_ui.scss's .alert-warning already uses.
-        color: #a1690a;
+        background-color: $saec-warning-light; // Same amber tone _global_ui.scss's .alert-warning uses.
+        color: $saec-warning;
     }
 
     // "Oculto" (Admin Global Course Catalog visibility pill) — a merely-

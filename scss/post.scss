@@ -1,20 +1,30 @@
 // theme_saec — post.scss
-// Loaded after Boost core styles. Holds the SAEC design tokens and every
-// `.saec-*` component style. Do not hardcode hex/rgb values below this
-// point — add a token (or derive one with darken()/rgba()) instead.
+// Loaded after Boost core styles. Holds every `.saec-*` component style.
+// Do not hardcode hex/rgb values below this point — add a token to
+// scss/_tokens.scss (or derive one with darken()/rgba() from one already
+// there) instead.
+
+// ---------------------------------------------------------------------
+// DESIGN TOKENS — single source of truth in scss/_tokens.scss, imported
+// first so every rule below (and every scss/saec/*.scss partial imported
+// later in this file) can use $saec-*. scss/pre.scss imports the same
+// file to feed Bootstrap's own variables ($primary, $link-color, etc.)
+// before Bootstrap compiles — see that file for why post.scss alone was
+// never enough to make native Bootstrap components inherit the brand.
+// ---------------------------------------------------------------------
+@import "tokens";
 
 // ---------------------------------------------------------------------
 // TYPOGRAPHY — Plus Jakarta Sans (replaces Bootstrap's system-ui stack)
 //
-// config.php's $THEME->scss assembles theme_boost_get_main_scss_content()
-// (Boost's full preset — variables, Bootstrap, moodle.scss) followed by
-// this file's content, with no pre.scss hook in between. By the time this
-// runs, Bootstrap has already consumed $font-family-sans-serif to emit its
-// own `body{font-family:...}` rule, so reassigning that Sass variable here
-// would be a no-op — only a plain CSS selector of equal-or-greater
-// specificity, compiled *after* Bootstrap's in the same stylesheet, can
-// win the cascade. That's what the html/body/h1-h6/form-control rule below
-// does.
+// scss/pre.scss now also sets $font-family-sans-serif/$font-family-base
+// to $saec-font-family before Bootstrap compiles, so Bootstrap's own
+// `body{font-family:...}` rule (and everything that inherits from it)
+// already uses Plus Jakarta Sans natively. The explicit selector list
+// below predates that fix and is kept as a harmless, redundant safety
+// net — it was previously the ONLY mechanism making this work (no
+// pre.scss hook existed), so removing it is optional cleanup, not
+// required for correctness.
 //
 // A `@import url(...)` for the Google Fonts stylesheet would suffer the
 // same ordering problem in the other direction: CSS only honours @import
@@ -63,7 +73,7 @@
     src: url(https://fonts.gstatic.com/s/plusjakartasans/v12/LDIbaomQNQcsA88c7O9yZ4KMCoOg4IA6-91aHEjcWuA_Tkn9TR_V.woff2) format("woff2");
 }
 
-$saec-font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+// $saec-font-family now comes from scss/_tokens.scss (imported above).
 
 html,
 body,
@@ -104,31 +114,8 @@ h1, .h1, h2, .h2, h3, .h3 {
 // ---------------------------------------------------------------------
 @import "saec/course_view";
 
-// ---------------------------------------------------------------------
-// DESIGN TOKENS
-// ---------------------------------------------------------------------
-$saec-primary:        #1b5e3b; // SAEC Green — primary actions, active states, brand highlights.
-$saec-primary-hover:  darken($saec-primary, 8%);
-$saec-primary-light:  rgba($saec-primary, 0.08);
-$saec-accent:         #a61c1c; // SAEC Red — urgent/negative states (e.g. late submissions).
-$saec-warning:        #a1690a; // SAEC Amber — caution/pending states (e.g. needs grading), distinct from $saec-accent's failure/danger red.
-$saec-warning-light:  rgba(#c8890a, 0.12);
-$saec-info:           #3b6ea5; // SAEC Slate Blue — neutral/informational states (e.g. justified/excused), distinct from primary green and warning amber.
-$saec-info-light:     rgba(#3b6ea5, 0.12);
-$saec-dark:           #212529; // Charcoal — controls, indicators, headings, outline borders.
-$saec-border:         #d1d5db; // Neutral border — card borders, dividers, structural outlines.
-$saec-surface:        #ffffff; // Cards / footer surface.
-$saec-bg-main:        #f8fafc; // Light slate page/panel background.
-$saec-img-bg:         #f8f9fa; // Off-white image container background.
-$saec-text-dark:      #111827; // Primary text.
-$saec-text-muted:     #6b7280; // Secondary / muted text.
-$saec-radius:         10px;
-$saec-radius-lg:      12px; // Hero carousel image stage.
-$saec-shadow-md:      0 4px 12px rgba(0, 0, 0, 0.08);
-$saec-shadow-elevated: 0 10px 25px -5px rgba(0, 0, 0, 0.1); // Hero carousel container shadow.
-$saec-nav-border:     #e5e7eb; // Secondary-navigation ribbon container border.
-$saec-nav-text-muted: #4b5563; // Secondary-navigation inactive tab text.
-$saec-nav-hover-bg:   #f0fdf4; // Secondary-navigation inactive tab hover tint.
+// $saec-* design tokens now come from scss/_tokens.scss (imported at the
+// top of this file).
 
 // ---------------------------------------------------------------------
 // SHARED BUTTON — .saec-btn
@@ -552,6 +539,103 @@ $saec-nav-hover-bg:   #f0fdf4; // Secondary-navigation inactive tab hover tint.
     }
 }
 
+// ---------------------------------------------------------------------
+// BLOCKS DRAWER (Step 3, Global Shell) — #theme_boost-drawers-blocks, the
+// right-hand off-canvas panel for the user's own configured blocks
+// (templates/theme_saec/drawers.mustache's {{#hasblocks}} branch — a real,
+// rendered drawer, unlike the course-index one; see the note below).
+// Visually mirrors #theme_saec-drawers-mainnav above (same surface/
+// border/shadow language, mirrored to the right edge) rather than
+// reusing a shared class, since Boost's own theme_boost/drawer template
+// renders each drawer as an independent sibling with its own id — no
+// common wrapper class exists to hang one rule off both.
+//
+// NOTE ON THE COURSE INDEX DRAWER: CLAUDE.md's Step 3 spec also calls for
+// re-skinning "#theme_boost-drawers-courseindex" — that id is never
+// rendered by this theme. templates/theme_saec/drawers.mustache's own
+// comment says so explicitly ("Drawer izquierdo: menú principal UPTex...
+// sustituye al árbol de índice de curso nativo en este mismo slot") and
+// grepping the compiled template confirms only two {{< theme_boost/drawer
+// }} blocks exist in the whole layout: mainnav and blocks. Writing a rule
+// for #theme_boost-drawers-courseindex would be dead CSS with zero visual
+// effect on any real page — skipped rather than added for its own sake;
+// #theme_saec-drawers-mainnav already occupies that exact role/slot and
+// has been fully themed since an earlier phase.
+// ---------------------------------------------------------------------
+#theme_boost-drawers-blocks {
+    background-color: $uptex-bg-alt;
+    border-left: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: -4px 0 24px -8px rgba(0, 0, 0, 0.04);
+}
+
+// Drawer header (close button + title) — shared markup between both
+// drawers (theme_boost/drawer.mustache's own .drawerheader), so this rule
+// is intentionally unscoped rather than duplicated per-drawer-id.
+.drawerheader {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid $uptex-border-color;
+
+    .drawertoggle {
+        color: $uptex-text-muted;
+        border-radius: 50%;
+
+        &:hover,
+        &:focus {
+            background-color: $uptex-primary-light;
+            color: $uptex-primary;
+        }
+    }
+}
+
+// Native block chrome (Calendario, Actividad reciente, etc. — whatever
+// the user has actually configured in the blocks drawer) — core's own
+// .block/.card markup, restyled generically so any block (core or
+// third-party) reads as part of the same surface instead of Boost's
+// plain white-on-white default.
+.block {
+    .card-body,
+    .content {
+        padding: 0.25rem 1rem 1rem;
+    }
+
+    .card-title,
+    .block-title {
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: $uptex-text-muted;
+        padding: 1rem 1rem 0.5rem;
+        margin: 0;
+    }
+}
+
+// Themed scrollbar for both off-canvas drawers' scrollable content area
+// (theme_boost/drawer.mustache's .drawercontent) — WebKit/Blink via
+// ::-webkit-scrollbar (Chrome/Edge/Safari), Firefox via the standard
+// scrollbar-width/scrollbar-color properties; no JS, degrades to each
+// browser's native scrollbar everywhere else on the site.
+#theme_saec-drawers-mainnav .drawercontent,
+#theme_boost-drawers-blocks .drawercontent {
+    scrollbar-width: thin;
+    scrollbar-color: $uptex-border-color transparent;
+
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: $uptex-border-color;
+        border-radius: 999px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background-color: transparent;
+    }
+}
+
 .saec-sidebar {
     display: flex;
     flex-direction: column;
@@ -864,6 +948,16 @@ $saec-dashboard-content-maxwidth: 1600px;
 // Sprint 10, the grading grid _grader_controls.scss deliberately skips.
 // ---------------------------------------------------------------------
 @import "saec/grader_report";
+
+// ---------------------------------------------------------------------
+// GRADEBOOK SETUP & CALCULATION TREE (/grade/edit/tree/index.php) — Step 4.
+// ---------------------------------------------------------------------
+@import "saec/gradebook_setup";
+
+// ---------------------------------------------------------------------
+// SINGLE VIEW (/grade/report/singleview/index.php) — Step 4.
+// ---------------------------------------------------------------------
+@import "saec/grade_singleview";
 
 // ---------------------------------------------------------------------
 // STUDENT "BOLETA DIGITAL" (/grade/report/user/index.php) — Sprint 6.

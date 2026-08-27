@@ -1,0 +1,103 @@
+// theme_saec — scss/pre.scss
+//
+// Global Bootstrap 5 / Boost core variable overrides — Step 1 of the
+// Design System architecture. Served via $THEME->prescsscallback
+// (theme_saec_get_pre_scss(), lib.php), which lib/outputlib.php's
+// theme_config::get_css_content_from_scss() prepends to the compiled
+// stylesheet BEFORE theme_boost_get_main_scss_content() (the Boost preset
+// that @imports Bootstrap's own scss/bootstrap/_variables.scss). Every
+// variable below is declared as a plain assignment (no `!default`), so
+// when Bootstrap's own `!default` declarations run afterwards for the
+// same names, they see the variable already set and skip re-assigning it
+// — this is the ONLY point in the whole compile where that ordering is
+// possible, which is why this file has to exist separately from post.scss
+// (loaded via $THEME->scss / extrascsscallback, which by definition only
+// ever runs AFTER Bootstrap has already compiled — see post.scss's own
+// TYPOGRAPHY section for the CSS-selector workaround that limitation used
+// to force).
+//
+// NOTE ON A PRIOR DECISION: custom.scss's own header (Fase 1) states this
+// theme deliberately avoided overriding Boost variables, "para evitar
+// colisiones con la compilación SCSS del núcleo" — at the time, every
+// $uptex-*/$saec-* rule lived in post.scss/custom.scss only, so a
+// pre-compile hook genuinely didn't exist yet and every override had to
+// happen at the CSS-selector level instead. This file supersedes that
+// constraint using Moodle's own supported prescsscallback mechanism
+// (confirmed against lib/outputlib.php and theme/boost/config.php in this
+// installation — theme_boost itself uses the exact same hook), not by
+// bypassing it. It has been validated to compile cleanly and to leave
+// every existing post.scss/scss/saec/*.scss rule producing the same
+// computed colours as before (see the QA report for verification).
+// Nothing in theme/boost/ is modified — this file only ever runs from
+// theme_saec's own config.php/lib.php.
+//
+// Effect: once $primary is set, Bootstrap's own !default chains already
+// derive several of the variables below FROM it automatically
+// ($component-active-bg: theme-color("primary"), $link-color: theme-color
+// ("primary"), $input-focus-border-color: lighten($component-active-bg,
+// 25%), etc. — see theme/boost/scss/bootstrap/_variables.scss). They are
+// still set explicitly below, matching this project's existing $saec-*
+// values exactly rather than Bootstrap's approximated derivations, and so
+// this file stays self-documenting without requiring a reader to trace
+// Bootstrap's own derivation chain to know what colour something ends up.
+// -----------------------------------------------------------------------
+
+@import "tokens";
+
+// ---------------------------------------------------------------------
+// THEME COLOR MAP — feeds $theme-colors (bootstrap/_variables.scss),
+// which in turn generates .btn-primary/.btn-success/.../.alert-*/.badge-*/
+// .text-*/.bg-*/.border-* for every key below with zero further overrides
+// needed anywhere else in the theme.
+// ---------------------------------------------------------------------
+$primary:       $saec-primary;
+$secondary:     $saec-text-muted;
+$success:       $saec-success;
+$info:          $saec-info;
+$warning:       $saec-warning;
+$danger:        $saec-accent;
+
+// ---------------------------------------------------------------------
+// LINKS
+// ---------------------------------------------------------------------
+$link-color:         $saec-primary;
+$link-hover-color:   $saec-primary-hover;
+
+// ---------------------------------------------------------------------
+// BORDER RADIUS — $saec-* only defines two radii; both $border-radius and
+// $border-radius-sm map to $saec-radius (10px) since this project has no
+// separate "small" institutional radius token yet.
+// ---------------------------------------------------------------------
+$border-radius:      $saec-radius;
+$border-radius-sm:   $saec-radius;
+$border-radius-lg:   $saec-radius-lg;
+
+// ---------------------------------------------------------------------
+// FOCUS STATES — inputs, buttons, custom controls (checkboxes/radios/
+// selects all derive from these two).
+// ---------------------------------------------------------------------
+$input-focus-border-color:    $saec-primary;
+$input-btn-focus-color:       rgba($saec-primary, 0.25);
+$input-btn-focus-box-shadow:  0 0 0 0.2rem rgba($saec-primary, 0.25);
+
+// ---------------------------------------------------------------------
+// ACTIVE COMPONENT STATE — active nav-pills/dropdown-items/pagination/
+// list-group entries, and custom checkbox/radio/switch fills.
+// ---------------------------------------------------------------------
+$component-active-bg:     $saec-primary;
+$component-active-color:  $saec-surface;
+
+// ---------------------------------------------------------------------
+// SHADOWS
+// ---------------------------------------------------------------------
+$box-shadow-sm:  $saec-shadow-md;
+$box-shadow:     $saec-shadow-md;
+$box-shadow-lg:  $saec-shadow-elevated;
+
+// ---------------------------------------------------------------------
+// TYPOGRAPHY — makes Bootstrap's OWN `body{font-family:...}` (and every
+// component that inherits it) use Plus Jakarta Sans natively, instead of
+// only the CSS-selector override post.scss previously relied on alone.
+// ---------------------------------------------------------------------
+$font-family-sans-serif:  $saec-font-family;
+$font-family-base:        $saec-font-family;

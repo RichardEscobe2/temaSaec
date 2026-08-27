@@ -1,0 +1,106 @@
+// -----------------------------------------------------------------------
+// GRADEBOOK SETUP & CALCULATION TREE (/grade/edit/tree/index.php) —
+// Step 4. Verified directly against grade/edit/tree/lib.php and
+// grade/templates/weight_field.mustache / weight_override_field.mustache
+// rather than assumed:
+//
+//   - The whole tree is a REAL <table class="generaltable simple
+//     setup-grades">, not a folder/card widget — it already inherits the
+//     generic .generaltable rules (zebra striping, header typography,
+//     hover, padding — scss/saec/_core_tables.scss) with zero extra work.
+//     Everything below only ADDS the category hierarchy/indentation cues
+//     that plain zebra striping can't express on its own.
+//   - Category rows carry a real "category" class (plus "coursecategory"
+//     for the root); the *name* cell of every row (category or item)
+//     carries "level{N} level{odd|even}" for its actual tree depth
+//     (grade_edit_tree_column::get_category_cell()) — used here for the
+//     left-accent indentation guide instead of guessing depth from
+//     whitespace/icons.
+//   - The weight/aggregation-coefficient input is a plain
+//     #weight_{itemid}.form-control (already themed generically —
+//     scss/saec/_core_forms.scss); .weightoverride is real, on the
+//     checkbox specifically. Neither ".weight" nor ".weightoverride" is a
+//     text-input class as CLAUDE.md's Step 4 spec assumed — only the
+//     checkbox carries a class of its own.
+// -----------------------------------------------------------------------
+table.setup-grades {
+    .category {
+        background-color: $uptex-bg-alt;
+
+        &.coursecategory {
+            background-color: $uptex-primary-pale;
+        }
+    }
+
+    // Indentation guide: a left-accent bar per depth level, lightening as
+    // it gets deeper so the root category always reads as the strongest
+    // line. Matches real depths this Moodle version actually emits
+    // (level1 = root course category); anything past level4 simply falls
+    // back to level4's own accent rather than getting no guide at all.
+    td[class*="level"] {
+        border-left: 3px solid transparent;
+    }
+
+    td.level1 { border-left-color: $uptex-primary; }
+    td.level2 { border-left-color: rgba($uptex-primary, 0.7); padding-left: 1.5rem; }
+    td.level3 { border-left-color: rgba($uptex-primary, 0.45); padding-left: 2.25rem; }
+    td.level4,
+    td[class*="level"]:not(.level1):not(.level2):not(.level3) {
+        border-left-color: rgba($uptex-primary, 0.25);
+        padding-left: 3rem;
+    }
+
+    .rowtitle {
+        color: $uptex-text-dark;
+        font-weight: 700;
+    }
+
+    // Visibility-eye toggle (core_grades/grade_category_visibility_toggle)
+    // and the drag "move here" targets (grade_edit_tree::get_category_cell
+    // /get_item_cell, class "movehere") — both real icon-only controls
+    // with no colour treatment of their own by default.
+    .action-icon,
+    a.moveheredarrow {
+        color: $uptex-text-muted;
+        transition: $uptex-transition;
+
+        &:hover,
+        &:focus {
+            color: $uptex-primary;
+        }
+    }
+
+    td.movehere {
+        border: 2px dashed $uptex-border-color;
+        border-radius: $uptex-radius-sm;
+        transition: $uptex-transition;
+
+        &:hover {
+            border-color: $uptex-primary;
+            background-color: $uptex-primary-light;
+        }
+    }
+
+    // Weight/aggregation-coefficient text input — real id is
+    // #weight_{itemid} (grade/templates/weight_field.mustache), already a
+    // plain .form-control so colour/radius/focus-ring are inherited; this
+    // only fixes width, since core's own size="4" attribute renders
+    // inconsistently once the generic .form-control padding is applied.
+    input[id^="weight_"] {
+        width: 4.5rem;
+        min-height: 36px;
+        padding: 0.3rem 0.5rem;
+        text-align: center;
+        display: inline-block;
+    }
+
+    // The real "Override weight" toggle (input[type=checkbox].weightoverride)
+    // already gets the institutional green accent-color from the generic
+    // checkbox rule (scss/saec/_global_ui.scss); this only enlarges the hit
+    // area, since it sits inline in a dense row next to a 4-character input.
+    .weightoverride {
+        width: 1.1rem;
+        height: 1.1rem;
+        margin: 0 0.5rem;
+    }
+}

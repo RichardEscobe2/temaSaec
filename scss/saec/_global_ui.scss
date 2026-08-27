@@ -158,8 +158,13 @@ input[type="radio"] {
 }
 
 .alert-warning {
-    background-color: rgba(#C8890A, 0.12);
-    color: #a1690a;
+    // Now largely redundant with Bootstrap's own native .alert-warning
+    // (scss/pre.scss sets $warning: $saec-warning before Bootstrap
+    // compiles, so its generated rule already matches) — kept as an
+    // explicit, token-backed rule rather than removed, since it costs
+    // nothing to keep correct and this file predates that pre.scss fix.
+    background-color: $saec-warning-light;
+    color: $saec-warning;
 }
 
 .alert-info {
@@ -173,9 +178,123 @@ input[type="radio"] {
     box-shadow: $uptex-shadow-elevation;
 }
 
+// -- Sticky footer action bar (core/sticky_footer, theme_boost's own
+// override template — #sticky-footer.stickyfooter.bg-white.border-top) —
+// a real, reusable core primitive (grade/report/singleview's "Guardar"
+// bar included, via core\output\sticky_footer), not page-specific markup,
+// so this stays here with the theme's other generic chrome rather than in
+// a per-page grading partial. Elevated rather than flat, since it floats
+// above page content at the bottom of the viewport. --
+.stickyfooter {
+    background-color: $uptex-surface !important; // Overrides core's own inline .bg-white utility class.
+    border-top-color: $uptex-border-color !important;
+    box-shadow: $uptex-shadow-elevation;
+
+    .btn-primary {
+        box-shadow: $uptex-shadow-sm;
+    }
+}
+
 .modal-header,
 .modal-footer {
     border-color: $uptex-border-color;
+}
+
+// -- Popovers / dropdown menus — same card language as .modal-content
+// above, reused generically so any Bootstrap dropdown or popover (user
+// menu, action-menu "⋮" triggers, autocomplete suggestion lists, etc.)
+// looks native without a page-specific rule. Scoped instances elsewhere
+// (scss/saec/_navigation.scss, _grader_controls.scss) target their own
+// dropdown/popover with a higher-specificity descendant selector and are
+// imported after this file, so neither can be affected by this one.
+.popover {
+    border: none;
+    border-radius: $uptex-radius-lg;
+    box-shadow: $uptex-shadow-elevation;
+}
+
+.popover-header {
+    background-color: $uptex-surface;
+    border-bottom-color: $uptex-border-color;
+    font-weight: 700;
+    color: $uptex-text-dark;
+}
+
+.dropdown-menu {
+    border: 1px solid $uptex-border-color;
+    border-radius: $uptex-radius-lg;
+    box-shadow: $uptex-shadow-elevation;
+    padding: 0.4rem;
+}
+
+.dropdown-item {
+    border-radius: $uptex-radius-sm;
+    color: $uptex-text-dark;
+    transition: $uptex-transition;
+
+    &:hover,
+    &:focus {
+        background-color: $uptex-primary-light;
+        color: $uptex-primary;
+    }
+
+    &.active,
+    &:active {
+        background-color: $uptex-primary;
+        color: $uptex-surface;
+    }
+}
+
+// -----------------------------------------------------------------------
+// ACTIVITY CHOOSER — "Añadir una actividad o recurso" modal
+// (course/amd/src/activitychooser.js). NOTE: despite the common name,
+// this Moodle install's own JS gives the modal the class `modchooser`
+// (activitychooser.js:306, `templateContext: {classes: 'modchooser'}`),
+// not `.activitychooser` — verified directly against core source rather
+// than assumed, since the class name isn't documented anywhere in the
+// chooser's own mustache templates. Its tabs (.nav-tabs) and each option
+// (.option.card) already inherit the generic .nav-tabs/.card treatment
+// (custom.scss/.nav-tabs above) with zero extra rules; this block only
+// covers what's specific to this modal — the light-grey core wrapper
+// core's own markup gives the tab body, and the option-card hover/icon
+// layout (course/templates/local/activitychooser/item.mustache).
+// -----------------------------------------------------------------------
+.modchooser {
+    .tab-content {
+        background-color: $uptex-bg-alt !important; // Overrides core's own inline Bootstrap .bg-light utility class.
+        border-color: $uptex-border-color !important;
+        border-radius: 0 0 $uptex-radius-lg $uptex-radius-lg;
+    }
+
+    .option {
+        border-radius: $uptex-radius-sm;
+        transition: $uptex-transition;
+
+        &:hover,
+        &:focus-within {
+            box-shadow: $uptex-shadow-sm;
+            transform: translateY(-2px);
+        }
+    }
+
+    .optionicon {
+        color: $uptex-primary;
+    }
+
+    .optionname {
+        color: $uptex-text-dark;
+        font-weight: 600;
+    }
+
+    .optionaction {
+        color: $uptex-text-muted;
+
+        &:hover,
+        &:focus,
+        &.text-primary {
+            color: $uptex-primary;
+        }
+    }
 }
 
 // =========================================================================
@@ -214,6 +333,202 @@ input[type="radio"] {
         &.active {
             background-color: $uptex-primary;
             color: $uptex-surface;
+        }
+    }
+}
+
+// =========================================================================
+// GLOBAL SHELL — Step 3. Breadcrumbs, the user account menu, and the
+// notification/message navbar popovers. Verified against this install's
+// own core source before writing any selector (lib/templates/navbar.mustache,
+// lib/templates/user_menu*.mustache, lib/templates/popover_region.mustache,
+// message/templates/message_popover.mustache) rather than assumed —
+// none of these are theme_saec templates, all render through
+// templates/theme_saec/navbar.mustache's {{{ output.navbar_plugin_output }}}
+// and {{> core/user_menu }} calls untouched.
+// =========================================================================
+
+// -- Breadcrumbs (core/navbar.mustache: <ol class="breadcrumb"><li
+// class="breadcrumb-item">) — the LAST item is the only one core ever
+// renders without an <a> (a plain <span>, "has_action" false), i.e. the
+// current page; every earlier item is a real link, styled as an
+// intermediate step in the hierarchy rather than a dead-end label. --
+.breadcrumb {
+    background-color: transparent;
+    padding: 0.5rem 0;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.breadcrumb-item {
+    font-size: 0.85rem;
+    color: $uptex-text-muted;
+
+    a {
+        color: $uptex-primary;
+        font-weight: 600;
+
+        &:hover,
+        &:focus {
+            color: $uptex-primary-hover;
+            text-decoration: underline;
+        }
+    }
+
+    // No <a> at all (core's has_action=false branch) — this is always the
+    // current/active page, core never renders it any other way.
+    span {
+        color: $uptex-text-dark;
+        font-weight: 600;
+    }
+
+    &.dimmed_text {
+        opacity: 0.6;
+    }
+
+    // Bootstrap's own ::before (the "/" separator) inherits $breadcrumb-
+    // divider-color !default, unrelated to $uptex-*; recoloured here to
+    // match the muted palette instead of Boost's default grey.
+    + .breadcrumb-item::before {
+        color: $uptex-border-color;
+    }
+}
+
+// -- User account menu (lib/templates/user_menu.mustache) — the
+// .dropdown-menu/.dropdown-item chrome and hover states already come from
+// the generic rules above (Step 2); this only covers what's specific to
+// THIS dropdown: the navbar toggle button itself (avatar + name) and its
+// avatar image, never targeted by any other rule in the theme. --
+.usermenu {
+    .userbutton {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.35rem 0.6rem;
+        border-radius: $uptex-radius-pill;
+        transition: $uptex-transition;
+    }
+
+    #user-menu-toggle {
+        color: $uptex-text-dark;
+        text-decoration: none;
+
+        &:hover .userbutton,
+        &:focus .userbutton {
+            background-color: $uptex-primary-light;
+        }
+    }
+
+    .usertext {
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .avatars .userpicture {
+        border-radius: 50%;
+        border: 2px solid $uptex-primary-light;
+    }
+
+    // Submenu carousel header ("Cambiar de rol a...", etc.) — back-arrow
+    // button + title row, core/user_menu.mustache's own .header/.carousel-
+    // navigation-link, restyled to match the rest of the panel instead of
+    // Bootstrap's plain default button.
+    .carousel-item.submenu .header {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 0.25rem 0.75rem;
+        font-weight: 700;
+        color: $uptex-text-dark;
+
+        .carousel-navigation-link {
+            color: $uptex-primary;
+        }
+    }
+}
+
+// -- Notification bell + message icon (both built on the SAME
+// lib/templates/popover_region.mustache base — message_popup/
+// notification_popover.mustache and core_message/message_popover.mustache
+// each only supply their own toggle icon/content). .popover-region-
+// container is Moodle's own bespoke widget, NOT a Bootstrap .dropdown-menu
+// or .popover — it needs its own card treatment, the Step 2 .popover/
+// .dropdown-menu rules never reach it. --
+.popover-region {
+    .popover-region-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: $uptex-text-muted;
+        border-radius: 50%;
+        transition: $uptex-transition;
+
+        &:hover,
+        &:focus,
+        &[aria-expanded="true"] {
+            background-color: $uptex-primary-light;
+            color: $uptex-primary;
+        }
+    }
+
+    // Unread-count pill — circular, high-contrast, matches the accent
+    // ($uptex-danger) used for urgent/attention-needed states elsewhere in
+    // the theme rather than Boost's default red.
+    .count-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 18px;
+        height: 18px;
+        padding: 0 4px;
+        border-radius: 999px;
+        background-color: $uptex-danger;
+        color: $uptex-surface;
+        font-size: 0.65rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .popover-region-container {
+        background-color: $uptex-surface;
+        border: 1px solid $uptex-border-color;
+        border-radius: $uptex-radius-lg;
+        box-shadow: $uptex-shadow-elevation;
+        overflow: hidden;
+    }
+
+    .popover-region-header-container {
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid $uptex-border-color;
+    }
+
+    .popover-region-header-text {
+        font-weight: 700;
+        font-size: 1rem;
+        color: $uptex-text-dark;
+        margin: 0;
+    }
+
+    .popover-region-header-actions a {
+        color: $uptex-text-muted;
+
+        &:hover,
+        &:focus {
+            color: $uptex-primary;
+        }
+    }
+
+    .see-all-link {
+        display: block;
+        text-align: center;
+        padding: 0.75rem;
+        border-top: 1px solid $uptex-border-color;
+        color: $uptex-primary;
+        font-weight: 600;
+
+        &:hover,
+        &:focus {
+            background-color: $uptex-primary-light;
+            text-decoration: none;
         }
     }
 }

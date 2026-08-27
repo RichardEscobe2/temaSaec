@@ -90,5 +90,73 @@
             background-color: $uptex-primary-pale !important;
             font-weight: 700;
         }
+
+        // -------------------------------------------------------------
+        // ACCESSIBILITY STATES — Step 4. Verified against grade/report/
+        // grader/lib.php's own cell-class construction (not assumed):
+        // ".grade i{itemid}" always gets " overridden" appended when
+        // $grade->is_overridden(), and " gradepass"/" gradefail" appended
+        // per $grade->is_passed($item) — real classes on the <td> itself,
+        // not a wrapper. ".cat"/".course" mark category- and course-total
+        // cells specifically (same row, different column role).
+        // -------------------------------------------------------------
+        td.gradepass {
+            color: darken($uptex-accent-green, 12%);
+            font-weight: 700;
+        }
+
+        td.gradefail {
+            color: $uptex-danger;
+            font-weight: 700;
+        }
+
+        // Left-accent bar rather than a background tint — a manually
+        // overridden grade is still a real, valid grade (unlike gradefail,
+        // which needs a strong colour to read as "attention"), so this
+        // stays a quiet provenance marker instead of competing with the
+        // pass/fail colours above for the same cell.
+        td.overridden {
+            box-shadow: inset 3px 0 0 $uptex-primary;
+        }
+
+        td.cat,
+        td.course {
+            background-color: $uptex-bg-alt;
+            font-weight: 700;
+        }
+
+        // Quick-grading inputs — core/grades/grader/input.mustache renders
+        // a plain <input id="grade_{userid}_{itemid}"> with NO distinct
+        // "quickgrade" class in this Moodle version (verified against the
+        // template directly); scoped to .gradecell so this never reaches
+        // the tertiary-navigation search box _grader_controls.scss already
+        // owns. Colour/radius already inherited from the generic
+        // .form-control rule (scss/saec/_core_forms.scss) — this only
+        // fixes sizing, since core's own input has no width constraint and
+        // would otherwise stretch to fill the grade cell.
+        td.gradecell input[id^="grade_"] {
+            width: 100%;
+            min-height: 36px;
+            padding: 0.3rem 0.5rem;
+            text-align: center;
+            font-weight: 600;
+
+            &:focus {
+                border-color: $uptex-primary;
+                box-shadow: 0 0 0 2px $uptex-primary-soft;
+            }
+        }
+
+        // NOTE ON "COLUMN CROSSHAIR" HIGHLIGHTING: CLAUDE.md's Step 4 spec
+        // also asks for a row-AND-column hover highlight (a "crosshair").
+        // Row highlighting is implemented above (tr.userrow:hover). True
+        // column highlighting is NOT implemented — there is no reliable,
+        // JS-free way to do it for a table whose column count/order is
+        // generated per-course (no per-column class exists on cells
+        // outside their own row, and CSS has no selector that reaches
+        // "every cell at this same column index" without either a fixed,
+        // known column count or a JS-added hover class per column). Adding
+        // a rule that silently matches nothing would be dead code; this is
+        // flagged as a known limitation instead of faked.
     }
 }

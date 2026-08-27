@@ -1,0 +1,61 @@
+// theme_saec — scss/_tokens.scss
+//
+// SINGLE SOURCE OF TRUTH for every $saec-* design token. Extracted out of
+// post.scss (where these lived inline until now) so the SAME variable
+// values are available in two places that need them for different
+// reasons:
+//   - scss/pre.scss imports this BEFORE Bootstrap/Boost's own variables
+//     compile, so native Bootstrap components (.btn-primary, .alert-*,
+//     focus rings, etc.) inherit the SAEC brand automatically.
+//   - scss/post.scss imports this (as it always effectively has) for
+//     every `.saec-*` component rule across post.scss and scss/saec/*.scss.
+//
+// Do not hardcode hex/rgb values anywhere else in the theme — add a token
+// here (or derive one with darken()/rgba() from one already here) instead.
+// This file intentionally does NOT touch the separate $uptex-* namespace
+// (custom.scss) — that palette is only available post-Bootstrap (custom.scss
+// is @import'd from post.scss, never from pre.scss) and is out of scope for
+// the pre-compile Bootstrap override this file exists to support.
+// -----------------------------------------------------------------------
+
+// ---------------------------------------------------------------------
+// TYPOGRAPHY
+// ---------------------------------------------------------------------
+$saec-font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+// ---------------------------------------------------------------------
+// COLOR PALETTE
+// ---------------------------------------------------------------------
+$saec-primary:        #1b5e3b; // SAEC Green — primary actions, active states, brand highlights.
+$saec-primary-hover:  darken($saec-primary, 8%);
+$saec-primary-light:  rgba($saec-primary, 0.08);
+$saec-success:        #7cb342; // Positive/success signal — same hex as custom.scss's $uptex-accent-green, kept
+                                // as its own value here (rather than importing custom.scss) since custom.scss
+                                // is only ever compiled post-Bootstrap and can't be reached from pre.scss.
+$saec-accent:         #a61c1c; // SAEC Red — urgent/negative states (e.g. late submissions).
+$saec-warning:        #a1690a; // SAEC Amber — caution/pending states (e.g. needs grading), distinct from $saec-accent's failure/danger red.
+$saec-warning-light:  rgba(#c8890a, 0.12);
+$saec-info:           #3b6ea5; // SAEC Slate Blue — neutral/informational states (e.g. justified/excused), distinct from primary green and warning amber.
+$saec-info-light:     rgba(#3b6ea5, 0.12);
+$saec-dark:           #212529; // Charcoal — controls, indicators, headings, outline borders.
+$saec-border:         #d1d5db; // Neutral border — card borders, dividers, structural outlines.
+$saec-surface:        #ffffff; // Cards / footer surface.
+$saec-bg-main:        #f8fafc; // Light slate page/panel background.
+$saec-img-bg:         #f8f9fa; // Off-white image container background.
+$saec-text-dark:      #111827; // Primary text.
+$saec-text-muted:     #6b7280; // Secondary / muted text.
+
+// ---------------------------------------------------------------------
+// RADII & SHADOWS
+// ---------------------------------------------------------------------
+$saec-radius:          10px;
+$saec-radius-lg:        12px; // Hero carousel image stage.
+$saec-shadow-md:        0 4px 12px rgba(0, 0, 0, 0.08);
+$saec-shadow-elevated:  0 10px 25px -5px rgba(0, 0, 0, 0.1); // Hero carousel container shadow.
+
+// ---------------------------------------------------------------------
+// NAVIGATION
+// ---------------------------------------------------------------------
+$saec-nav-border:     #e5e7eb; // Secondary-navigation ribbon container border.
+$saec-nav-text-muted: #4b5563; // Secondary-navigation inactive tab text.
+$saec-nav-hover-bg:   #f0fdf4; // Secondary-navigation inactive tab hover tint.
