@@ -1,0 +1,67 @@
+# theme_saec - Orquestacion Docker para Moodle 4.x (enterprise)
+# Ubicacion: theme/saec/docker/docker-compose.yml
+#
+# Servicios: db (MariaDB 10.11), web (PHP 8.2 + Apache), phpmyadmin.
+# Puertos: 8080 (Moodle), 8081 (phpMyAdmin), 3307 (MariaDB).
+
+services:
+  db:
+    image: mariadb:10.11
+    container_name: saec_db
+    restart: unless-stopped
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --innodb-file-per-table=1
+      - --max-allowed-packet=64M
+    environment:
+      MYSQL_ROOT_PASSWORD: moodle_root_pw
+      MYSQL_DATABASE: moodle
+      MYSQL_USER: moodle
+      MYSQL_PASSWORD: moodle
+    ports:
+      - "3307:3306"
+    volumes:
+      - saec_db_data:/var/lib/mysql
+    networks:
+      - saec_net
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: saec_web
+    restart: unless-stopped
+    depends_on:
+      - db
+    ports:
+      - "8080:80"
+    volumes:
+      - ../../..:/var/www/html
+      - ../:/var/www/html/theme/saec
+      - saec_moodledata:/var/www/moodledata
+      - ./php.ini:/usr/local/etc/php/conf.d/zz-saec-custom.ini:ro
+    networks:
+      - saec_net
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: saec_phpmyadmin
+    restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+    ports:
+      - "8081:80"
+    networks:
+      - saec_net
+
+networks:
+  saec_net:
+    driver: bridge
+
+volumes:
+  saec_db_data:
+  saec_moodledata:

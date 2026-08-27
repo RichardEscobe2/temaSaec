@@ -1,0 +1,38 @@
+<?php
+// theme_saec - Plantilla de referencia config.php para el entorno Docker.
+// Ubicacion: theme/saec/docker/config.docker.php.dist
+//
+// NO se sobrescribe el config.php real de Moodle. Este archivo es solo
+// una referencia de los valores que deben ajustarse al ejecutar Moodle
+// dentro de los contenedores definidos en docker-compose.yml.
+//
+// Pasos sugeridos (manual, no automatizado por este generador):
+//   1. Copiar este archivo como config.php en la raiz de Moodle dentro
+//      del contenedor 'web' (o usarlo de guia para editar el existente).
+//   2. Ajustar credenciales de base de datos segun el servicio 'db'.
+
+unset($CFG);
+global $CFG;
+$CFG = new stdClass();
+
+$CFG->dbtype    = 'mysqli';
+$CFG->dblibrary = 'native';
+$CFG->dbhost    = 'db';              // Nombre del servicio en docker-compose.yml
+$CFG->dbname    = 'moodle';
+$CFG->dbuser    = 'moodle';
+$CFG->dbpass    = 'moodle';
+$CFG->prefix    = 'mdl_';
+$CFG->dboptions = array(
+    'dbpersist' => false,
+    'dbsocket'  => false,
+    'dbport'    => '',
+    'dbcollation' => 'utf8mb4_unicode_ci',
+);
+
+$CFG->wwwroot   = 'http://localhost:8080';
+$CFG->dataroot  = '/var/www/moodledata';
+$CFG->admin     = 'admin';
+
+$CFG->directorypermissions = 02777;
+
+require_once(__DIR__ . '/lib/setup.php');

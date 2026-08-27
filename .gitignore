@@ -7,3 +7,5 @@ Thumbs.db
 # Logs y archivos temporales
 *.log
 *.tmp
+docker/*.sql
+docker/moodledata/
