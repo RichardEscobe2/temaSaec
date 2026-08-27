@@ -108,7 +108,8 @@
 
     .uptex-deadline-item {
         display: flex;
-        gap: 0.75rem;
+        flex-direction: column;
+        gap: 0.5rem;
         padding: 0.6rem;
         background-color: $saec-bg-main;
         border-radius: $saec-radius;
@@ -117,6 +118,15 @@
 
         &:hover {
             background-color: darken($saec-bg-main, 3%);
+        }
+
+        // Wraps daybox+body. The Teacher Dashboard never sets student_dashboard's
+        // "hassubmiturl" (this partial is shared — see components/deadline_item.mustache),
+        // so this row is always this item's only child here, but the markup
+        // structure is shared, so the CSS structure must mirror it.
+        &__row {
+            display: flex;
+            gap: 0.75rem;
         }
 
         &__daybox {
@@ -280,5 +290,86 @@
         margin-top: 0.35rem;
         font-size: 0.75rem;
         color: $saec-text-muted;
+    }
+}
+
+// -----------------------------------------------------------------------
+// TEACHER QUICK-ACTION BAR + COURSE-PICKER MODALS — $uptex-* tokens (this
+// round's mandatory design-token source), matching the rest of this file's
+// pre-existing $saec-* rules staying untouched/out of scope. The action
+// pills themselves reuse .uptex-quickaction as-is (scss/saec/_admin_hub.scss
+// — "Style: matching the executive Admin dashboard aesthetic" per spec);
+// only the row layout and the two-modal course list below are new.
+// -----------------------------------------------------------------------
+.saec-teacher-quickactions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.uptex-course-picker-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.uptex-course-picker-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid $uptex-border-color;
+    border-radius: $uptex-radius-sm;
+    color: $uptex-text-dark;
+    text-decoration: none;
+    transition: $uptex-transition;
+
+    &:hover,
+    &:focus {
+        background-color: $uptex-primary-light;
+        border-color: $uptex-primary;
+        color: $uptex-text-dark;
+        text-decoration: none;
+    }
+
+    &__badge {
+        flex-shrink: 0;
+        background-color: $uptex-primary-light;
+        color: $uptex-primary;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        padding: 0.25rem 0.6rem;
+        border-radius: $uptex-radius-pill;
+    }
+
+    &__name {
+        flex: 1 1 auto;
+        font-weight: 600;
+        min-width: 0;
+    }
+
+    &__arrow {
+        flex-shrink: 0;
+        color: $uptex-primary;
+        font-weight: 700;
+    }
+}
+
+.uptex-course-picker-modal {
+    .modal-content {
+        border: none;
+        border-radius: $uptex-radius-lg;
+        box-shadow: $uptex-shadow-elevation;
+    }
+
+    .modal-header {
+        border-color: $uptex-border-color;
+    }
+
+    .modal-title {
+        font-weight: 700;
+        color: $uptex-text-dark;
     }
 }

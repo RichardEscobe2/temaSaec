@@ -180,8 +180,15 @@ class course_view_page {
     private static function get_next_deadline(int $courseid, int $userid): array {
         $now = time();
         $events = calendar_get_events($now, $now + (60 * DAYSECS), false, false, [$courseid], true, true);
-        $filtered = array_values(array_filter($events, function (stdClass $event): bool {
-            return in_array($event->modulename ?? '', ['assign', 'quiz'], true);
+        $filtered = array_values(array_filter($events, function (stdClass $event) use ($userid): bool {
+            $modulename = $event->modulename ?? '';
+            if (!in_array($modulename, ['assign', 'quiz'], true)) {
+                return false;
+            }
+            // Skip activities the user has already submitted/attempted — a
+            // due date in the future is not "upcoming work" once there's
+            // nothing left for the student to do.
+            return !self::has_user_completed_activity($modulename, (int) $event->instance, $userid);
         }));
         usort($filtered, fn (stdClass $a, stdClass $b) => $a->timestart <=> $b->timestart);
 
@@ -203,6 +210,40 @@ class course_view_page {
             'isurgent' => ($daysleft <= 2),
             'url' => (new moodle_url('/mod/' . $event->modulename . '/view.php', ['id' => $event->instance]))->out(false),
         ];
+    }
+
+    /**
+     * Whether $userid has already submitted (assign) or finished an attempt
+     * (quiz) for the given activity instance — used to keep already-handled
+     * work out of the "next deadline" widget even when its due date still
+     * lies in the future.
+     *
+     * @param string $modulename 'assign' or 'quiz'
+     * @param int $instanceid The activity's own instance id (event->instance)
+     * @param int $userid
+     * @return bool
+     */
+    private static function has_user_completed_activity(string $modulename, int $instanceid, int $userid): bool {
+        global $DB;
+
+        if ($modulename === 'assign') {
+            return $DB->record_exists('assign_submission', [
+                'assignment' => $instanceid,
+                'userid' => $userid,
+                'status' => 'submitted',
+                'latest' => 1,
+            ]);
+        }
+
+        if ($modulename === 'quiz') {
+            return $DB->record_exists('quiz_attempts', [
+                'quiz' => $instanceid,
+                'userid' => $userid,
+                'state' => 'finished',
+            ]);
+        }
+
+        return false;
     }
 
     /** @var array<int, array{forum: stdClass, cm: stdClass}|false> Per-request memo for get_news_forum(). */

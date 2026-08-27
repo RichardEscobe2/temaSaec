@@ -40,6 +40,24 @@
 </div>
 {{#js}}
 require(['jquery'], function($) {
+    // Suppress the native "Blogs" category site-wide (all 3 roles show it,
+    // Admin/Teacher/Student alike — this isn't a per-role capability gate,
+    // it's a deliberate UX simplification for this theme). A CSS-only fix
+    // isn't viable here: "Blogs" sits at a different tab INDEX per role
+    // (verified live — 3rd tab for Admin, 2nd for Teacher/Student, since
+    // each role's own preferences_group list differs), so an nth-child rule
+    // that hides the right tab for one role hides the wrong one for
+    // another. Matching by the category's own title text, in the exact
+    // script that already owns this template's tab/panel wiring, is the
+    // only robust option — and still zero core hacks, since this whole
+    // template already replaces core's own preferences_groups.mustache.
+    $('.saec-settings-tabs__tab').each(function(index) {
+        if ($(this).text().trim().toLowerCase().indexOf('blog') !== -1) {
+            $('.saec-settings-panel').eq(index).remove();
+            $(this).remove();
+        }
+    });
+
     var tabs = $('.saec-settings-tabs__tab');
     var panels = $('.saec-settings-panel');
 

@@ -1,0 +1,61 @@
+{{!
+    @template theme_saec/components/course_picker_modal
+
+    Reusable Bootstrap 4 modal (theme_boost/bootstrap/modal — bundled and
+    active on every page via theme_boost/loader, so a plain
+    data-toggle=modal / data-target=#(modalid) trigger elsewhere on the
+    page needs no extra JS here) listing a teacher's courses as a
+    one-click-through picker: choosing a course navigates straight to
+    courseurl (an assignment-creation form or a forum add-discussion
+    editor — the caller decides which by what it puts in courseurl, this
+    component only renders the list). Used twice by teacher_dashboard.mustache
+    (modalSelectCourseTask, modalSelectCourseNotice) from
+    \theme_saec\dashboard\teacher_dashboard::get_teacher_course_pickers().
+
+    NOTE: never write two closing curly braces in a row anywhere inside
+    this comment block, including inside plain prose text describing the
+    bug itself — Mustache comment parsing stops at the first such pair it
+    finds and leaks everything after it onto the page as raw text (this
+    happened twice while writing this very docblock).
+
+    Example context (json):
+    {
+        "modalid": "modalSelectCourseTask",
+        "modaltitle": "Selecciona el curso para crear la tarea",
+        "haslistcourses": true,
+        "courses": [
+            {
+                "id": 5, "fullname": "Desarrollo de Sistemas Web II", "shortname": "DSW-2026",
+                "courseurl": "https://example.org/course/modedit.php?add=assign&section=0&course=5&return=0"
+            }
+        ]
+    }
+}}
+<div class="modal fade uptex-course-picker-modal" id="{{ modalid }}" tabindex="-1" role="dialog" aria-labelledby="{{ modalid }}Label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="{{ modalid }}Label">{{ modaltitle }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="{{#str}} closebuttontitle, moodle {{/str}}">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {{#haslistcourses}}
+                    <div class="uptex-course-picker-list">
+                        {{#courses}}
+                            <a href="{{{ courseurl }}}" class="uptex-course-picker-item">
+                                <span class="uptex-course-picker-item__badge">{{ shortname }}</span>
+                                <span class="uptex-course-picker-item__name">{{ fullname }}</span>
+                                <span class="uptex-course-picker-item__arrow" aria-hidden="true">&rarr;</span>
+                            </a>
+                        {{/courses}}
+                    </div>
+                {{/haslistcourses}}
+                {{^haslistcourses}}
+                    <p class="text-muted mb-0">{{#str}} coursepickerempty, theme_saec {{/str}}</p>
+                {{/haslistcourses}}
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,336 @@
+// -----------------------------------------------------------------------
+// STUDENT DASHBOARD (/my/) — "Mis Cursos Inscritos" Grid/List view switcher
+// (student_dashboard.mustache). $uptex-* tokens only, per this round's
+// design-system convention. The header/section chrome around this
+// (.uptex-dashboard-section, .uptex-course-showcase-card itself) is scoped
+// inside .uptex-student-dashboard in custom.scss — this file only adds the
+// new switcher control and the two .saec-courses-container layouts.
+// -----------------------------------------------------------------------
+
+.uptex-dashboard-section__header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+}
+
+// -- Course action buttons ("Entrar al Curso" / "Ver Boleta") --
+// Modern SaaS button hierarchy replacing the old generic oval-pill .btn
+// pair (border-radius: 999px) that used to live in the shared
+// .uptex-course-showcase-card__footer component (custom.scss). Scoped here
+// rather than there since these two classes are exclusive to the Student
+// Dashboard course card (components/course_progress_card.mustache) — every
+// other caller of that shared card keeps its own single full-width .btn.
+.saec-course-actions {
+    align-items: stretch;
+
+    a {
+        flex: 1 1 0;
+    }
+}
+
+.saec-btn-enter,
+.saec-btn-report {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    // Flex items default to min-width: auto, which floors shrinking at the
+    // label's min-content width — at narrow card widths (mobile) that pushed
+    // the button row wider than its parent instead of shrinking. Overridden
+    // here so flex: 1 1 0 (.saec-course-actions, above) can actually shrink
+    // these below their natural content width; the label itself truncates
+    // with an ellipsis rather than overflowing once it runs out of room.
+    min-width: 0;
+    border-radius: $uptex-radius-sm;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out,
+        box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out, color 0.2s ease-in-out;
+
+    &:hover,
+    &:focus {
+        text-decoration: none;
+        transform: translateY(-1px);
+    }
+
+    &__label {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    &__icon {
+        flex-shrink: 0;
+    }
+}
+
+// Primary action: solid fill, right arrow that nudges on hover.
+.saec-btn-enter {
+    padding: 0.5rem 1.1rem;
+    font-weight: 600;
+    background-color: $uptex-primary;
+    color: $uptex-surface;
+    border: none;
+    box-shadow: $uptex-shadow-sm;
+
+    &:hover,
+    &:focus {
+        background-color: $uptex-primary-hover;
+        color: $uptex-surface;
+        box-shadow: 0 4px 12px rgba($uptex-primary, 0.25);
+
+        .saec-btn-enter__icon {
+            transform: translateX(3px);
+        }
+    }
+
+    &__icon {
+        transition: transform 0.2s ease-in-out;
+    }
+}
+
+// Secondary action: soft tinted fill, crisps to white + solid border on hover.
+.saec-btn-report {
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    background-color: $uptex-primary-light;
+    color: $uptex-primary;
+    border: 1px solid rgba($uptex-primary, 0.2);
+
+    &:hover,
+    &:focus {
+        background-color: $uptex-surface;
+        color: $uptex-primary;
+        border-color: $uptex-primary;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+}
+
+// -- Segmented Grid/List toggle control --
+.saec-view-switcher {
+    display: inline-flex;
+    border: 1px solid $uptex-border-color;
+    border-radius: $uptex-radius-sm;
+    overflow: hidden;
+
+    &__btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        background-color: $uptex-surface;
+        color: $uptex-text-muted;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+
+        &:not(:last-child) {
+            border-right: 1px solid $uptex-border-color;
+        }
+
+        &:hover {
+            color: $uptex-primary;
+            background-color: $uptex-primary-light;
+        }
+
+        &--active {
+            background-color: $uptex-primary;
+            color: $uptex-surface;
+
+            &:hover {
+                background-color: $uptex-primary;
+                color: $uptex-surface;
+            }
+        }
+    }
+}
+
+// -- Grid view (default) — uniform-height cards, bottom-pinned footer --
+.saec-courses-container--grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+
+    .uptex-course-showcase-card {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+
+        &__media {
+            height: 140px;
+        }
+
+        &__body {
+            display: flex;
+            flex-direction: column;
+            flex: 1 1 auto;
+        }
+
+        &__list-title {
+            display: none;
+        }
+
+        &__footer {
+            margin-top: auto;
+        }
+    }
+}
+
+// -- List view — compact horizontal rows --
+.saec-courses-container--list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+
+    .uptex-course-showcase-card {
+        flex-direction: row;
+        align-items: center;
+        gap: 1rem;
+
+        &__media {
+            width: 120px;
+            height: 80px;
+            flex-shrink: 0;
+            border-radius: $uptex-radius-sm;
+        }
+
+        // The grid view's title-on-image overlay makes no sense on a
+        // 120x80 thumbnail — list view shows the title as plain text in
+        // __list-title instead (same underlying fullname, two visual
+        // treatments, only one ever visible per view).
+        &__media-overlay,
+        &__media-title {
+            display: none;
+        }
+
+        &__list-title {
+            display: block;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: $uptex-text-dark;
+            margin: 0 0 0.2rem;
+        }
+
+        &__body {
+            flex-direction: row;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.25rem 1rem 0;
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        &__info {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        &__completion {
+            display: none;
+        }
+
+        // --split already sets flex-direction: row (custom.scss, shared
+        // component) regardless of grid/list mode — only margin-top/shrink
+        // need overriding here so it sits flush-right without stretching.
+        &__footer {
+            flex-shrink: 0;
+            margin-top: 0;
+        }
+    }
+}
+
+// -----------------------------------------------------------------------
+// MOBILE REFLOW (<= 768px) — Course list items + quick-action pills.
+// Equal-or-higher specificity than the desktop rules above and this file
+// is @imported last (post.scss), so these unconditionally win once the
+// media condition is true; nothing here needs !important.
+// -----------------------------------------------------------------------
+@media (max-width: 768px) {
+    // -- Grid view: force a single column instead of relying on auto-fill's
+    // minmax(280px, 1fr) math, which can leave an oddly narrow/cramped
+    // second column rather than a clean full-width stack on small phones.
+    .saec-courses-container--grid {
+        grid-template-columns: 1fr;
+    }
+
+    // -- List view: 2-tier column card (thumbnail+title row, then a
+    // full-width 50/50 button row) instead of the desktop horizontal row.
+    // __media and .saec-course-actions are direct children of the card,
+    // but __info and .saec-course-actions both actually live inside
+    // __body — display: contents un-boxes __body so its own children
+    // become direct grid items of the card alongside __media, letting a
+    // single grid-template-areas describe the whole 2-tier shape without
+    // any markup changes.
+    .saec-courses-container--list {
+        .uptex-course-showcase-card {
+            display: grid;
+            grid-template-columns: 72px 1fr;
+            grid-template-areas:
+                "media info"
+                "actions actions";
+            align-items: start;
+            gap: 0.75rem;
+            padding: 0.875rem;
+
+            &__body {
+                display: contents;
+            }
+
+            &__media {
+                grid-area: media;
+                width: 72px;
+                height: 48px;
+                border-radius: 6px;
+            }
+
+            &__info {
+                grid-area: info;
+                min-width: 0;
+                overflow-wrap: break-word;
+            }
+
+            &__list-title {
+                white-space: normal;
+            }
+        }
+
+        .saec-course-actions {
+            grid-area: actions;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            width: 100%;
+        }
+
+        // Full label visibility takes priority over the desktop ellipsis
+        // fallback (which exists for much narrower Grid-view cards, not
+        // this full-width 50/50 mobile row — there's ample room for both
+        // labels here) plus a guaranteed >= 42px touch target.
+        .saec-btn-enter,
+        .saec-btn-report {
+            min-height: 42px;
+
+            &__label {
+                overflow: visible;
+                text-overflow: clip;
+                white-space: normal;
+            }
+        }
+    }
+
+    // -- Quick-action pills: symmetrical 2x2 grid instead of flex-wrap
+    // (custom.scss), whose row-by-row wrap order depends on content width
+    // and isn't guaranteed to land 2-per-row.
+    .saec-student-quickactions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+        width: 100%;
+
+        .uptex-quickaction {
+            justify-content: center;
+            min-height: 42px;
+        }
+    }
+}

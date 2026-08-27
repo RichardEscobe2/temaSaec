@@ -19,6 +19,8 @@
         "shortname": "REG-2026", "categoryname": "Educación Continua",
         "period": "2026", "studentcount": 28,
         "isvisible": true, "canchangevisibility": true,
+        "hascourseimage": true,
+        "courseimage": "https://example.org/pluginfile.php/1/course/overviewfiles/f1.jpg",
         "courseurl": "https://example.org/course/view.php?id=3",
         "gradebookurl": "https://example.org/grade/report/index.php?id=3",
         "hasattendance": true,
@@ -26,8 +28,16 @@
     }
 }}
 <div class="saec-teacher-course-card" data-course-name="{{fullname}} {{shortname}}">
-    <div class="saec-teacher-course-card__header">
+    <div class="saec-teacher-course-card__media">
+        {{#hascourseimage}}
+            <img src="{{{ courseimage }}}" alt="" loading="lazy">
+        {{/hascourseimage}}
+        {{^hascourseimage}}
+            <div class="saec-card-img__placeholder">{{#str}} placeholderinitial, theme_saec {{/str}}</div>
+        {{/hascourseimage}}
         <span class="saec-teacher-course-card__badge">{{ categoryname }}</span>
+    </div>
+    <div class="saec-teacher-course-card__header">
         <div class="custom-control custom-switch saec-visibility-switch">
             <input
                 type="checkbox"
@@ -44,20 +54,22 @@
         </div>
     </div>
 
-    <h3 class="saec-teacher-course-card__title">
-        <a href="{{{ courseurl }}}">{{ fullname }}</a>
-    </h3>
-    <p class="saec-teacher-course-card__code">{{ shortname }}</p>
-    <p class="saec-teacher-course-card__students">
-        <i class="icon fa fa-users" aria-hidden="true"></i>
-        {{#str}} teachercoursestudentcount, theme_saec, {{studentcount}} {{/str}}
-    </p>
+    <div class="saec-teacher-course-card__body">
+        <h3 class="saec-teacher-course-card__title">
+            <a href="{{{ courseurl }}}">{{ fullname }}</a>
+        </h3>
+        <p class="saec-teacher-course-card__code">{{ shortname }}</p>
+        <p class="saec-teacher-course-card__students">
+            <i class="icon fa fa-users" aria-hidden="true"></i>
+            {{#str}} teachercoursestudentcount, theme_saec, {{studentcount}} {{/str}}
+        </p>
 
-    <div class="saec-teacher-course-card__actions">
-        <a href="{{{ courseurl }}}" class="btn btn-primary btn-sm">{{#str}} entercoursebutton, theme_saec {{/str}}</a>
-        <a href="{{{ gradebookurl }}}" class="btn btn-outline-primary btn-sm">{{#str}} navgradebook, theme_saec {{/str}}</a>
-        {{#hasattendance}}
-            <a href="{{{ attendanceurl }}}" class="btn btn-outline-primary btn-sm">{{#str}} navattendance, theme_saec {{/str}}</a>
-        {{/hasattendance}}
+        <div class="saec-teacher-course-card__actions">
+            <a href="{{{ courseurl }}}" class="btn btn-primary btn-sm">{{#str}} entercoursebutton, theme_saec {{/str}}</a>
+            <a href="{{{ gradebookurl }}}" class="btn btn-outline-primary btn-sm">{{#str}} navgradebook, theme_saec {{/str}}</a>
+            {{#hasattendance}}
+                <a href="{{{ attendanceurl }}}" class="btn btn-outline-primary btn-sm">{{#str}} navattendance, theme_saec {{/str}}</a>
+            {{/hasattendance}}
+        </div>
     </div>
 </div>

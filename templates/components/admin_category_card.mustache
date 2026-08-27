@@ -1,0 +1,32 @@
+{{!
+    @template theme_saec/components/admin_category_card
+
+    One card in the Admin Command Center's Site Administration Hub —
+    col-lg-3 col-md-6 col-12 per this project's 4-per-row desktop grid rule.
+    Each <li> carries its own data-search (label text) so the parent
+    template's inline JS can hide non-matching links individually while
+    keeping the category card itself visible whenever the category title or
+    at least one of its own links matches.
+
+    Example context (json):
+    {
+        "key": "appearance", "title": "Apariencia y Temas",
+        "icon": "<img src=\"https://example.org/pix/i/theme.svg\" alt=\"\">",
+        "links": [
+            {"label": "Selector de Temas", "url": "https://example.org/admin/settings.php?section=themesettings"}
+        ]
+    }
+}}
+<div class="uptex-category-card col-lg-3 col-md-6 col-12" data-category-title="{{ title }}">
+    <h3 class="uptex-category-card__title">
+        <span class="uptex-category-card__icon" aria-hidden="true">{{{ icon }}}</span>
+        {{ title }}
+    </h3>
+    <ul class="uptex-category-card__links">
+        {{#links}}
+            <li class="uptex-category-card__link-item" data-search="{{ label }}">
+                <a href="{{{ url }}}">{{ label }}</a>
+            </li>
+        {{/links}}
+    </ul>
+</div>

@@ -21,20 +21,27 @@
     input, JS hook and conditional block from lib/templates/loginform.mustache
     is preserved (logintoken, username, password, error/info alerts,
     forgotpasswordurl, recaptcha, hasidentityproviders/identityproviders,
-    hasinstructions, cansignup, languagemenu, cookies notice, autofocus/
-    error-focus/togglepassword/double-submit-protection JS) — only markup/
-    classes changed, plus two DISABLED decorative SSO buttons (visual only,
-    per design brief; no real identity provider is wired to them, so
-    they're inert rather than misleading) above a divider. Real, admin-
-    configured identity providers still render further down, guarded by
-    hasidentityproviders exactly as in core, unchanged.
+    hasinstructions, languagemenu, cookies notice, autofocus/error-focus/
+    togglepassword/double-submit-protection JS) — only markup/classes
+    changed. Real, admin-configured identity providers still render further
+    down, guarded by hasidentityproviders exactly as in core, unchanged.
 
-    Deliberately DROPPED by design decision: the guest-login block core
-    normally renders when canloginasguest is true (heading, hidden
-    guest/guest form, submit button, and its paired JS submit-guard) — the
-    guest-access entry point is intentionally absent from this theme's
-    login page, not a bug. The context variable is still accepted (Moodle
-    always supplies it) but no longer used.
+    Deliberately DROPPED by design decision (not a bug):
+    - The two decorative/disabled SSO buttons ("Continuar con Google",
+      "Portal Institucional") and their divider a previous round added as
+      visual-only mockups — no real identity provider was ever wired to
+      them, so this round removed them outright per the "direct credential
+      form only" requirement rather than keep dead inert UI.
+    - Both cansignup blocks (the sr-only "skip to signup" link and the
+      visible "¿No tienes cuenta? Regístrate" paragraph) — self-registration
+      is already off site-wide ($CFG->registerauth is empty), but the
+      template no longer renders either even if a future admin enables it,
+      per this round's "guarantee zero self-registration links" requirement.
+    - The guest-login block core normally renders when canloginasguest is
+      true (heading, hidden guest/guest form, submit button, and its paired
+      JS submit-guard) — the guest-access entry point is intentionally
+      absent from this theme's login page. cansignup/canloginasguest are
+      still accepted in context (Moodle always supplies them) but unused.
 
     Context variables: see lib/templates/loginform.mustache — identical,
     minus the guest-login usage noted above.
@@ -87,24 +94,6 @@
         <a href="#" id="logininfomessage" class="sr-only">{{info}}</a>
         <div class="alert alert-info mb-4" role="alert">{{info}}</div>
     {{/info}}
-    {{#cansignup}}
-        <a href="{{signupurl}}" class="sr-only">{{#str}} tocreatenewaccount {{/str}}</a>
-    {{/cansignup}}
-
-    <div class="uptex-login-sso mb-4">
-        <button type="button" class="btn btn-outline-secondary btn-block uptex-login-sso__btn" disabled aria-disabled="true">
-            <i class="icon fa fa-google" aria-hidden="true"></i>
-            {{#str}} ssogoogle, theme_saec {{/str}}
-        </button>
-        <button type="button" class="btn btn-outline-secondary btn-block uptex-login-sso__btn" disabled aria-disabled="true">
-            <i class="icon fa fa-university" aria-hidden="true"></i>
-            {{#str}} ssoinstitutional, theme_saec {{/str}}
-        </button>
-    </div>
-    <div class="uptex-login-divider">
-        <span>{{#str}} ssodivider, theme_saec {{/str}}</span>
-    </div>
-
     <form class="login-form" action="{{loginurl}}" method="post" id="login">
         <input id="anchor" type="hidden" name="anchor" value="">
         <script>document.getElementById('anchor').value = location.hash;</script>
@@ -165,11 +154,6 @@
             {{{instructions}}}
         </div>
     {{/hasinstructions}}
-    {{#cansignup}}
-        <p class="text-center mt-4 mb-0">
-            {{#str}} nosignupaccount, theme_saec {{/str}} <a class="font-weight-bold" href="{{signupurl}}">{{#str}}startsignup{{/str}}</a>
-        </p>
-    {{/cansignup}}
     <hr class="my-4">
     <div class="d-flex align-items-center justify-content-center">
         {{#languagemenu}}

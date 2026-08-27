@@ -1,0 +1,31 @@
+{{!
+    @template theme_saec/components/admin_user_row
+
+    One <tr> in the Admin Command Center's User Directory table. data-search
+    backs the table's own client-side text filter (name + email + role +
+    status), covering the spec's "filter by role/status" with the same
+    plain-text-match approach every other search box in this theme already
+    uses (grader hub, teacher courses) rather than a separate facet UI.
+
+    Example context (json):
+    {
+        "id": 12, "fullname": "Carlos Gomez", "email": "carlos@uptex.edu.mx",
+        "rolelabel": "Docente", "issuspended": false, "statuslabel": "Activo",
+        "editurl": "https://example.org/user/editadvanced.php?id=12",
+        "rolesurl": "https://example.org/admin/roles/usersroles.php?userid=12&courseid=1"
+    }
+}}
+<tr class="saec-admin-hub__row" data-search="{{ fullname }} {{ email }} {{ rolelabel }} {{ statuslabel }}">
+    <td>
+        <p class="uptex-table-student__name mb-0">{{ fullname }}</p>
+        <p class="uptex-table-student__subtext mb-0">{{ email }}</p>
+    </td>
+    <td>{{ rolelabel }}</td>
+    <td>
+        <span class="uptex-status-pill {{#issuspended}}uptex-status-pill--suspended{{/issuspended}}">{{ statuslabel }}</span>
+    </td>
+    <td class="text-right">
+        <a href="{{{ editurl }}}" class="saec-admin-hub__row-action">{{#str}} adminuseractionedit, theme_saec {{/str}}</a>
+        <a href="{{{ rolesurl }}}" class="saec-admin-hub__row-action">{{#str}} adminuseractionroles, theme_saec {{/str}}</a>
+    </td>
+</tr>

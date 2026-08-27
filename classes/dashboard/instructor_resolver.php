@@ -64,7 +64,7 @@ final class instructor_resolver {
 
         return [
             'name' => fullname($teacher),
-            'avatarurl' => $picture->get_url($PAGE)->out(false),
+            'avatarurl' => \theme_saec\course_helper::to_relative_url($picture->get_url($PAGE)->out(false)),
             'messageurl' => (new moodle_url('/message/index.php', ['id' => $teacher->id]))->out(false),
         ];
     }

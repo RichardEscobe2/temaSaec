@@ -1,0 +1,28 @@
+{{!
+    @template theme_saec/components/admin_quickaction
+
+    One pill-shaped quick-action button for the Admin Command Center's top
+    action bar. Plain links carry a real href; "Purgar Caché" (ispurge) has
+    no href — it's a data-attribute button the parent template's inline JS
+    wires to ajax/purge_caches.php.
+
+    Example context (json):
+    {
+        "label": "+ Crear Curso",
+        "icon": "<img src=\"https://example.org/pix/i/course.svg\" alt=\"\">",
+        "url": "https://example.org/course/edit.php?category=1",
+        "ispurge": false
+    }
+}}
+{{^ispurge}}
+<a href="{{{ url }}}" class="uptex-quickaction">
+    <span class="uptex-quickaction__icon" aria-hidden="true">{{{ icon }}}</span>
+    <span class="uptex-quickaction__label">{{ label }}</span>
+</a>
+{{/ispurge}}
+{{#ispurge}}
+<button type="button" class="uptex-quickaction uptex-quickaction--action" data-saec-admin-purge-cache>
+    <span class="uptex-quickaction__icon" aria-hidden="true">{{{ icon }}}</span>
+    <span class="uptex-quickaction__label">{{ label }}</span>
+</button>
+{{/ispurge}}

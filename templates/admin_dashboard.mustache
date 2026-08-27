@@ -1,0 +1,177 @@
+{{!
+    @template theme_saec/admin_dashboard
+
+    Admin Executive Command Center — injected into /my/ (layout/drawers.php)
+    exactly like theme_saec/student_dashboard and theme_saec/teacher_dashboard
+    already are for their roles. Context from
+    \theme_saec\dashboard\admin_dashboard::get_dashboard_context().
+
+    This used to live on theme/saec/pages/admin_hub.php alongside the Site
+    Administration matrix; that page now holds ONLY the settings index
+    (theme_saec/admin_hub) — "run the school" and "configure the site" are
+    separate pages, like every other role already separates dashboard from
+    management pages.
+
+    Two independent instant client-side filters (courses/users tables),
+    same plain-JS-over-prerendered-rows approach as grader_hub_page.mustache.
+    "Purgar Caché" POSTs to ajax/purge_caches.php with sesskey and shows an
+    inline toast instead of navigating away.
+
+    Example context (json):
+    {
+        "fullname": "Admin User", "greeting": "¡Hola, Admin User!",
+        "sesskey": "abc123",
+        "kpis": [{"key": "activestudents", "icon": "<img>", "iconvariant": "primary",
+            "label": "Estudiantes Activos", "value": "128", "hasvaluesuffix": false,
+            "hasfootnote": false, "hasurl": false}],
+        "quickactions": [{"label": "+ Crear Curso", "icon": "<img>",
+            "url": "https://example.org/course/edit.php?category=1", "ispurge": false}],
+        "hascourses": true, "courses": [], "coursesmoreurl": "https://example.org/my/courses.php",
+        "hasusers": true, "users": [], "usersmoreurl": "https://example.org/admin/user.php"
+    }
+}}
+<div class="saec-admin-hub" id="saec-admin-dashboard-{{uniqid}}">
+    <header class="saec-admin-hub__hero">
+        <div>
+            <h1 class="saec-admin-hub__title">{{ greeting }}</h1>
+        </div>
+    </header>
+
+    <div class="saec-admin-hub__kpi-grid row">
+        {{#kpis}}
+            <div class="col-lg-3 col-md-6 col-12">
+                {{> theme_saec/components/metric_card }}
+            </div>
+        {{/kpis}}
+    </div>
+
+    <div class="saec-admin-hub__quickactions">
+        {{#quickactions}}
+            {{> theme_saec/components/admin_quickaction }}
+        {{/quickactions}}
+    </div>
+    <div class="saec-admin-hub__toast d-none" data-saec-admin-purge-toast></div>
+
+    <section class="saec-admin-hub__section-card">
+        <div class="saec-admin-hub__section-header">
+            <h2 class="saec-admin-hub__section-title">{{#str}} adminsectioncourses, theme_saec {{/str}}</h2>
+            {{#hascourses}}
+                <input type="search" class="saec-admin-hub__filter-input"
+                       placeholder="{{#str}} adminfiltercourses, theme_saec {{/str}}"
+                       data-saec-admin-hub-coursefilter>
+            {{/hascourses}}
+        </div>
+        {{#hascourses}}
+            <div class="uptex-table-container">
+                <div class="table-responsive">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th>{{#str}} admincoursecolname, theme_saec {{/str}}</th>
+                                <th class="text-center">{{#str}} admincoursecolstudents, theme_saec {{/str}}</th>
+                                <th class="text-right">{{#str}} admincoursecolactions, theme_saec {{/str}}</th>
+                            </tr>
+                        </thead>
+                        <tbody data-saec-admin-hub-courserows>
+                            {{#courses}}
+                                {{> theme_saec/components/admin_course_row }}
+                            {{/courses}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <a href="{{{ coursesmoreurl }}}" class="saec-admin-hub__viewall">{{#str}} adminviewallcourses, theme_saec {{/str}}</a>
+        {{/hascourses}}
+        {{^hascourses}}
+            <p class="text-muted mb-0">{{#str}} admincoursesempty, theme_saec {{/str}}</p>
+        {{/hascourses}}
+    </section>
+
+    <section class="saec-admin-hub__section-card">
+        <div class="saec-admin-hub__section-header">
+            <h2 class="saec-admin-hub__section-title">{{#str}} adminsectionusers, theme_saec {{/str}}</h2>
+            {{#hasusers}}
+                <input type="search" class="saec-admin-hub__filter-input"
+                       placeholder="{{#str}} adminfilterusers, theme_saec {{/str}}"
+                       data-saec-admin-hub-userfilter>
+            {{/hasusers}}
+        </div>
+        {{#hasusers}}
+            <div class="uptex-table-container">
+                <div class="table-responsive">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th>{{#str}} adminusercolname, theme_saec {{/str}}</th>
+                                <th>{{#str}} adminusercolrole, theme_saec {{/str}}</th>
+                                <th>{{#str}} adminusercolstatus, theme_saec {{/str}}</th>
+                                <th class="text-right">{{#str}} admincoursecolactions, theme_saec {{/str}}</th>
+                            </tr>
+                        </thead>
+                        <tbody data-saec-admin-hub-userrows>
+                            {{#users}}
+                                {{> theme_saec/components/admin_user_row }}
+                            {{/users}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <a href="{{{ usersmoreurl }}}" class="saec-admin-hub__viewall">{{#str}} adminviewallusers, theme_saec {{/str}}</a>
+        {{/hasusers}}
+        {{^hasusers}}
+            <p class="text-muted mb-0">{{#str}} adminusersempty, theme_saec {{/str}}</p>
+        {{/hasusers}}
+    </section>
+</div>
+{{#js}}
+require(['jquery'], function($) {
+    var root = $('#saec-admin-dashboard-{{uniqid}}');
+
+    // Active Courses table filter.
+    var coursefilter = root.find('[data-saec-admin-hub-coursefilter]');
+    coursefilter.on('keyup input', function() {
+        var query = (coursefilter.val() || '').toLowerCase();
+        root.find('[data-saec-admin-hub-courserows] tr').each(function() {
+            var row = $(this);
+            var text = (row.data('search') || '').toString().toLowerCase();
+            row.toggle(text.indexOf(query) !== -1);
+        });
+    });
+
+    // User Directory table filter.
+    var userfilter = root.find('[data-saec-admin-hub-userfilter]');
+    userfilter.on('keyup input', function() {
+        var query = (userfilter.val() || '').toLowerCase();
+        root.find('[data-saec-admin-hub-userrows] tr').each(function() {
+            var row = $(this);
+            var text = (row.data('search') || '').toString().toLowerCase();
+            row.toggle(text.indexOf(query) !== -1);
+        });
+    });
+
+    // Cache purge — AJAX, toast, no navigation.
+    root.find('[data-saec-admin-purge-cache]').on('click', function() {
+        var button = $(this);
+        var toast = root.find('[data-saec-admin-purge-toast]');
+        button.prop('disabled', true);
+
+        $.ajax({
+            url: M.cfg.wwwroot + '/theme/saec/ajax/purge_caches.php',
+            method: 'POST',
+            data: {sesskey: '{{ sesskey }}'},
+            dataType: 'json'
+        }).done(function() {
+            toast.removeClass('d-none uptex-toast--error').addClass('uptex-toast--success')
+                .text('{{#str}} adminpurgecachesuccess, theme_saec {{/str}}');
+        }).fail(function() {
+            toast.removeClass('d-none uptex-toast--success').addClass('uptex-toast--error')
+                .text('{{#str}} adminpurgecacheerror, theme_saec {{/str}}');
+        }).always(function() {
+            button.prop('disabled', false);
+            setTimeout(function() {
+                toast.addClass('d-none');
+            }, 4000);
+        });
+    });
+});
+{{/js}}

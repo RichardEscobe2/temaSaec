@@ -94,7 +94,7 @@ class badges_page {
             $badges[] = [
                 'badgeid' => (int) $record->id,
                 'title' => format_string($record->name),
-                'imageurl' => self::resolve_badge_object_image_url($badgeobj)->out(false),
+                'imageurl' => \theme_saec\course_helper::to_relative_url(self::resolve_badge_object_image_url($badgeobj)->out(false)),
                 'hasissued' => true,
                 'subtitle' => self::resolve_earned_subtitle($record, $categorycache),
                 'issuername' => format_string($badgeobj->issuername ?? ''),
@@ -151,7 +151,7 @@ class badges_page {
                 $badges[] = [
                     'badgeid' => $badgeid,
                     'title' => format_string($badge->name),
-                    'imageurl' => self::resolve_badge_object_image_url($badge)->out(false),
+                    'imageurl' => \theme_saec\course_helper::to_relative_url(self::resolve_badge_object_image_url($badge)->out(false)),
                     'hasissued' => false,
                     'subtitle' => null,
                     'date' => null,

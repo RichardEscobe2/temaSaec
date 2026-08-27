@@ -1,0 +1,201 @@
+{{!
+    @template theme_saec/admin_courses_page
+
+    Admin Global Course Catalog / Academic Operations Center — injected into
+    /my/courses.php (layout/drawers.php) exactly like theme_saec/my_courses_page
+    (Student) and theme_saec/teacher_courses_page (Teacher) already are for
+    their own roles. Every course in the system (visible and hidden), for
+    audit, rapid creation, and 1-click administrative control. Context from
+    \theme_saec\dashboard\admin_courses_page::get_context().
+
+    Two combined instant client-side filters (AND'd together, same plain-JS-
+    over-prerendered-rows approach as the rest of this theme's search boxes):
+    the text filter matches each row's data-search attribute (name + category
+    + teacher), the status pill tabs match data-status ("visible"/"hidden").
+    Each row's "⋮" actions dropdown (Configurar/Participantes/Calificador/
+    Asistencia, plus Duplicar/Respaldar) opens on click and closes on
+    outside click, Escape, or scroll — see components/admin_course_row's
+    usecompactactions branch for the primary-button + dropdown markup.
+
+    Example context (json):
+    {
+        "filterplaceholder": "Buscar en el catálogo…",
+        "createcourseurl": "https://example.org/course/edit.php?category=1",
+        "csvuploadurl": "https://example.org/admin/tool/uploadcourse/index.php",
+        "managecategoriesurl": "https://example.org/course/management.php",
+        "hascourses": true,
+        "courses": [{
+            "id": 5, "fullname": "Desarrollo de Sistemas Web II", "categoryname": "Category 1",
+            "studentcount": 4, "showvisibility": true, "isvisible": true,
+            "hasteachercolumn": true, "hasteacher": true, "teachername": "Carlos Gomez",
+            "teacheravatarurl": "https://example.org/pluginfile.php/1/user/icon/f1.jpg",
+            "hasentercourse": true, "entercourseurl": "https://example.org/course/view.php?id=5",
+            "configureurl": "https://example.org/course/edit.php?id=5",
+            "participantsurl": "https://example.org/user/index.php?id=5",
+            "gradesurl": "https://example.org/grade/report/grader/index.php?id=5",
+            "hasattendance": false, "attendanceurl": null,
+            "hascatalogactions": true,
+            "duplicateurl": "https://example.org/backup/copy.php?id=5",
+            "backupurl": "https://example.org/backup/backup.php?id=5"
+        }]
+    }
+}}
+<div class="saec-admin-hub" id="saec-admin-courses-{{uniqid}}">
+    <header class="saec-admin-hub__hero">
+        <div>
+            <h1 class="saec-admin-hub__title">{{#str}} admincoursecatalogheading, theme_saec {{/str}}</h1>
+            <p class="saec-admin-hub__subtitle">{{#str}} admincoursecatalogsubheading, theme_saec {{/str}}</p>
+        </div>
+        {{#hascourses}}
+            <div class="saec-admin-hub__search">
+                <span class="saec-admin-hub__search-icon" aria-hidden="true"><i class="icon fa fa-search"></i></span>
+                <label class="sr-only" for="saec-admin-courses-filter-{{uniqid}}">{{ filterplaceholder }}</label>
+                <input type="search" id="saec-admin-courses-filter-{{uniqid}}"
+                       class="saec-admin-hub__search-input"
+                       placeholder="{{ filterplaceholder }}"
+                       data-saec-admin-courses-filter>
+            </div>
+        {{/hascourses}}
+    </header>
+
+    <div class="saec-admin-hub__quickactions">
+        <a href="{{{ createcourseurl }}}" class="uptex-quickaction uptex-quickaction--action">
+            {{#str}} admincoursecatalogcreatebutton, theme_saec {{/str}}
+        </a>
+        <a href="{{{ csvuploadurl }}}" class="uptex-quickaction">{{#str}} admincoursecatalogcsvbutton, theme_saec {{/str}}</a>
+        <a href="{{{ managecategoriesurl }}}" class="uptex-quickaction">{{#str}} admincoursecatalogcategoriesbutton, theme_saec {{/str}}</a>
+    </div>
+
+    {{#hascourses}}
+        <div class="saec-admin-hub__status-tabs" data-saec-admin-courses-statustabs>
+            <button type="button" class="saec-admin-hub__status-tab saec-admin-hub__status-tab--active" data-status-filter="all">
+                {{#str}} adminfilterall, theme_saec {{/str}}
+            </button>
+            <button type="button" class="saec-admin-hub__status-tab" data-status-filter="visible">
+                {{#str}} adminfiltervisible, theme_saec {{/str}}
+            </button>
+            <button type="button" class="saec-admin-hub__status-tab" data-status-filter="hidden">
+                {{#str}} adminfilterhidden, theme_saec {{/str}}
+            </button>
+        </div>
+    {{/hascourses}}
+
+    <section class="saec-admin-hub__section-card">
+        {{#hascourses}}
+            <div class="uptex-table-container">
+                <div class="table-responsive">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th>{{#str}} admincoursecolname, theme_saec {{/str}}</th>
+                                <th>{{#str}} admincoursecolteacher, theme_saec {{/str}}</th>
+                                <th class="text-center">{{#str}} admincoursecolstudents, theme_saec {{/str}}</th>
+                                <th class="text-right">{{#str}} admincoursecolactions, theme_saec {{/str}}</th>
+                            </tr>
+                        </thead>
+                        <tbody data-saec-admin-courses-rows>
+                            {{#courses}}
+                                {{> theme_saec/components/admin_course_row }}
+                            {{/courses}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <p class="saec-admin-hub__empty-filtered d-none" data-saec-admin-courses-empty-filtered>
+                {{#str}} adminhubnomatch, theme_saec {{/str}}
+            </p>
+        {{/hascourses}}
+        {{^hascourses}}
+            <p class="text-muted mb-0">{{#str}} admincoursesempty, theme_saec {{/str}}</p>
+        {{/hascourses}}
+    </section>
+</div>
+{{#js}}
+require(['jquery'], function($) {
+    var root = $('#saec-admin-courses-{{uniqid}}');
+    var rows = root.find('[data-saec-admin-courses-rows] tr');
+    var textfilter = root.find('[data-saec-admin-courses-filter]');
+    var statustabs = root.find('[data-status-filter]');
+    var currentstatus = 'all';
+
+    function applyfilters() {
+        var query = (textfilter.val() || '').toLowerCase();
+        var visiblecount = 0;
+
+        rows.each(function() {
+            var row = $(this);
+            var text = (row.data('search') || '').toString().toLowerCase();
+            var status = (row.data('status') || '').toString();
+            var matchestext = text.indexOf(query) !== -1;
+            var matchesstatus = (currentstatus === 'all') || (status === currentstatus);
+            var show = matchestext && matchesstatus;
+            row.toggle(show);
+            if (show) {
+                visiblecount++;
+            }
+        });
+
+        root.find('[data-saec-admin-courses-empty-filtered]').toggleClass('d-none', visiblecount !== 0);
+    }
+
+    textfilter.on('keyup input', applyfilters);
+
+    statustabs.on('click', function() {
+        statustabs.removeClass('saec-admin-hub__status-tab--active');
+        $(this).addClass('saec-admin-hub__status-tab--active');
+        currentstatus = $(this).data('status-filter');
+        applyfilters();
+    });
+
+    // Per-row "⋮" actions dropdown (Configurar/Participantes/Calificador/
+    // Asistencia + Duplicar/Respaldar). Positioned with position: fixed and
+    // JS-computed viewport coordinates rather than the CSS position:
+    // absolute + relative-parent pattern used elsewhere in this theme —
+    // this menu lives inside .uptex-table-container (overflow: hidden, for
+    // the table's rounded corners) AND .table-responsive (overflow-x: auto,
+    // which per spec also forces overflow-y: auto since only one axis can
+    // stay 'visible'), either of which would silently clip an
+    // absolutely-positioned menu on rows near the bottom/right of the
+    // table. position: fixed escapes both (no transformed ancestor exists
+    // to re-scope it) — see scss/saec/_admin_hub.scss's __row-dropdown-menu.
+    function closeallmenus() {
+        root.find('[data-saec-row-menu]').removeClass('saec-admin-hub__row-dropdown-menu--open');
+        root.find('[data-saec-row-menu-toggle]').attr('aria-expanded', 'false');
+    }
+
+    root.on('click', '[data-saec-row-menu-toggle]', function(e) {
+        e.stopPropagation();
+        var toggle = this;
+        var btn = $(toggle);
+        var menu = btn.siblings('[data-saec-row-menu]');
+        var wasopen = menu.hasClass('saec-admin-hub__row-dropdown-menu--open');
+        closeallmenus();
+        if (wasopen) {
+            return;
+        }
+
+        var rect = toggle.getBoundingClientRect();
+        var menuwidth = menu.outerWidth() || 200;
+        var left = Math.min(rect.right - menuwidth, window.innerWidth - menuwidth - 8);
+        menu.css({
+            top: (rect.bottom + 4) + 'px',
+            left: Math.max(8, left) + 'px'
+        });
+        menu.addClass('saec-admin-hub__row-dropdown-menu--open');
+        btn.attr('aria-expanded', 'true');
+    });
+
+    $(document).on('click', closeallmenus);
+
+    $(document).on('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeallmenus();
+        }
+    });
+
+    // A position: fixed menu doesn't scroll with the page/table — closing
+    // on any scroll (capture phase, so it also catches .table-responsive's
+    // own horizontal scroll) avoids it visually detaching from its toggle.
+    window.addEventListener('scroll', closeallmenus, true);
+});
+{{/js}}

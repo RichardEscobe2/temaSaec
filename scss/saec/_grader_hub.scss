@@ -179,6 +179,27 @@ body.page-grader-hub {
         }
     }
 
+    // Per-student "Ver boleta" quick-jump (Journey: Calificador -> Boleta de
+    // un alumno específico in 2 clicks instead of Calificador -> Grader Hub
+    // -> switch report type -> search by name).
+    &__student-form {
+        margin-bottom: 0.75rem;
+    }
+
+    &__student-select {
+        width: 100%;
+        min-height: 44px;
+        border-radius: $saec-radius;
+        border-color: $saec-border;
+        color: $saec-text-muted;
+        font-size: 0.85rem;
+
+        &:focus {
+            border-color: $saec-primary;
+            box-shadow: 0 0 0 2px $saec-primary-light;
+        }
+    }
+
     &__cta {
         display: inline-flex;
         align-items: center;

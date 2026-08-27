@@ -15,16 +15,27 @@
         "hasvaluesuffix": true,
         "valuesuffix": "/ 10",
         "hasfootnote": true,
-        "footnote": "+4% vs parcial anterior"
+        "footnote": "+4% vs parcial anterior",
+        "hasurl": true,
+        "url": "https://example.org/mod/attendance/view.php?id=31&mode=1"
     }
+
+    hasurl/url are optional (default false/absent) — most metric_card call
+    sites (Calificador, Rendimiento Académico summaries, etc.) pass neither
+    and keep rendering as a plain, non-interactive tile exactly as before.
+
+    valuemodifier is optional (default absent — no extra class) — e.g. "good"
+    (green) / "warn" (amber) for the Student Dashboard's GPA badge; every
+    other caller omits it and renders exactly as before.
 }}
-<div class="uptex-metric-card">
+{{#hasurl}}<a href="{{{ url }}}" class="uptex-metric-card uptex-metric-card--link">{{/hasurl}}
+{{^hasurl}}<div class="uptex-metric-card">{{/hasurl}}
     <div class="uptex-metric-card__icon {{#iconvariant}}uptex-metric-card__icon--{{ iconvariant }}{{/iconvariant}}" aria-hidden="true">
         {{{ icon }}}
     </div>
     <div class="uptex-metric-card__body">
         <p class="uptex-metric-card__label">{{ label }}</p>
-        <p class="uptex-metric-card__value">
+        <p class="uptex-metric-card__value {{#valuemodifier}}uptex-metric-card__value--{{ valuemodifier }}{{/valuemodifier}}">
             {{ value }}
             {{#hasvaluesuffix}}<small>{{ valuesuffix }}</small>{{/hasvaluesuffix}}
         </p>
@@ -32,4 +43,5 @@
             <p class="small text-muted mb-0 mt-1">{{ footnote }}</p>
         {{/hasfootnote}}
     </div>
-</div>
+{{#hasurl}}</a>{{/hasurl}}
+{{^hasurl}}</div>{{/hasurl}}

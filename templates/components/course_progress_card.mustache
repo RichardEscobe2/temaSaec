@@ -12,11 +12,19 @@
     disabled or no trackable activities — the progress row is omitted
     entirely rather than showing a fake 0%.
 
+    hasinstructor/instructorname/instructoravatarurl come straight from
+    instructor_resolver::resolve() — absent (hasinstructor false) rather
+    than fabricated when the course has no editing teacher yet.
+
     Example context (json):
     {
         "id": 12,
         "fullname": "Ingeniería de Software II",
         "courseurl": "https://example.org/course/view.php?id=12",
+        "boletaurl": "https://example.org/grade/report/user/index.php?id=12",
+        "hasinstructor": true,
+        "instructorname": "Carlos Gomez",
+        "instructoravatarurl": "https://example.org/pluginfile.php/1/user/icon/f1.jpg",
         "hascourseimage": true,
         "courseimage": "https://example.org/pluginfile.php/1/course/overviewfiles/f1.jpg",
         "hascompletiondata": true,
@@ -38,20 +46,36 @@
         <span class="uptex-course-showcase-card__media-title">{{ fullname }}</span>
     </div>
     <div class="uptex-course-showcase-card__body">
-        {{#hascompletiondata}}
-            <div>
-                <div class="uptex-course-showcase-card__progress">
-                    <span>{{#str}} courseprogresslabelheading, theme_saec {{/str}}</span>
-                    <strong>{{ progresslabel }}</strong>
+        <div class="uptex-course-showcase-card__info">
+            <h3 class="uptex-course-showcase-card__list-title">{{ fullname }}</h3>
+            {{#hasinstructor}}
+                <div class="uptex-course-showcase-card__instructor-row">
+                    <img src="{{{ instructoravatarurl }}}" alt="" class="uptex-course-showcase-card__instructor-avatar">
+                    <span class="uptex-course-showcase-card__instructor-name">{{ instructorname }}</span>
                 </div>
-                <div class="progress">
-                    <div class="progress-bar" role="progressbar" style="width: {{ progresspercent }}%"
-                         aria-valuenow="{{ progresspercent }}" aria-valuemin="0" aria-valuemax="100"></div>
+            {{/hasinstructor}}
+            {{#hascompletiondata}}
+                <div class="uptex-course-showcase-card__completion">
+                    <div class="uptex-course-showcase-card__progress">
+                        <span>{{#str}} courseprogresslabelheading, theme_saec {{/str}}</span>
+                        <strong>{{ progresslabel }}</strong>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" style="width: {{ progresspercent }}%"
+                             aria-valuenow="{{ progresspercent }}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
                 </div>
-            </div>
-        {{/hascompletiondata}}
-        <div class="uptex-course-showcase-card__footer">
-            <a href="{{{ courseurl }}}" class="btn btn-primary btn-block">{{#str}} continuecourse, theme_saec {{/str}}</a>
+            {{/hascompletiondata}}
+        </div>
+        <div class="saec-course-actions uptex-course-showcase-card__footer uptex-course-showcase-card__footer--split">
+            <a href="{{{ courseurl }}}" class="saec-btn-enter">
+                <span class="saec-btn-enter__label">{{#str}} entercoursebutton, theme_saec {{/str}}</span>
+                <i class="icon fa fa-arrow-right saec-btn-enter__icon" aria-hidden="true"></i>
+            </a>
+            <a href="{{{ boletaurl }}}" class="saec-btn-report">
+                <i class="icon fa fa-chart-pie saec-btn-report__icon" aria-hidden="true"></i>
+                <span class="saec-btn-report__label">{{#str}} viewboletabutton, theme_saec {{/str}}</span>
+            </a>
         </div>
     </div>
 </div>

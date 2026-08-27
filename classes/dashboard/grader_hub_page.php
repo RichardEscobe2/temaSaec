@@ -70,12 +70,14 @@ class grader_hub_page {
         }
 
         $studentcounts = teacher_courses_page::fetch_student_counts($courseids);
+        $studentsbycoures = self::fetch_students_per_course($courseids);
         $categorycache = [];
 
         $cards = [];
         foreach ($courseids as $courseid) {
             $course = get_course($courseid);
             $context = context_course::instance($courseid);
+            $students = $studentsbycoures[$courseid] ?? [];
 
             $cards[] = [
                 'id' => (int) $course->id,
@@ -84,8 +86,66 @@ class grader_hub_page {
                 'categoryname' => teacher_courses_page::resolve_category_name((int) $course->category, $categorycache),
                 'studentcount' => $studentcounts[$courseid] ?? 0,
                 'gradebookurl' => (new moodle_url('/grade/report/index.php', ['id' => $courseid]))->out(false),
+                'boletabaseurl' => (new moodle_url('/grade/report/user/index.php'))->out(false),
+                'hasstudents' => !empty($students),
+                'students' => $students,
             ];
         }
         return $cards;
+    }
+
+    /**
+     * Enrolled students (id + display name) per course, one batched query
+     * for every card on this hub — same "single join, not one query per
+     * course" convention as teacher_courses_page::fetch_student_counts(),
+     * which this method mirrors closely. Backs each course card's "Ver
+     * boleta de alumno" quick-jump select
+     * (grade/report/user/index.php?id=<courseid>&userid=<studentid>),
+     * collapsing what would otherwise be a Calificador -> Grader Hub ->
+     * switch report type -> search-by-name flow (4 clicks) into a single
+     * select-and-go action from the hub itself.
+     *
+     * @param int[] $courseids
+     * @return array<int, array{id: int, fullname: string}[]> courseid => students, lastname-sorted.
+     */
+    private static function fetch_students_per_course(array $courseids): array {
+        global $DB;
+
+        if (empty($courseids)) {
+            return [];
+        }
+
+        sort($courseids);
+        $cache = \cache::make('theme_saec', 'teachercoursedetails');
+        $cachekey = 'studentlist_' . implode('_', $courseids);
+        $cached = $cache->get($cachekey);
+        if ($cached !== false) {
+            return $cached;
+        }
+
+        list($insql, $inparams) = $DB->get_in_or_equal($courseids, SQL_PARAMS_NAMED, 'course');
+        $namefields = \core_user\fields::for_name()->get_sql('u');
+
+        $sql = "SELECT ue.id AS uniqueid, e.courseid, u.id AS userid {$namefields->selects}
+                  FROM {user_enrolments} ue
+                  JOIN {enrol} e ON e.id = ue.enrolid AND e.status = 0
+                  JOIN {user} u ON u.id = ue.userid AND u.deleted = 0
+                  JOIN {context} ctx ON ctx.instanceid = e.courseid AND ctx.contextlevel = :contextcourse
+                  JOIN {role_assignments} ra ON ra.userid = ue.userid AND ra.contextid = ctx.id
+                  JOIN {role} r ON r.id = ra.roleid AND r.shortname = 'student'
+                 WHERE e.courseid $insql AND ue.status = 0
+              ORDER BY e.courseid, u.lastname, u.firstname";
+        $params = array_merge($inparams, ['contextcourse' => CONTEXT_COURSE]);
+
+        $bycourse = array_fill_keys($courseids, []);
+        foreach ($DB->get_records_sql($sql, $params) as $row) {
+            $bycourse[(int) $row->courseid][] = [
+                'id' => (int) $row->userid,
+                'fullname' => fullname($row),
+            ];
+        }
+
+        $cache->set($cachekey, $bycourse);
+        return $bycourse;
     }
 }

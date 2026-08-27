@@ -3,6 +3,8 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/behat/lib.php');
 
+use theme_saec\dashboard\admin_courses_page;
+use theme_saec\dashboard\admin_dashboard;
 use theme_saec\dashboard\analytics_page;
 use theme_saec\dashboard\badges_page;
 use theme_saec\dashboard\courses_page;
@@ -112,6 +114,27 @@ if (isloggedin() && !isguestuser() && $PAGE->pagelayout === 'mydashboard') {
     }
 }
 
+// 1c-ter. PANEL EJECUTIVO DEL ADMINISTRADOR (/my/, Admin Command Center):
+// mismo principio que los bloques 1c/1c-bis de arriba, pero para el rol
+// Administrador — antes, un Administrador en /my/ veía el dashboard nativo
+// de Moodle sin ningún contenido propio de theme_saec. KPIs sitewide, barra
+// de acciones rápidas y resúmenes de cursos/usuarios ahora viven aquí en vez
+// de en theme/saec/pages/admin_hub.php, que ahora es sólo el índice de
+// Administración del Sitio (categorías + búsqueda).
+// admin_dashboard::get_dashboard_context() ya hace su propia comprobación de
+// rol y devuelve null para Alumno/Docente.
+$admindashboardhtml = null;
+if (isloggedin() && !isguestuser() && $PAGE->pagelayout === 'mydashboard') {
+    $admindashboardcontext = admin_dashboard::get_dashboard_context();
+    if ($admindashboardcontext !== null) {
+        $admindashboardhtml = $OUTPUT->render_from_template('theme_saec/admin_dashboard', $admindashboardcontext);
+
+        // Same rationale as the student/teacher dashboard blocks above: no
+        // block region is left for an admin to customise on this replaced view.
+        $PAGE->set_button('');
+    }
+}
+
 // 1d. PÁGINA "MIS CURSOS" (/my/courses.php, Fase 8): construye el contexto
 // de \theme_saec\dashboard\courses_page y pre-renderiza
 // theme_saec/my_courses_page sólo para Alumnos. block_myoverview sigue
@@ -139,6 +162,24 @@ if (isloggedin() && !isguestuser() && $PAGE->pagelayout === 'mycourses') {
     $teachercoursespagecontext = teacher_courses_page::get_context();
     if ($teachercoursespagecontext !== null) {
         $teachercoursespagehtml = $OUTPUT->render_from_template('theme_saec/teacher_courses_page', $teachercoursespagecontext);
+    }
+}
+
+// 1d-ter. CATÁLOGO GLOBAL DE CURSOS PARA ADMINISTRADOR (/my/courses.php):
+// mismo slot que los bloques 1d/1d-bis de arriba, pero para el rol
+// Administrador — antes, un Administrador en esta página no obtenía NI un
+// catálogo propio NI el bloque nativo block_myoverview (oculto de forma
+// incondicional por la regla `body.page-mycourses .block_myoverview` de
+// scss/custom.scss, sin importar el rol), resultando en un área de
+// contenido en blanco. A diferencia del resumen capado de admin_dashboard,
+// éste es el catálogo completo de auditoría: todos los cursos del sistema,
+// visibles y ocultos. admin_courses_page::get_context() ya hace su propia
+// comprobación de rol y devuelve null para Alumno/Docente.
+$admincoursespagehtml = null;
+if (isloggedin() && !isguestuser() && $PAGE->pagelayout === 'mycourses') {
+    $admincoursespagecontext = admin_courses_page::get_context();
+    if ($admincoursespagecontext !== null) {
+        $admincoursespagehtml = $OUTPUT->render_from_template('theme_saec/admin_courses_page', $admincoursespagecontext);
     }
 }
 
@@ -290,6 +331,23 @@ $isattendancetakepage = ($PAGE->url->out_omit_querystring()
     === (new moodle_url('/mod/attendance/take.php'))->out_omit_querystring());
 if ($isattendancetakepage && isloggedin() && !isguestuser()) {
     $attendancemarkalllabel = json_encode(get_string('attendancemarkallpresent', 'theme_saec'));
+    // P/L/E/A status pill labels (Sprint 10 — enterprise UI overhaul): the
+    // native radios in columns c2..c5 render bare, with no wrapping <label>
+    // and no visible text anywhere (verified live) — a plain grid of
+    // identical, unlabelled circles until one is picked. CSS alone can't
+    // add real content here (generated ::before/::after content does not
+    // render on <input> — a replaced element, per spec — even with
+    // appearance:none), so each radio is moved (not cloned, to preserve its
+    // checked state/listeners) into a real <label> wrapping a visible
+    // letter + an aria-label, turning the tiny dot into an accessible,
+    // full-size clickable "pill button" — scss/saec/_attendance_take.scss's
+    // .saec-attendance-pill classes do the rest.
+    $attendancestatuslabels = json_encode([
+        'c2' => ['letter' => 'P', 'variant' => 'p', 'label' => get_string('attendancestatuspresentlabel', 'theme_saec')],
+        'c3' => ['letter' => 'L', 'variant' => 'l', 'label' => get_string('attendancestatuslatelabel', 'theme_saec')],
+        'c4' => ['letter' => 'E', 'variant' => 'e', 'label' => get_string('attendancestatusexcusedlabel', 'theme_saec')],
+        'c5' => ['letter' => 'A', 'variant' => 'a', 'label' => get_string('attendancestatusabsentlabel', 'theme_saec')],
+    ]);
     $PAGE->requires->js_init_code(<<<JS
 require(['jquery'], function(\$) {
     var table = document.querySelector('table.takelist');
@@ -309,6 +367,47 @@ require(['jquery'], function(\$) {
         });
     });
     submitbtn.insertAdjacentElement('afterend', button);
+
+    var statuslabels = {$attendancestatuslabels};
+    table.querySelectorAll('tbody tr').forEach(function(row) {
+        Object.keys(statuslabels).forEach(function(cellclass) {
+            var td = row.querySelector('td.cell.' + cellclass);
+            var radio = td ? td.querySelector('input[type="radio"]') : null;
+            if (!radio) {
+                return;
+            }
+            var info = statuslabels[cellclass];
+            var label = document.createElement('label');
+            label.className = 'saec-attendance-pill saec-attendance-pill--' + info.variant;
+            var letter = document.createElement('span');
+            letter.className = 'saec-attendance-pill__letter';
+            letter.setAttribute('aria-hidden', 'true');
+            letter.textContent = info.letter;
+            radio.setAttribute('aria-label', info.label);
+            td.insertBefore(label, radio);
+            label.appendChild(radio);
+            label.appendChild(letter);
+        });
+    });
+});
+JS);
+}
+
+// 1g-quinquies. CALIFICADOR GENERAL — CELDAS SIN CALIFICAR (Sprint 10,
+// /grade/report/grader/index.php): the grid's "no grade yet" cells render
+// as a literal "-" text node inside .gradevalue, with no distinct core
+// class to select on (verified live: identical DOM/classes as a graded
+// cell) — this tags them so scss/saec/_grader_report.scss can mute them.
+$isgraderreportpage = ($PAGE->url->out_omit_querystring()
+    === (new moodle_url('/grade/report/grader/index.php'))->out_omit_querystring());
+if ($isgraderreportpage && isloggedin() && !isguestuser()) {
+    $PAGE->requires->js_init_code(<<<'JS'
+require(['jquery'], function($) {
+    document.querySelectorAll('table.gradereport-grader-table .gradevalue').forEach(function(span) {
+        if (span.textContent.trim() === '-') {
+            span.classList.add('saec-grade-empty');
+        }
+    });
 });
 JS);
 }
@@ -636,6 +735,34 @@ if ($showmainnav) {
         return $OUTPUT->pix_icon($pix, '', $component, ['class' => 'saec-sidebar__icon-img']);
     };
 
+    // "Configuración" (/user/preferences.php) is also the active nav item
+    // while inside the native profile-edit pages it links out to (Editar
+    // perfil / Cambiar contraseña), not just on the preferences grid itself
+    // — an admin/teacher/student mid-edit shouldn't lose the sidebar's
+    // sense of "where am I".
+    $isaccountsettingspath = function (string $path) use ($PAGE, $USER): bool {
+        if (strpos($path, '/user/preferences.php') !== false
+                || strpos($path, '/user/profile.php') !== false
+                || strpos($path, '/user/edit.php') !== false) {
+            return true;
+        }
+
+        // Admins' own "Editar perfil" link (from the preferences hero) routes
+        // through the advanced editor (moodle/user:editprofile lets them edit
+        // fields edit.php doesn't expose) instead of the plain self-service
+        // edit.php a teacher/student's own profile edit uses. Only treat it
+        // as "Configuración" when the id being edited is the admin's own —
+        // this exact URL is also how the Admin Command Center's "+ Nuevo
+        // Usuario" action and the Course Catalog's user-directory "Editar"
+        // action reach OTHER users' profiles, which is Administración del
+        // Sitio work, not account settings.
+        if (strpos($path, '/user/editadvanced.php') !== false) {
+            return ((int) $PAGE->url->get_param('id')) === (int) $USER->id;
+        }
+
+        return false;
+    };
+
     $dashboarditem = [
         'label' => get_string('navdashboard', 'theme_saec'),
         'url' => (new moodle_url('/my/'))->out(false),
@@ -651,15 +778,73 @@ if ($showmainnav) {
 
     if ($is_admin) {
         // ---- ADMINISTRADOR --------------------------------------------------
+        // Sprint (Admin Command Center): was a direct link to the native
+        // /admin/search.php flat settings list. Now points at the theme's
+        // own Admin SaaS Command Center (theme/saec/pages/admin_hub.php),
+        // which itself links out to /admin/search.php and every other
+        // native admin destination — same "theme hub replaces a bare native
+        // landing page" strategy pages/attendance_hub.php already uses.
+        // Enterprise SaaS information architecture, two groups: daily
+        // operational workspaces first (Panel, Gestión de Cursos, Directorio
+        // de Usuarios, Insignias y Certificación, Reportes y Auditoría), then
+        // governance/system administration (Administración del Sitio,
+        // Configuración) toward the bottom, separated by a subtle divider.
+        // Labels below are admin-specific overrides of the generic
+        // navmycourses/navcredentials strings Teacher/Student also use
+        // (get_string('navmycourses')="Mis Cursos", ('navcredentials')=
+        // "Insignias") — built as standalone array items here rather than
+        // relabeling $mycoursesitem itself, since that shared object/string
+        // must stay untouched for the Teacher/Student branches below.
         $navitems = [
             $dashboarditem,
             [
-                'label' => get_string('navsiteadmin', 'theme_saec'),
-                'url' => (new moodle_url('/admin/search.php'))->out(false),
-                'icon' => $icon('i/settings'),
-                'isactive' => (strpos($currentpath, '/admin/') !== false),
+                'label' => get_string('navadmincoursemanagement', 'theme_saec'),
+                'url' => $mycoursesitem['url'],
+                'icon' => $icon('i/course'),
+                'isactive' => $mycoursesitem['isactive'],
             ],
-            $mycoursesitem,
+            [
+                'label' => get_string('navuserdirectory', 'theme_saec'),
+                'url' => (new moodle_url('/admin/user.php'))->out(false),
+                'icon' => $icon('i/users'),
+                'isactive' => (strpos($currentpath, '/admin/user.php') !== false),
+            ],
+            [
+                'label' => get_string('navadmincredentials', 'theme_saec'),
+                // 1 = BADGE_TYPE_SITE (see the same literal-vs-constant note
+                // on admin_dashboard's own badges quick action) — site-level
+                // badge management, the admin-only counterpart to a
+                // student's "Mi Mochila".
+                'url' => (new moodle_url('/badges/index.php', ['type' => 1]))->out(false),
+                'icon' => $icon('i/badge'),
+                'isactive' => (strpos($currentpath, '/badges/') !== false),
+                'disabled' => empty($CFG->enablebadges),
+            ],
+            [
+                'label' => get_string('navreports', 'theme_saec'),
+                'url' => (new moodle_url('/report/log/index.php'))->out(false),
+                'icon' => $icon('i/report'),
+                'isactive' => (strpos($currentpath, '/report/log/') !== false),
+            ],
+            ['isdivider' => true],
+            [
+                'label' => get_string('navsiteadmin', 'theme_saec'),
+                'url' => (new moodle_url('/theme/saec/pages/admin_hub.php'))->out(false),
+                'icon' => $icon('i/settings'),
+                // Excludes /admin/user.php specifically — that subpath now
+                // has its own dedicated "Directorio de Usuarios" item above,
+                // and /admin/ is otherwise a prefix of it, which would
+                // double-highlight both items at once without this carve-out.
+                'isactive' => ((strpos($currentpath, '/admin/') !== false
+                        && strpos($currentpath, '/admin/user.php') === false)
+                    || strpos($currentpath, '/theme/saec/pages/admin_hub.php') !== false),
+            ],
+            [
+                'label' => get_string('navsettings', 'theme_saec'),
+                'url' => (new moodle_url('/user/preferences.php'))->out(false),
+                'icon' => $icon('i/settings'),
+                'isactive' => $isaccountsettingspath($currentpath),
+            ],
         ];
     } else if ($is_teacher) {
         // ---- DOCENTE ----------------------------------------------------------
@@ -681,6 +866,17 @@ if ($showmainnav) {
             ? new moodle_url('/grade/report/user/index.php', ['id' => $courseid])
             : new moodle_url('/my/courses.php');
 
+        // Course-scoped badge management (2 = BADGE_TYPE_COURSE — see the
+        // literal-vs-constant note on admin_dashboard's own badges action).
+        // Unlike Calificador/Progreso above, there's no sensible cross-course
+        // fallback to fall back to here — a teacher's site-level
+        // moodle/badges:manageownbadges is normally off (that's an admin-only
+        // capability), so this is disabled outside a specific course rather
+        // than guessing which of their courses to land on.
+        $badgeurl = $courseid
+            ? new moodle_url('/badges/index.php', ['type' => 2, 'id' => $courseid])
+            : new moodle_url('/my/courses.php');
+
         $navitems = [
             $dashboarditem,
             $mycoursesitem,
@@ -689,6 +885,13 @@ if ($showmainnav) {
                 'url' => $gradeurl->out(false),
                 'icon' => $icon('i/grades'),
                 'isactive' => (strpos($currentpath, '/grade/') !== false),
+            ],
+            [
+                'label' => get_string('navcredentials', 'theme_saec'),
+                'url' => $badgeurl->out(false),
+                'icon' => $icon('i/badge'),
+                'isactive' => (strpos($currentpath, '/badges/') !== false),
+                'disabled' => (!$courseid || empty($CFG->enablebadges)),
             ],
             [
                 'label' => get_string('navattendance', 'theme_saec'),
@@ -709,7 +912,7 @@ if ($showmainnav) {
                 'label' => get_string('navsettings', 'theme_saec'),
                 'url' => (new moodle_url('/user/preferences.php'))->out(false),
                 'icon' => $icon('i/settings'),
-                'isactive' => (strpos($currentpath, '/user/preferences.php') !== false),
+                'isactive' => $isaccountsettingspath($currentpath),
             ],
         ];
     } else if ($isstudentrole) {
@@ -717,6 +920,12 @@ if ($showmainnav) {
         $navitems = [
             $dashboarditem,
             $mycoursesitem,
+            [
+                'label' => get_string('navstudenttasks', 'theme_saec'),
+                'url' => (new moodle_url('/theme/saec/pages/student_tasks.php'))->out(false),
+                'icon' => $icon('i/checkedcircle'),
+                'isactive' => (strpos($currentpath, '/theme/saec/pages/student_tasks.php') !== false),
+            ],
             [
                 'label' => get_string('navcredentials', 'theme_saec'),
                 'url' => (new moodle_url('/badges/mybadges.php'))->out(false),
@@ -734,7 +943,7 @@ if ($showmainnav) {
                 'label' => get_string('navsettings', 'theme_saec'),
                 'url' => (new moodle_url('/user/preferences.php'))->out(false),
                 'icon' => $icon('i/settings'),
-                'isactive' => (strpos($currentpath, '/user/preferences.php') !== false),
+                'isactive' => $isaccountsettingspath($currentpath),
             ],
         ];
     }
@@ -787,10 +996,14 @@ $templatecontext = [
     'studentdashboardhtml' => $studentdashboardhtml,
     'showteacherdashboard' => ($teacherdashboardhtml !== null),
     'teacherdashboardhtml' => $teacherdashboardhtml,
+    'showadmindashboard' => ($admindashboardhtml !== null),
+    'admindashboardhtml' => $admindashboardhtml,
     'showcoursespage' => ($coursespagehtml !== null),
     'coursespagehtml' => $coursespagehtml,
     'showteachercoursespage' => ($teachercoursespagehtml !== null),
     'teachercoursespagehtml' => $teachercoursespagehtml,
+    'showadmincoursespage' => ($admincoursespagehtml !== null),
+    'admincoursespagehtml' => $admincoursespagehtml,
     'showbadgespage' => ($badgespagehtml !== null),
     'badgespagehtml' => $badgespagehtml,
     'showanalyticspage' => ($analyticspagehtml !== null),

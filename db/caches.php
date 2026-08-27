@@ -41,6 +41,12 @@
  * Cursos" card grid. Enrolment counts drift slowly (a manual enrolment here
  * and there), so a moderate TTL keeps that join off nearly every
  * /my/courses.php load without meaningfully stale headcounts.
+ *
+ * "adminkpis" backs admin_hub_page::get_kpis() — the 4 sitewide COUNT()
+ * queries (active students, enrolled teachers, active courses, issued
+ * badges) behind the Admin Command Center's top KPI row. Same drift profile
+ * as "teachercourses" (an enrolment or a badge issuance here and there, not
+ * a per-request event), so it gets the same moderate TTL.
  */
 $definitions = [
     'instructor' => [
@@ -71,6 +77,12 @@ $definitions = [
         'mode' => cache_store::MODE_APPLICATION,
         'simplekeys' => true,
         'simpledata' => false,
+        'ttl' => 600,
+    ],
+    'adminkpis' => [
+        'mode' => cache_store::MODE_APPLICATION,
+        'simplekeys' => true,
+        'simpledata' => true,
         'ttl' => 600,
     ],
 ];

@@ -1,0 +1,43 @@
+// -----------------------------------------------------------------------
+// GLOBAL DATA TABLES — .generaltable (native admin/report listing tables:
+// Directorio de Usuarios, Bitácoras, category management, etc.) and
+// .flexible (Moodle's flexible_table base, used by most report tables).
+// _global_ui.scss already has a mobile-only (<768px) overflow-x fallback
+// for tables with no wrapper of their own — this file adds the always-on
+// typography/spacing/hover polish this round's spec asks for, on top of
+// that existing safety net rather than replacing it.
+// -----------------------------------------------------------------------
+.generaltable,
+.flexible {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+
+    thead th,
+    tr.r0 th {
+        background-color: $uptex-bg-alt;
+        color: $uptex-text-muted;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        border-bottom: 1px solid $uptex-divider-color;
+        white-space: nowrap;
+    }
+
+    th,
+    td {
+        padding: 0.75rem 1rem;
+        border-color: $uptex-divider-color;
+        vertical-align: middle;
+    }
+
+    tbody tr {
+        transition: background-color 0.15s ease-in-out;
+
+        &:hover {
+            background-color: $uptex-bg-alt;
+        }
+    }
+}
+

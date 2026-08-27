@@ -93,11 +93,17 @@
             text-overflow: ellipsis;
         }
 
-        // P/L/E/A — colour-coded circular pill buttons. Bare <input
-        // type="radio"> with no wrapping <label> (verified live), so this
-        // restyles the input itself via appearance:none rather than the
-        // usual hide-input/style-label technique — still a real, keyboard-
-        // and-click-accessible radio, just repainted.
+        // P/L/E/A — segmented status pill buttons. The bare <input
+        // type="radio"> (no wrapping <label>, verified live) is moved by
+        // layout/drawers.php's JS into a real <label class="saec-attendance-
+        // pill saec-attendance-pill--{p,l,e,a}"> alongside a visible letter
+        // span — CSS generated content (::before/::after) does not render
+        // on <input>, a replaced element, even with appearance:none, so the
+        // letter has to be a real DOM node. The <label> is the clickable
+        // "pill button"; the radio itself is visually hidden but still
+        // real, focusable (via its own :focus-visible ring below) and
+        // keyboard/click accessible — see .saec-attendance-pill__letter's
+        // aria-hidden and the radio's aria-label, both set by that JS.
         td.cell.c2,
         td.cell.c3,
         td.cell.c4,
@@ -109,51 +115,6 @@
             // have no flex-basis:100% escape hatch either, so they're
             // exposed to the exact same default flex-shrink:1 collapse.
             flex: 0 0 auto;
-
-            input[type="radio"] {
-                appearance: none;
-                width: 36px;
-                height: 36px;
-                min-width: 36px;
-                border-radius: 50%;
-                border: 2px solid $saec-border;
-                background-color: $saec-surface;
-                cursor: pointer;
-                transition: transform 0.1s ease-in-out;
-
-                &:hover {
-                    transform: scale(1.08);
-                }
-
-                &:focus {
-                    outline: none;
-                    box-shadow: 0 0 0 3px $saec-primary-light;
-                }
-            }
-        }
-
-        // Presente.
-        td.cell.c2 input[type="radio"]:checked {
-            border-color: $saec-primary;
-            background-color: $saec-primary;
-        }
-
-        // Retardo.
-        td.cell.c3 input[type="radio"]:checked {
-            border-color: $saec-warning;
-            background-color: $saec-warning;
-        }
-
-        // Justificado.
-        td.cell.c4 input[type="radio"]:checked {
-            border-color: $saec-info;
-            background-color: $saec-info;
-        }
-
-        // Falta.
-        td.cell.c5 input[type="radio"]:checked {
-            border-color: $saec-accent;
-            background-color: $saec-accent;
         }
 
         // Observaciones — own line, full-width input.
@@ -173,6 +134,103 @@
                     box-shadow: 0 0 0 2px $saec-primary-light;
                 }
             }
+        }
+    }
+
+    .saec-attendance-pill {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 36px;
+        border-radius: $uptex-radius-sm;
+        border: 1.5px solid transparent;
+        font-weight: 700;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.15s ease-in-out;
+
+        input[type="radio"] {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            opacity: 0;
+            cursor: pointer;
+
+            &:focus-visible ~ .saec-attendance-pill__letter {
+                outline: 2px solid currentColor;
+                outline-offset: 2px;
+                border-radius: 4px;
+            }
+        }
+
+        &:hover {
+            transform: translateY(-1px);
+        }
+
+        // Sits visually above the absolutely-positioned, 0-opacity radio;
+        // pointer-events:none isn't strictly required (a native <label>
+        // forwards clicks on any non-form-control descendant to the
+        // control it wraps regardless of stacking order) but makes that
+        // explicit rather than relying on it silently.
+        &__letter {
+            position: relative;
+            pointer-events: none;
+        }
+    }
+
+    // Presente.
+    .saec-attendance-pill--p {
+        background-color: $uptex-primary-pale;
+        border-color: rgba($uptex-primary, 0.35);
+        color: $uptex-primary;
+
+        &:has(input:checked) {
+            background-color: $uptex-primary;
+            border-color: $uptex-primary;
+            color: $uptex-surface;
+        }
+    }
+
+    // Retardo.
+    .saec-attendance-pill--l {
+        background-color: $uptex-amber-pale;
+        border-color: rgba($uptex-amber, 0.35);
+        color: $uptex-amber;
+
+        &:has(input:checked) {
+            background-color: $uptex-amber;
+            border-color: $uptex-amber;
+            color: $uptex-surface;
+        }
+    }
+
+    // Justificado.
+    .saec-attendance-pill--e {
+        background-color: $uptex-blue-pale;
+        border-color: rgba($uptex-blue, 0.35);
+        color: $uptex-blue;
+
+        &:has(input:checked) {
+            background-color: $uptex-blue;
+            border-color: $uptex-blue;
+            color: $uptex-surface;
+        }
+    }
+
+    // Falta.
+    .saec-attendance-pill--a {
+        background-color: $uptex-red-pale;
+        border-color: rgba($uptex-red, 0.35);
+        color: $uptex-red;
+
+        &:has(input:checked) {
+            background-color: $uptex-red;
+            border-color: $uptex-red;
+            color: $uptex-surface;
         }
     }
 
@@ -226,17 +284,9 @@
 
     // Tablet: compact status pills, 2-column-friendly wrapping.
     @media (min-width: 768px) and (max-width: 1023.98px) {
-        table.takelist tr {
-            td.cell.c2,
-            td.cell.c3,
-            td.cell.c4,
-            td.cell.c5 {
-                input[type="radio"] {
-                    width: 32px;
-                    height: 32px;
-                    min-width: 32px;
-                }
-            }
+        .saec-attendance-pill {
+            width: 34px;
+            height: 32px;
         }
     }
 

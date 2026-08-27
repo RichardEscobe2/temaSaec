@@ -21,6 +21,9 @@
                 "icon": "<img class='saec-sidebar__icon-img' src='...' alt=''>",
                 "isactive": true,
                 "disabled": false
+            },
+            {
+                "isdivider": true
             }
         ],
         "hashelp": true,
@@ -41,15 +44,20 @@
 
     <nav class="saec-sidebar__nav" aria-label="{{#str}} sidebarnav, theme_saec {{/str}}">
         {{#navitems}}
-            <a
-                href="{{{ url }}}"
-                class="saec-sidebar__link {{#isactive}}active{{/isactive}} {{#disabled}}saec-sidebar__link--disabled{{/disabled}}"
-                {{#isactive}}aria-current="page"{{/isactive}}
-                {{#disabled}}aria-disabled="true" tabindex="-1"{{/disabled}}
-            >
-                <span class="saec-sidebar__icon">{{{ icon }}}</span>
-                <span class="saec-sidebar__label">{{ label }}</span>
-            </a>
+            {{#isdivider}}
+                <div class="saec-sidebar__divider" role="separator"></div>
+            {{/isdivider}}
+            {{^isdivider}}
+                <a
+                    href="{{{ url }}}"
+                    class="saec-sidebar__link {{#isactive}}active{{/isactive}} {{#disabled}}saec-sidebar__link--disabled{{/disabled}}"
+                    {{#isactive}}aria-current="page"{{/isactive}}
+                    {{#disabled}}aria-disabled="true" tabindex="-1"{{/disabled}}
+                >
+                    <span class="saec-sidebar__icon">{{{ icon }}}</span>
+                    <span class="saec-sidebar__label">{{ label }}</span>
+                </a>
+            {{/isdivider}}
         {{/navitems}}
     </nav>
 

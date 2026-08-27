@@ -67,7 +67,23 @@
                 "title": "Suspensión de clases", "snippet": "Se informa a la comunidad...",
                 "date": "20 oct 2026", "url": "https://example.org/mod/forum/discuss.php?d=1"
             }
-        ]
+        ],
+        "graderhuburl": "https://example.org/grade/report/overview/index.php",
+        "attendancehuburl": "https://example.org/theme/saec/pages/attendance_hub.php",
+        "taskpicker": {
+            "modalid": "modalSelectCourseTask",
+            "modaltitle": "Selecciona el curso para crear la tarea",
+            "haslistcourses": true,
+            "courses": [{"id": 5, "fullname": "Desarrollo de Sistemas Web II", "shortname": "DSW-2026",
+                "courseurl": "https://example.org/course/modedit.php?add=assign&section=0&course=5&return=0"}]
+        },
+        "noticepicker": {
+            "modalid": "modalSelectCourseNotice",
+            "modaltitle": "Selecciona el curso para publicar aviso",
+            "haslistcourses": true,
+            "courses": [{"id": 5, "fullname": "Desarrollo de Sistemas Web II", "shortname": "DSW-2026",
+                "courseurl": "https://example.org/mod/forum/post.php?forum=25"}]
+        }
     }
 }}
 <div class="saec-teacher-dashboard">
@@ -114,6 +130,27 @@
                             {{> theme_saec/components/metric_card }}
                         {{/activecourseskpi}}
                     </div>
+                </div>
+            </section>
+
+            <section class="uptex-dashboard-section mb-4">
+                <div class="saec-teacher-quickactions">
+                    <a href="{{{ graderhuburl }}}" class="uptex-quickaction">
+                        <span class="uptex-quickaction__icon" aria-hidden="true"><i class="icon fa fa-pencil-square-o"></i></span>
+                        <span class="uptex-quickaction__label">{{#str}} quickactiongradesubmissions, theme_saec {{/str}}</span>
+                    </a>
+                    <a href="{{{ attendancehuburl }}}" class="uptex-quickaction">
+                        <span class="uptex-quickaction__icon" aria-hidden="true"><i class="icon fa fa-check-square-o"></i></span>
+                        <span class="uptex-quickaction__label">{{#str}} quickactiontakeattendance, theme_saec {{/str}}</span>
+                    </a>
+                    <button type="button" class="uptex-quickaction uptex-quickaction--action" data-toggle="modal" data-target="#{{ taskpicker.modalid }}">
+                        <span class="uptex-quickaction__icon" aria-hidden="true"><i class="icon fa fa-plus-circle"></i></span>
+                        <span class="uptex-quickaction__label">{{#str}} quickactionnewtask, theme_saec {{/str}}</span>
+                    </button>
+                    <button type="button" class="uptex-quickaction uptex-quickaction--action" data-toggle="modal" data-target="#{{ noticepicker.modalid }}">
+                        <span class="uptex-quickaction__icon" aria-hidden="true"><i class="icon fa fa-bullhorn"></i></span>
+                        <span class="uptex-quickaction__label">{{#str}} quickactionnewnotice, theme_saec {{/str}}</span>
+                    </button>
                 </div>
             </section>
 
@@ -200,4 +237,11 @@
             </section>
         </div>
     </div>
+
+    {{#taskpicker}}
+        {{> theme_saec/components/course_picker_modal }}
+    {{/taskpicker}}
+    {{#noticepicker}}
+        {{> theme_saec/components/course_picker_modal }}
+    {{/noticepicker}}
 </div>

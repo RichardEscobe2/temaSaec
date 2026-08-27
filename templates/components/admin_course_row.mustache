@@ -1,0 +1,140 @@
+{{!
+    @template theme_saec/components/admin_course_row
+
+    One <tr> shared by the Admin Dashboard's "Cursos Activos" summary table
+    and the Admin Global Course Catalog — data-search backs the table's own
+    client-side text filter (fullname + category + teacher name), data-status
+    backs the catalog's status pill tabs. Every field introduced for the
+    catalog (hasteachercolumn, hascatalogactions, showvisibility,
+    hasentercourse) is opt-in and omitted by the dashboard summary's rows, so
+    that table keeps rendering its original 3 columns / 4 actions unchanged.
+
+    Example context (json):
+    {
+        "id": 4, "fullname": "Microcredencial de Desarrollo Web", "shortname": "MDW-2026",
+        "categoryname": "Educación Continua", "studentcount": 12,
+        "hascourseimage": true,
+        "courseimage": "https://example.org/pluginfile.php/1/course/overviewfiles/f1.jpg",
+        "showvisibility": true, "isvisible": true,
+        "hasteachercolumn": true, "hasteacher": true,
+        "teachername": "Carlos Gomez", "teacheravatarurl": "https://example.org/pluginfile.php/1/user/icon/f1.jpg",
+        "hasentercourse": true, "entercourseurl": "https://example.org/course/view.php?id=4",
+        "configureurl": "https://example.org/course/edit.php?id=4",
+        "participantsurl": "https://example.org/user/index.php?id=4",
+        "gradesurl": "https://example.org/grade/report/index.php?id=4",
+        "hasattendance": true,
+        "attendanceurl": "https://example.org/mod/attendance/index.php?id=4",
+        "hascatalogactions": true,
+        "duplicateurl": "https://example.org/backup/copy.php?id=4",
+        "backupurl": "https://example.org/backup/backup.php?id=4",
+        "usecompactactions": true
+    }
+}}
+<tr class="saec-admin-hub__row"
+    data-search="{{ fullname }} {{ shortname }} {{ categoryname }} {{ teachername }}"
+    data-status="{{^isvisible}}hidden{{/isvisible}}{{#isvisible}}visible{{/isvisible}}">
+    <td>
+        <div class="saec-admin-hub__course-cell">
+            <div class="saec-admin-hub__course-thumb">
+                {{#hascourseimage}}
+                    <img src="{{{ courseimage }}}" alt="" loading="lazy">
+                {{/hascourseimage}}
+                {{^hascourseimage}}
+                    <div class="saec-card-img__placeholder saec-card-img__placeholder--mini"></div>
+                {{/hascourseimage}}
+            </div>
+            <div class="saec-admin-hub__course-cell-text">
+                <p class="uptex-table-student__name mb-0">
+                    {{ fullname }}
+                    {{#showvisibility}}
+                        <span class="uptex-status-pill {{^isvisible}}uptex-status-pill--hidden{{/isvisible}}">
+                            {{#isvisible}}{{#str}} adminvisibilityvisible, theme_saec {{/str}}{{/isvisible}}
+                            {{^isvisible}}{{#str}} adminvisibilityhidden, theme_saec {{/str}}{{/isvisible}}
+                        </span>
+                    {{/showvisibility}}
+                </p>
+                <p class="uptex-table-student__subtext mb-0">
+                    {{#shortname}}{{ shortname }} · {{/shortname}}{{ categoryname }}
+                </p>
+            </div>
+        </div>
+    </td>
+    {{#hasteachercolumn}}
+        <td>
+            {{#hasteacher}}
+                <div class="saec-admin-hub__teacher">
+                    <img src="{{{ teacheravatarurl }}}" alt="" class="saec-admin-hub__teacher-avatar">
+                    <span>{{ teachername }}</span>
+                </div>
+            {{/hasteacher}}
+            {{^hasteacher}}
+                <span class="uptex-status-pill uptex-status-pill--warning">
+                    {{#str}} adminnoteacherassigned, theme_saec {{/str}}
+                </span>
+            {{/hasteacher}}
+        </td>
+    {{/hasteachercolumn}}
+    <td class="text-center">{{ studentcount }}</td>
+    <td class="text-right">
+        {{#usecompactactions}}
+            <div class="saec-admin-hub__actions-cell">
+                {{#hasentercourse}}
+                    <a href="{{{ entercourseurl }}}" class="saec-btn-enter-sm">
+                        {{#str}} entercoursebutton, theme_saec {{/str}}
+                        <i class="icon fa fa-arrow-right" aria-hidden="true"></i>
+                    </a>
+                {{/hasentercourse}}
+                <div class="saec-admin-hub__row-dropdown">
+                    <button type="button" class="saec-admin-hub__row-dropdown-toggle" data-saec-row-menu-toggle
+                            aria-haspopup="true" aria-expanded="false"
+                            title="{{#str}} admincourseactionmore, theme_saec {{/str}}">
+                        <i class="icon fa fa-ellipsis-v" aria-hidden="true"></i>
+                        <span class="sr-only">{{#str}} admincourseactionmore, theme_saec {{/str}}</span>
+                    </button>
+                    <div class="saec-admin-hub__row-dropdown-menu" data-saec-row-menu>
+                        <a href="{{{ configureurl }}}">
+                            <i class="icon fa fa-cog" aria-hidden="true"></i>
+                            {{#str}} admincourseactionconfigure, theme_saec {{/str}}
+                        </a>
+                        <a href="{{{ participantsurl }}}">
+                            <i class="icon fa fa-users" aria-hidden="true"></i>
+                            {{#str}} admincourseactionparticipants, theme_saec {{/str}}
+                        </a>
+                        <a href="{{{ gradesurl }}}">
+                            <i class="icon fa fa-chart-bar" aria-hidden="true"></i>
+                            {{#str}} admincourseactiongrades, theme_saec {{/str}}
+                        </a>
+                        {{#hasattendance}}
+                            <a href="{{{ attendanceurl }}}">
+                                <i class="icon fa fa-calendar-check" aria-hidden="true"></i>
+                                {{#str}} admincourseactionattendance, theme_saec {{/str}}
+                            </a>
+                        {{/hasattendance}}
+                        {{#hascatalogactions}}
+                            <div class="saec-admin-hub__row-dropdown-divider" role="separator"></div>
+                            <a href="{{{ duplicateurl }}}">
+                                <i class="icon fa fa-copy" aria-hidden="true"></i>
+                                {{#str}} admincourseactionduplicate, theme_saec {{/str}}
+                            </a>
+                            <a href="{{{ backupurl }}}">
+                                <i class="icon fa fa-download" aria-hidden="true"></i>
+                                {{#str}} admincourseactionbackup, theme_saec {{/str}}
+                            </a>
+                        {{/hascatalogactions}}
+                    </div>
+                </div>
+            </div>
+        {{/usecompactactions}}
+        {{^usecompactactions}}
+            {{#hasentercourse}}
+                <a href="{{{ entercourseurl }}}" class="saec-admin-hub__row-action">{{#str}} entercoursebutton, theme_saec {{/str}}</a>
+            {{/hasentercourse}}
+            <a href="{{{ configureurl }}}" class="saec-admin-hub__row-action">{{#str}} admincourseactionconfigure, theme_saec {{/str}}</a>
+            <a href="{{{ participantsurl }}}" class="saec-admin-hub__row-action">{{#str}} admincourseactionparticipants, theme_saec {{/str}}</a>
+            <a href="{{{ gradesurl }}}" class="saec-admin-hub__row-action">{{#str}} admincourseactiongrades, theme_saec {{/str}}</a>
+            {{#hasattendance}}
+                <a href="{{{ attendanceurl }}}" class="saec-admin-hub__row-action">{{#str}} admincourseactionattendance, theme_saec {{/str}}</a>
+            {{/hasattendance}}
+        {{/usecompactactions}}
+    </td>
+</tr>

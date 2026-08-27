@@ -1,0 +1,255 @@
+// -----------------------------------------------------------------------
+// STUDENT TASKS HUB ("Mis Tareas", theme/saec/pages/student_tasks.php) —
+// student-only bird's-eye view of every assignment across every enrolled
+// course. $uptex-* tokens only, per this project's design-system
+// convention.
+// -----------------------------------------------------------------------
+
+.saec-student-tasks {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1.5rem 0 3rem;
+
+    &__title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: $uptex-text-dark;
+        margin: 0;
+    }
+
+    &__subtitle {
+        color: $uptex-text-muted;
+        margin: 0.25rem 0 0;
+    }
+
+    &__kpis {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    &__filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    &__filter {
+        background-color: $uptex-surface;
+        border: 1px solid $uptex-border-color;
+        border-radius: $uptex-radius-pill;
+        padding: 0.45rem 1.1rem;
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: $uptex-text-muted;
+        cursor: pointer;
+        transition: $uptex-transition;
+
+        &:hover {
+            border-color: $uptex-primary;
+            color: $uptex-primary;
+        }
+
+        &--active {
+            background-color: $uptex-primary;
+            border-color: $uptex-primary;
+            color: $uptex-surface;
+
+            &:hover {
+                color: $uptex-surface;
+            }
+        }
+    }
+
+    &__grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.25rem;
+    }
+
+    &__empty-filtered {
+        text-align: center;
+        color: $uptex-text-muted;
+        padding: 1.5rem 0 0;
+    }
+
+    &__empty {
+        text-align: center;
+        color: $uptex-text-muted;
+        padding: 3rem 0;
+
+        .icon {
+            font-size: 2.5rem;
+            color: $uptex-accent-green;
+            margin-bottom: 0.75rem;
+        }
+    }
+}
+
+// -- Summary KPI chip (lighter-weight than .uptex-metric-card — a plain
+// counter, no icon/footnote/link slots) --
+.uptex-task-chip {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    background-color: $uptex-surface;
+    border: 1px solid $uptex-border-color;
+    border-radius: $uptex-radius-lg;
+    padding: 0.85rem 1.25rem;
+    box-shadow: $uptex-shadow-sm;
+
+    &__value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: $uptex-primary;
+    }
+
+    &__label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: $uptex-text-muted;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+}
+
+// -- Assignment card --
+.uptex-task-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    background-color: $uptex-surface;
+    border: 1px solid $uptex-border-color;
+    border-radius: $uptex-radius-lg;
+    box-shadow: $uptex-shadow-sm;
+    padding: 1.25rem;
+    transition: $uptex-transition;
+
+    &:hover {
+        box-shadow: $uptex-shadow-md;
+    }
+
+    &__header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 0.5rem;
+    }
+
+    &__course {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+        min-width: 0;
+    }
+
+    &__course-badge {
+        align-self: flex-start;
+        background-color: $uptex-primary-light;
+        color: $uptex-primary;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        padding: 0.15rem 0.6rem;
+        border-radius: $uptex-radius-pill;
+    }
+
+    &__course-name {
+        font-size: 0.75rem;
+        color: $uptex-text-muted;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    &__urgency {
+        flex-shrink: 0;
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 0.2rem 0.65rem;
+        border-radius: $uptex-radius-pill;
+
+        &--urgente {
+            background-color: $uptex-danger-light;
+            color: $uptex-danger;
+        }
+
+        &--proximo {
+            background-color: rgba(#C8890A, 0.12);
+            color: #a1690a;
+        }
+
+        &--contiempo {
+            background-color: $uptex-accent-green-light;
+            color: darken($uptex-accent-green, 15%);
+        }
+    }
+
+    &__title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: $uptex-text-dark;
+        margin: 0;
+    }
+
+    &__due {
+        font-size: 0.8rem;
+        color: $uptex-text-muted;
+        margin: 0;
+    }
+
+    &__footer {
+        margin-top: auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    &__status {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        padding: 0.2rem 0.65rem;
+        border-radius: $uptex-radius-pill;
+
+        &--pendiente {
+            background-color: $uptex-slate-soft;
+            color: $uptex-slate;
+        }
+
+        // Closed, never submitted — a muted red (not the vivid $uptex-danger
+        // "Urgente" uses): this is a past outcome to note, not an active
+        // alarm demanding the student act on it right now.
+        &--cerrada {
+            background-color: $uptex-slate-soft;
+            color: $uptex-danger;
+        }
+
+        &--entregada {
+            background-color: $uptex-primary-light;
+            color: $uptex-primary;
+        }
+
+        &--calificada {
+            background-color: $uptex-accent-green-light;
+            color: darken($uptex-accent-green, 15%);
+        }
+    }
+
+    &__graded {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+    }
+
+    &__grade {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: $uptex-primary;
+    }
+}

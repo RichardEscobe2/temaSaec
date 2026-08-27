@@ -1,0 +1,94 @@
+// -----------------------------------------------------------------------
+// ENTERPRISE GRADER REPORT GRID (/grade/report/grader/index.php) —
+// complements scss/saec/_grader_controls.scss, which deliberately stops at
+// the tertiary-navigation control bar and leaves "the grading grid itself"
+// untouched (see its own docblock). This file is that grid.
+//
+// Verified live via Chrome (course with 17 grade items, 4 students):
+//   div.gradeparent { overflow: auto }                  (real scroll container)
+//     table.gradereport-grader-table
+//       tr (no class)   × 2   — course name row, category name row
+//       tr.heading            — real column headers (th.header/.userfield/.item)
+//       tr.userrow × N         — one per student (th.header.user = name, td...)
+//       tr.avg.lastrow.pinned  — averages row
+// Core ALREADY makes the student-name column position:sticky; left:0 on
+// both tr.heading and tr.userrow (confirmed via getComputedStyle) — that
+// half of "sticky header + sticky name column" needs no work here. What's
+// missing is the header ROW staying visible on vertical scroll, which this
+// adds to tr.heading only (the course-name/category-name rows above it are
+// left to scroll away — the real column headers are the one row worth
+// pinning). z-index is layered so the header row's own sticky-left name
+// cell (the corner) sits above both the plain sticky-top header cells and
+// the plain sticky-left body cells.
+// -----------------------------------------------------------------------
+.path-grade-report-grader {
+    .gradeparent {
+        border: 1px solid $uptex-divider-color;
+        border-radius: $uptex-radius-lg;
+        background-color: $uptex-surface;
+    }
+
+    .gradereport-grader-table {
+        tr.heading th {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            background-color: $uptex-bg-alt;
+            color: $uptex-text-muted;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            border-bottom: 2px solid $uptex-divider-color;
+        }
+
+        // Corner cell: sticky in both axes (top from the rule above, left
+        // natively from core) — needs the highest z-index so it stays above
+        // grade columns scrolling underneath it in both directions. Core's
+        // own report CSS also sets a z-index here at equal-or-higher
+        // cascade priority (confirmed live: without !important this value
+        // is silently overridden back down to core's own z-index:1).
+        tr.heading th.header {
+            z-index: 3 !important;
+        }
+
+        // Core's native sticky-left name column (both header and body) has
+        // no guaranteed opaque background of its own — without one, grade
+        // columns scrolling horizontally show through underneath it.
+        th.header.cell.c0,
+        td.header.cell.c0 {
+            background-color: $uptex-surface;
+        }
+
+        td.gradecell,
+        th.item {
+            border-right: 1px solid $uptex-divider-color;
+        }
+
+        .gradevalue {
+            font-weight: 600;
+            color: $uptex-text-dark;
+        }
+
+        // "-" (no grade yet) — tagged by layout/drawers.php's JS pass
+        // (plain text content, no distinct core class to select on).
+        .saec-grade-empty {
+            font-weight: 400;
+            color: $uptex-text-muted;
+        }
+
+        tr.userrow:hover td,
+        tr.userrow:hover th {
+            background-color: $uptex-bg-alt;
+        }
+
+        // Averages row — a real summary, not just another student. Core's
+        // own report CSS also sets a background here at equal-or-higher
+        // cascade priority (confirmed live, same as the corner cell above).
+        tr.avg td,
+        tr.avg th {
+            background-color: $uptex-primary-pale !important;
+            font-weight: 700;
+        }
+    }
+}

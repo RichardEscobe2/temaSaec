@@ -59,7 +59,11 @@
                 "imageurl": "https://example.org/pluginfile.php/1/badges/badgeimage/1/f1",
                 "isverified": true, "ispending": false, "date": "Emitido: Oct 24, 2023"
             }
-        ]
+        ],
+        "tasksurl": "https://example.org/theme/saec/pages/student_tasks.php",
+        "boletaurl": "https://example.org/grade/report/overview/index.php",
+        "badgesurl": "https://example.org/badges/mybadges.php",
+        "quickcalendarurl": "https://example.org/calendar/view.php?view=month"
     }
 }}
 <div class="uptex-student-dashboard">
@@ -77,19 +81,59 @@
         </div>
     </div>
 
+    <section class="uptex-dashboard-section mb-4">
+        <div class="uptex-dashboard-section__header">
+            <h2>{{#str}} academicsummaryheading, theme_saec {{/str}}</h2>
+        </div>
+        <div class="row">
+            {{#kpis}}
+                <div class="col-12 col-md-3 mb-4 mb-md-0">
+                    {{> theme_saec/components/metric_card }}
+                </div>
+            {{/kpis}}
+        </div>
+    </section>
+
+    <div class="saec-student-quickactions mb-4">
+        <a href="{{{ tasksurl }}}" class="uptex-quickaction">
+            <span class="uptex-quickaction__icon" aria-hidden="true"><i class="icon fa fa-list-alt"></i></span>
+            <span class="uptex-quickaction__label">{{#str}} quickactionmytasks, theme_saec {{/str}}</span>
+        </a>
+        <a href="{{{ boletaurl }}}" class="uptex-quickaction">
+            <span class="uptex-quickaction__icon" aria-hidden="true"><i class="icon fa fa-file-text-o"></i></span>
+            <span class="uptex-quickaction__label">{{#str}} quickactionmyboleta, theme_saec {{/str}}</span>
+        </a>
+        <a href="{{{ badgesurl }}}" class="uptex-quickaction">
+            <span class="uptex-quickaction__icon" aria-hidden="true"><i class="icon fa fa-shield"></i></span>
+            <span class="uptex-quickaction__label">{{#str}} quickactionmybadges, theme_saec {{/str}}</span>
+        </a>
+        <a href="{{{ quickcalendarurl }}}" class="uptex-quickaction">
+            <span class="uptex-quickaction__icon" aria-hidden="true"><i class="icon fa fa-calendar"></i></span>
+            <span class="uptex-quickaction__label">{{#str}} quickactionmycalendar, theme_saec {{/str}}</span>
+        </a>
+    </div>
+
     <div class="row">
         <div class="col-12 col-lg-8">
             <section class="uptex-dashboard-section mb-4">
                 <div class="uptex-dashboard-section__header">
                     <h2>{{#str}} coursesenrolledheading, theme_saec {{/str}}</h2>
-                    <a href="{{{ mycoursesurl }}}" class="uptex-dashboard-section__link">{{#str}} viewallcourses, theme_saec {{/str}}</a>
+                    <div class="uptex-dashboard-section__header-actions">
+                        <div class="saec-view-switcher" data-saec-view-switcher role="group" aria-label="{{#str}} courseviewswitcherlabel, theme_saec {{/str}}">
+                            <button type="button" class="saec-view-switcher__btn" data-saec-view-btn="grid" aria-pressed="true" title="{{#str}} courseviewgrid, theme_saec {{/str}}">
+                                <i class="icon fa fa-th-large" aria-hidden="true"></i>
+                            </button>
+                            <button type="button" class="saec-view-switcher__btn" data-saec-view-btn="list" aria-pressed="false" title="{{#str}} courseviewlist, theme_saec {{/str}}">
+                                <i class="icon fa fa-bars" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        <a href="{{{ mycoursesurl }}}" class="uptex-dashboard-section__link">{{#str}} viewallcourses, theme_saec {{/str}}</a>
+                    </div>
                 </div>
                 {{#hascourses}}
-                    <div class="row">
+                    <div class="saec-courses-container saec-courses-container--grid" data-saec-courses-container>
                         {{#courses}}
-                            <div class="col-12 col-md-6 mb-4">
-                                {{> theme_saec/components/course_progress_card }}
-                            </div>
+                            {{> theme_saec/components/course_progress_card }}
                         {{/courses}}
                     </div>
                 {{/hascourses}}
@@ -143,17 +187,44 @@
             </section>
         </div>
     </div>
-
-    <section class="uptex-dashboard-section mt-4">
-        <div class="uptex-dashboard-section__header">
-            <h2>{{#str}} academicsummaryheading, theme_saec {{/str}}</h2>
-        </div>
-        <div class="row">
-            {{#kpis}}
-                <div class="col-12 col-md-3 mb-4 mb-md-0">
-                    {{> theme_saec/components/metric_card }}
-                </div>
-            {{/kpis}}
-        </div>
-    </section>
 </div>
+{{#js}}
+require(['jquery'], function($) {
+    var STORAGE_KEY = 'saec_student_course_view';
+    var container = document.querySelector('[data-saec-courses-container]');
+    var switcher = document.querySelector('[data-saec-view-switcher]');
+    if (!container || !switcher) {
+        return;
+    }
+
+    var applyView = function(view) {
+        container.classList.toggle('saec-courses-container--grid', view === 'grid');
+        container.classList.toggle('saec-courses-container--list', view === 'list');
+        switcher.querySelectorAll('[data-saec-view-btn]').forEach(function(btn) {
+            var isactive = (btn.getAttribute('data-saec-view-btn') === view);
+            btn.classList.toggle('saec-view-switcher__btn--active', isactive);
+            btn.setAttribute('aria-pressed', isactive ? 'true' : 'false');
+        });
+    };
+
+    var saved = null;
+    try {
+        saved = window.localStorage.getItem(STORAGE_KEY);
+    } catch (e) {
+        saved = null;
+    }
+    applyView(saved === 'list' ? 'list' : 'grid');
+
+    switcher.querySelectorAll('[data-saec-view-btn]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var view = btn.getAttribute('data-saec-view-btn');
+            applyView(view);
+            try {
+                window.localStorage.setItem(STORAGE_KEY, view);
+            } catch (e) {
+                // Private browsing / storage disabled — view still applies for this load, just doesn't persist.
+            }
+        });
+    });
+});
+{{/js}}

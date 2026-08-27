@@ -173,38 +173,72 @@
     gap: 1.5rem;
 }
 
+// Card media/badge/hover-zoom below use $uptex-* tokens (this round's
+// mandatory design-token source), matching course_progress_card/
+// course_catalog_card in custom.scss — the rest of this card's rules
+// (title/code/students/actions) predate that migration and stay on
+// $saec-*, still valid and untouched here, out of this round's scope.
 .saec-teacher-course-card {
-    background-color: $saec-surface;
-    border: 1px solid $saec-border;
-    border-top: 3px solid $saec-primary;
-    border-radius: $saec-radius;
-    box-shadow: $saec-shadow-md;
-    padding: 1.1rem;
+    background-color: $uptex-surface;
+    border: 1px solid $uptex-border-color;
+    border-radius: $uptex-radius-lg;
+    box-shadow: $uptex-shadow-sm;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 
-    &:hover {
-        transform: translateY(-2px);
+    &:hover,
+    &:focus-within {
+        transform: translateY(-4px);
+        box-shadow: $uptex-shadow-card-hover;
+
+        .saec-teacher-course-card__media img {
+            transform: scale(1.03);
+        }
     }
 
-    &__header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 0.5rem;
+    &__media {
+        position: relative;
+        height: 150px;
+        overflow: hidden;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease-in-out;
+        }
     }
 
     &__badge {
-        background-color: $saec-primary-light;
-        color: $saec-primary-hover;
+        position: absolute;
+        top: 0.75rem;
+        left: 0.75rem;
+        background-color: $uptex-surface;
+        color: $uptex-primary-hover;
         font-size: 0.65rem;
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.04em;
         padding: 0.3rem 0.7rem;
-        border-radius: 999px;
+        border-radius: $uptex-radius-pill;
+        box-shadow: $uptex-shadow-sm;
+    }
+
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding: 0.6rem 1.1rem 0;
+    }
+
+    &__body {
+        padding: 0 1.1rem 1.1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        flex: 1 1 auto;
     }
 
     &__title {

@@ -21,7 +21,8 @@
                 "id": 2,
                 "fullname": "Curso demo",
                 "viewurl": "https://example.org/course/view.php?id=2",
-                "courseimage": "https://example.org/pluginfile.php/1/course/overviewfiles/1/f1.jpg",
+                "hascourseimage": true,
+                "courseimage": "https://example.org/pluginfile.php/1/course/overviewfiles/f1.jpg",
                 "categoryname": "Desarrollo Web",
                 "tagcolor": "green",
                 "hasduration": true,
@@ -43,7 +44,12 @@
                         {{#categoryname}}
                             <span class="uptex-course-showcase-card__tag uptex-course-showcase-card__tag--{{ tagcolor }}">{{ categoryname }}</span>
                         {{/categoryname}}
-                        <img src="{{{ courseimage }}}" alt="" loading="lazy">
+                        {{#hascourseimage}}
+                            <img src="{{{ courseimage }}}" alt="" loading="lazy">
+                        {{/hascourseimage}}
+                        {{^hascourseimage}}
+                            <div class="saec-card-img__placeholder">{{#str}} placeholderinitial, theme_saec {{/str}}</div>
+                        {{/hascourseimage}}
                     </div>
                     <div class="uptex-course-showcase-card__body">
                         {{#hasduration}}

@@ -23,26 +23,6 @@ require_once($CFG->dirroot . '/badges/renderer.php');
  */
 class theme_saec_core_course_renderer extends core_course_renderer {
 
-    /** @var string[] Category keyword => curated Unsplash fallback image (verified reachable). */
-    private const CATEGORY_FALLBACK_IMAGES = [
-        'web' => 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=600&q=80',
-        'desarrollo' => 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=600&q=80',
-        'seguridad' => 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=600&q=80',
-        'cyber' => 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=600&q=80',
-        'inteligencia' => 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80',
-        'datos' => 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80',
-        'arquitectura' => 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=600&q=80',
-        'redes' => 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=600&q=80',
-    ];
-
-    /** @var string[] Deterministic (per course id) fallback pool for categories matching no keyword. */
-    private const DEFAULT_FALLBACK_IMAGES = [
-        'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=600&q=80',
-        'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=600&q=80',
-        'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80',
-        'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=600&q=80',
-    ];
-
     /** @var string[] Category keyword => .uptex-course-showcase-card__tag colour modifier (custom.scss). */
     private const CATEGORY_TAG_COLORS = [
         'web' => 'green', 'desarrollo' => 'green',
@@ -134,34 +114,27 @@ class theme_saec_core_course_renderer extends core_course_renderer {
     /**
      * Exports one course into the exact context theme_saec/core_course/frontpage_courses_grid expects.
      *
+     * Image resolution is delegated to \theme_saec\course_helper (shared
+     * with every authenticated dashboard/catalog card — see that class'
+     * docblock for why it goes through core's own course_image cache
+     * rather than building the pluginfile URL by hand). No login/enrolment
+     * is required to read it: overviewfiles is served to guests as long as
+     * $CFG->forcelogin is off (confirmed on this install), so the same
+     * resolved URL that works for alumno_top1/maestro_b1/admin also works
+     * unauthenticated. When a course has no image, hascourseimage is false
+     * and the template falls back to the shared institutional placeholder
+     * banner — never an external stock-photo URL.
+     *
      * @param core_course_list_element $course
      * @return array
      */
     protected function uptex_export_course_card(core_course_list_element $course): array {
-        $courseimage = null;
-        foreach ($course->get_course_overviewfiles() as $file) {
-            if ($file->is_valid_image()) {
-                $courseimage = moodle_url::make_pluginfile_url(
-                    $file->get_contextid(),
-                    $file->get_component(),
-                    $file->get_filearea(),
-                    $file->get_itemid(),
-                    $file->get_filepath(),
-                    $file->get_filename()
-                )->out(false);
-                break;
-            }
-        }
+        $courseimage = \theme_saec\course_helper::get_course_image_url((object) ['id' => $course->id]);
 
         $category = core_course_category::get($course->category, IGNORE_MISSING);
         $categoryname = $category ? format_string($category->name) : '';
         $categorykey = $this->uptex_match_category_key($categoryname);
         $tagcolor = self::CATEGORY_TAG_COLORS[$categorykey] ?? 'green';
-
-        if (!$courseimage) {
-            $courseimage = self::CATEGORY_FALLBACK_IMAGES[$categorykey]
-                ?? self::DEFAULT_FALLBACK_IMAGES[$course->id % count(self::DEFAULT_FALLBACK_IMAGES)];
-        }
 
         // Duración: calculada de start/end date reales del curso; si no están
         // configurados, se omite el renglón de meta en vez de inventar un valor.
@@ -181,6 +154,7 @@ class theme_saec_core_course_renderer extends core_course_renderer {
             'id' => $course->id,
             'fullname' => format_string($course->fullname, true, ['context' => context_course::instance($course->id)]),
             'viewurl' => (new moodle_url('/course/view.php', ['id' => $course->id]))->out(false),
+            'hascourseimage' => !empty($courseimage),
             'courseimage' => $courseimage,
             'categoryname' => $categoryname,
             'tagcolor' => $tagcolor,

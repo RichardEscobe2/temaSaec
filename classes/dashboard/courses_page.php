@@ -7,7 +7,6 @@ namespace theme_saec\dashboard;
 
 use completion_info;
 use context_course;
-use core_course_list_element;
 use moodle_url;
 use stdClass;
 
@@ -192,21 +191,7 @@ class courses_page {
      * @return array
      */
     private static function export_course_base(stdClass $course, array &$categorycache): array {
-        $listcourse = new core_course_list_element($course);
-        $courseimage = null;
-        foreach ($listcourse->get_course_overviewfiles() as $file) {
-            if ($file->is_valid_image()) {
-                $courseimage = moodle_url::make_pluginfile_url(
-                    $file->get_contextid(),
-                    $file->get_component(),
-                    $file->get_filearea(),
-                    $file->get_itemid(),
-                    $file->get_filepath(),
-                    $file->get_filename()
-                )->out(false);
-                break;
-            }
-        }
+        $courseimage = \theme_saec\course_helper::get_course_image_url($course);
 
         return [
             'id' => (int) $course->id,

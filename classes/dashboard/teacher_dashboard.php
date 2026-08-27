@@ -109,7 +109,7 @@ class teacher_dashboard {
 
         return [
             'fullname' => fullname($user),
-            'avatarurl' => $userpicture->get_url($PAGE)->out(false),
+            'avatarurl' => \theme_saec\course_helper::to_relative_url($userpicture->get_url($PAGE)->out(false)),
             'greeting' => get_string('teacherdashwelcome', 'theme_saec', fullname($user)),
         ];
     }
@@ -363,6 +363,118 @@ class teacher_dashboard {
     }
 
     /**
+     * Static targets for the two 1-click quick-action bar buttons (Grader
+     * Hub, Attendance Hub) — both native Moodle URLs whose page content
+     * theme_saec overlays entirely (see layout/drawers.php's
+     * $isanalyticspage/$graderhubpagehtml and $attendancehubpagehtml
+     * blocks), not standalone theme_saec/pages/*.php controllers.
+     *
+     * @return array{graderhuburl: string, attendancehuburl: string}
+     */
+    public static function get_teacher_quickaction_links(): array {
+        return [
+            'graderhuburl' => (new moodle_url('/grade/report/overview/index.php'))->out(false),
+            'attendancehuburl' => (new moodle_url('/theme/saec/pages/attendance_hub.php'))->out(false),
+        ];
+    }
+
+    /**
+     * Course lists backing the two 2-click course-picker modals (+ Nueva
+     * Tarea, + Nuevo Aviso) — supersedes the old single-click "post to the
+     * first course's forum" shortcut (get_teacher_quick_announcement(), now
+     * removed) with a real choice across every course the teacher can
+     * actually manage activities in, matching
+     * theme_saec/components/course_picker_modal's expected shape.
+     *
+     * Each list is independently filtered:
+     * - taskcourses: every visible taught course where the teacher holds
+     *   moodle/course:manageactivities (the exact capability
+     *   course/modedit.php itself requires to add a module) — its
+     *   courseurl opens the assignment-creation form directly.
+     * - noticecourses: the same, further narrowed to courses that actually
+     *   have a news/announcements forum — its courseurl opens that forum's
+     *   add-discussion editor directly. A course without a news forum is
+     *   simply absent from this list rather than linking somewhere broken.
+     *
+     * @param int $userid 0 for the current user.
+     * @return array{taskpicker: array, noticepicker: array}
+     */
+    public static function get_teacher_course_pickers(int $userid = 0): array {
+        global $USER;
+        $userid = $userid ?: (int) $USER->id;
+
+        $taskcourses = [];
+        $noticecourses = [];
+
+        foreach (self::get_taught_courseids($userid) as $courseid) {
+            $course = get_course($courseid);
+            if (empty($course->visible)) {
+                continue;
+            }
+
+            $context = context_course::instance($courseid);
+            if (!has_capability('moodle/course:manageactivities', $context, $userid)) {
+                continue;
+            }
+
+            $fullname = format_string($course->fullname, true, ['context' => $context]);
+            $shortname = format_string($course->shortname, true, ['context' => $context]);
+
+            $taskcourses[] = [
+                'id' => $courseid,
+                'fullname' => $fullname,
+                'shortname' => $shortname,
+                'courseurl' => (new moodle_url('/course/modedit.php', [
+                    'add' => 'assign',
+                    'section' => 0,
+                    'course' => $courseid,
+                    'return' => 0,
+                ]))->out(false),
+            ];
+
+            $forum = self::fetch_course_news_forum($courseid);
+            if ($forum) {
+                $noticecourses[] = [
+                    'id' => $courseid,
+                    'fullname' => $fullname,
+                    'shortname' => $shortname,
+                    'courseurl' => (new moodle_url('/mod/forum/post.php', ['forum' => $forum->id]))->out(false),
+                ];
+            }
+        }
+
+        return [
+            'taskpicker' => [
+                'modalid' => 'modalSelectCourseTask',
+                'modaltitle' => get_string('taskpickertitle', 'theme_saec'),
+                'haslistcourses' => !empty($taskcourses),
+                'courses' => $taskcourses,
+            ],
+            'noticepicker' => [
+                'modalid' => 'modalSelectCourseNotice',
+                'modaltitle' => get_string('noticepickertitle', 'theme_saec'),
+                'haslistcourses' => !empty($noticecourses),
+                'courses' => $noticecourses,
+            ],
+        ];
+    }
+
+    /**
+     * The course's "news"/announcements forum record, if one exists. Same
+     * lookup as course_view_page::get_news_forum(), kept as its own small
+     * copy here since that method is private to its own class and this one
+     * only ever needs the bare forum id — not worth sharing a cache for a
+     * handful-of-courses-per-request lookup.
+     *
+     * @param int $courseid
+     * @return stdClass|null
+     */
+    private static function fetch_course_news_forum(int $courseid): ?stdClass {
+        global $DB;
+        return $DB->get_record('forum', ['course' => $courseid, 'type' => 'news'], '*', IGNORE_MULTIPLE) ?: null;
+    }
+
+    /**
      * Unified context for templates/teacher_dashboard.mustache. Returns null
      * when the logged-in user is not a teacher (student/admin dashboards are
      * out of scope for this context builder). Per-request memoized since
@@ -393,7 +505,9 @@ class teacher_dashboard {
             self::get_teacher_grading_kpi($userid),
             self::get_teacher_pending_grading($userid),
             self::get_teacher_upcoming_deadlines($userid),
-            self::get_institutional_announcements()
+            self::get_institutional_announcements(),
+            self::get_teacher_quickaction_links(),
+            self::get_teacher_course_pickers($userid)
         );
 
         self::$contextmemo[$userid] = $context;

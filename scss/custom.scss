@@ -12,6 +12,22 @@ $uptex-primary:        #0B8043; // Verde Institucional — navegación, botones 
 $uptex-primary-hover:  darken($uptex-primary, 8%);
 $uptex-primary-light:  rgba($uptex-primary, 0.08); // Fondos tenues de iconos / hover.
 $uptex-primary-soft:   rgba($uptex-primary, 0.12);
+$uptex-primary-pale:   #E6F4EA; // Fondo de píldoras de estado (e.g. "Visible", catálogo de cursos) — distinto de $uptex-primary-light (mezcla rgba más tenue).
+$uptex-divider-color:  #E2E8F0; // Separador sutil (sidebar Admin) — más claro que $saec-border (#d1d5db, post.scss), usado solo aquí para no afectar bordes estructurales existentes.
+
+// -- Píldoras de estatus (Matriz de Asistencia P/L/E/A) — cada una un tono
+// distinto para diferenciarlas a simple vista sin depender del texto/orden
+// de columna. $uptex-primary/$uptex-primary-pale ya cubren "Presente"; las
+// otras tres son nuevas, no reutilizan $saec-warning/$saec-info/$saec-accent
+// (paleta "SAEC" heredada, post.scss) porque no coinciden con los hex
+// exactos de este round y este tema exige tokens $uptex-* en todo trabajo
+// nuevo.
+$uptex-amber:       #D97706; // Retardo.
+$uptex-amber-pale:  #FEF3C7;
+$uptex-blue:        #2563EB; // Justificado.
+$uptex-blue-pale:   #DBEAFE;
+$uptex-red:         #DC2626; // Falta.
+$uptex-red-pale:    #FEE2E2;
 $uptex-hover-tint:     #E8F5E9; // Tinte de hover en ítems de navegación (sidebar) — no es un rgba() de $uptex-primary, tono propio.
 
 $uptex-accent-green:       #7CB342; // Verde Acento — progreso, éxito, refuerzo positivo.
@@ -306,6 +322,23 @@ p {
         box-shadow: $uptex-shadow-sm;
     }
 
+    // Clickable variant (metric_card.mustache's hasurl branch) — plain
+    // anchor reset so the link doesn't inherit global `a { color }`/
+    // underline-on-hover, and a stronger hover lift than the static card's
+    // shadow-only affordance signals it's interactive.
+    &--link {
+        color: inherit;
+        text-decoration: none;
+
+        &:hover,
+        &:focus {
+            color: inherit;
+            text-decoration: none;
+            transform: translateY(-2px);
+            box-shadow: $uptex-shadow-card-hover;
+        }
+    }
+
     &__icon {
         flex-shrink: 0;
         width: 48px;
@@ -369,6 +402,17 @@ p {
             font-weight: 400;
             color: $uptex-text-muted;
             white-space: nowrap;
+        }
+
+        // Student Dashboard GPA badge: green at/above 8.0, amber below —
+        // opt-in via metric_card.mustache's "valuemodifier" field, every
+        // other metric_card caller omits it and gets no color override.
+        &--good {
+            color: darken($uptex-accent-green, 10%);
+        }
+
+        &--warn {
+            color: #a1690a; // Same amber tone _global_ui.scss's .alert-warning already uses.
         }
     }
 }
@@ -983,11 +1027,82 @@ $uptex-shadow-feature-hover: 0 12px 24px rgba(0, 0, 0, 0.06);
         margin: 0;
     }
 
+    // Avatar + name row (Student Dashboard course cards only —
+    // components/course_progress_card.mustache's "hasinstructor" branch).
+    // Deliberately its own class, not a variant of &__instructor above,
+    // since that one is plain text reused as-is by the frontpage/course
+    // grid cards (core_course/frontpage_courses_grid.mustache,
+    // components/course_grid.mustache).
+    &__instructor-row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    &__instructor-avatar {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    &__instructor-name {
+        color: $uptex-text-muted;
+        font-size: 0.8rem;
+    }
+
     &__footer {
         margin-top: auto;
         display: flex;
         flex-direction: column;
         gap: 0.6rem;
+
+        // Student Dashboard's "Entrar al Curso" + "Ver Boleta" pair
+        // (components/course_progress_card.mustache) — every other caller
+        // of this footer class keeps a single full-width button. Button
+        // sizing/flex itself lives on .saec-course-actions (same element,
+        // scss/saec/_student_dashboard.scss) alongside the button component
+        // styles — kept together since both are specific to this one caller.
+        &--split {
+            flex-direction: row;
+        }
+    }
+}
+
+// -- Institutional fallback banner — shown in any course card's media slot
+// (.uptex-course-showcase-card__media, .saec-course-catalog-card__media,
+// .saec-teacher-course-card__media, admin_course_row's mini table
+// thumbnail) whenever a course has no valid overview image yet: a legacy
+// course saved before this round's mandatory-image validation existed. A
+// CSS-only diagonal-stripe pattern over the UPTex green gradient, so no
+// extra image asset/HTTP request is needed to render it.
+.saec-card-img__placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: $uptex-primary;
+    background-image:
+        linear-gradient(135deg, $uptex-primary 0%, $uptex-primary-hover 100%),
+        repeating-linear-gradient(
+            45deg,
+            rgba($uptex-surface, 0.07) 0px,
+            rgba($uptex-surface, 0.07) 2px,
+            transparent 2px,
+            transparent 14px
+        );
+    color: rgba($uptex-surface, 0.92);
+    font-weight: 800;
+    font-size: 1.1rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+
+    // admin_course_row's 56x40 table-preview thumbnail — too small for the
+    // full-size lettering above without wrapping/overflowing.
+    &--mini {
+        font-size: 0.5rem;
+        letter-spacing: 0.03em;
     }
 }
 
@@ -1254,44 +1369,6 @@ $uptex-shadow-feature-hover: 0 12px 24px rgba(0, 0, 0, 0.06);
     }
 }
 
-.uptex-login-sso {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-
-    &__btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.6rem;
-        border-radius: $uptex-radius-sm;
-        border-color: $uptex-border-color;
-        color: $uptex-text-muted;
-        padding: 0.65rem;
-        opacity: 0.65;
-        cursor: not-allowed;
-    }
-}
-
-.uptex-login-divider {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    color: $uptex-text-muted;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    margin-bottom: 1.5rem;
-
-    &::before,
-    &::after {
-        content: "";
-        flex: 1 1 auto;
-        height: 1px;
-        background-color: $uptex-border-color;
-    }
-}
-
 .uptex-login-label {
     display: block;
     font-weight: 700;
@@ -1481,27 +1558,11 @@ $uptex-shadow-feature-hover: 0 12px 24px rgba(0, 0, 0, 0.06);
         text-align: center;
     }
 
-    // -- Grid de "Mis Cursos Inscritos" (Fase 7) ------------------------------
-    // Bootstrap's .row/.col-12.col-md-6 gave each card ~50% of .col-lg-8 —
-    // on the now-fluid .main-inner (Fase 6) that stretched cards past
-    // 450-500px. Scoped to the ONE .row that's a direct child of the
-    // courses section inside .col-lg-8 (student_dashboard.mustache has no
-    // other), so the KPI grid, badge grid and every other .row/.col-* in
-    // the theme are untouched. auto-fill lets extra columns appear on very
-    // wide screens instead of just two oversized ones.
-    .col-lg-8 > .uptex-dashboard-section > .row {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(260px, 300px));
-        gap: 1.25rem;
-        margin: 0; // neutralize Bootstrap's .row negative gutters — grid `gap` replaces them
-
-        > .col-12.col-md-6 {
-            width: 100%;
-            max-width: 300px;
-            padding: 0;        // neutralize Bootstrap's col gutters
-            margin-bottom: 0;  // grid `gap` replaces the .mb-4 utility
-        }
-    }
+    // "Mis Cursos Inscritos" grid/list layout: see scss/saec/_student_dashboard.scss
+    // (.saec-courses-container and its --grid/--list modifiers) — the old
+    // Bootstrap .row/.col-12.col-md-6-based grid rule that used to live
+    // here was removed along with that markup (student_dashboard.mustache
+    // now wraps cards in .saec-courses-container directly, no .row/.col-*).
 
     // -- Tarjetas de curso: barra de progreso institucional + CTA elevado ----
     // (.uptex-course-showcase-card en sí — media overlay, hover zoom de
@@ -1532,18 +1593,6 @@ $uptex-shadow-feature-hover: 0 12px 24px rgba(0, 0, 0, 0.06);
     .progress-bar {
         background-color: $uptex-primary; // Verde institucional #0B8043.
         transition: width 0.4s ease-in-out;
-    }
-
-    .uptex-course-showcase-card__footer .btn {
-        border-radius: $uptex-radius-pill;
-        font-weight: 700;
-        transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-
-        &:hover,
-        &:focus {
-            transform: translateY(-2px);
-            box-shadow: $uptex-shadow-card-hover;
-        }
     }
 
     // -- KPI cards: radio ampliado, valor más prominente, elevación hover ----
@@ -1584,7 +1633,8 @@ $uptex-shadow-feature-hover: 0 12px 24px rgba(0, 0, 0, 0.06);
 
     .uptex-deadline-item {
         display: flex;
-        gap: 0.75rem;
+        flex-direction: column;
+        gap: 0.5rem;
         padding: 0.6rem;
         background-color: $uptex-bg-subtle;
         border-radius: $uptex-radius-sm;
@@ -1593,6 +1643,14 @@ $uptex-shadow-feature-hover: 0 12px 24px rgba(0, 0, 0, 0.06);
 
         &:hover {
             background-color: $uptex-bg-alt;
+        }
+
+        // Wraps daybox+body — kept separate from the "Entregar Tarea" button
+        // below it (student_dashboard's "hassubmiturl" cards only) so a
+        // narrow sidebar column never has to cram 3 flex items horizontally.
+        &__row {
+            display: flex;
+            gap: 0.75rem;
         }
 
         &__daybox {
@@ -1666,6 +1724,27 @@ $uptex-shadow-feature-hover: 0 12px 24px rgba(0, 0, 0, 0.06);
         &__urgent-note {
             color: $uptex-danger;
             font-weight: 700;
+        }
+
+        // "Entregar Tarea" 1-click shortcut — only ever present when
+        // student_dashboard sets hassubmiturl (assign due dates with a
+        // resolvable course module); teacher_dashboard's reuse of this
+        // same partial never renders this element at all.
+        &__submit-btn {
+            align-self: flex-start;
+            margin-left: calc(48px + 0.75rem); // Lines up under &__body, past the daybox + its gap.
+            background-color: $uptex-primary;
+            color: $uptex-surface;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.35rem 0.85rem;
+            border-radius: $uptex-radius-pill;
+            white-space: nowrap;
+
+            &:hover {
+                background-color: $uptex-primary-hover;
+                color: $uptex-surface;
+            }
         }
     }
 
@@ -1753,6 +1832,17 @@ $uptex-shadow-feature-hover: 0 12px 24px rgba(0, 0, 0, 0.06);
             gap: 0.75rem;
         }
     }
+}
+
+// Student Dashboard quick-action bar (student_dashboard.mustache) — same
+// flex-wrap row as .saec-teacher-quickactions (scss/saec/_teacher_dashboard.scss);
+// kept as its own class per this file's existing per-dashboard scoping
+// convention, not because the layout itself differs. Action pills reuse
+// .uptex-quickaction as-is (scss/saec/_admin_hub.scss).
+.saec-student-quickactions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
 }
 
 /* ===========================================================================
@@ -1882,6 +1972,10 @@ body.page-mycourses #page-header {
     &:focus-within {
         transform: translateY(-4px);
         box-shadow: $uptex-shadow-card-hover;
+
+        .saec-course-catalog-card__media img {
+            transform: scale(1.03);
+        }
     }
 
     &__media {
@@ -1894,6 +1988,7 @@ body.page-mycourses #page-header {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: transform 0.4s ease-in-out;
         }
     }
 

@@ -13,7 +13,10 @@
         "id": 4, "fullname": "Microcredencial de Desarrollo Web",
         "shortname": "MDW-2026", "categoryname": "Educación Continua",
         "studentcount": 12,
-        "gradebookurl": "https://example.org/grade/report/index.php?id=4"
+        "gradebookurl": "https://example.org/grade/report/index.php?id=4",
+        "boletabaseurl": "https://example.org/grade/report/user/index.php",
+        "hasstudents": true,
+        "students": [ { "id": 8, "fullname": "Ana García Méndez" } ]
     }
 }}
 <article class="saec-grader-hub-card" data-course-name="{{fullname}} {{shortname}}">
@@ -24,6 +27,20 @@
         <i class="icon fa fa-users" aria-hidden="true"></i>
         {{#str}} teachercoursestudentcount, theme_saec, {{studentcount}} {{/str}}
     </p>
+    {{#hasstudents}}
+        <form method="get" action="{{{ boletabaseurl }}}" class="saec-grader-hub-card__student-form">
+            <input type="hidden" name="id" value="{{ id }}">
+            <label class="sr-only" for="saec-grader-hub-student-{{ id }}">{{#str}} viewstudentboleta, theme_saec {{/str}}</label>
+            <select id="saec-grader-hub-student-{{ id }}" name="userid"
+                    class="saec-grader-hub-card__student-select custom-select"
+                    onchange="this.value && this.form.submit()">
+                <option value="">{{#str}} viewstudentboleta, theme_saec {{/str}}</option>
+                {{#students}}
+                    <option value="{{ id }}">{{ fullname }}</option>
+                {{/students}}
+            </select>
+        </form>
+    {{/hasstudents}}
     <a href="{{{ gradebookurl }}}" class="saec-grader-hub-card__cta">
         {{#str}} graderhubcta, theme_saec {{/str}}
         <span aria-hidden="true">&rarr;</span>

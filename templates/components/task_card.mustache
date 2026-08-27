@@ -1,0 +1,66 @@
+{{!
+    @template theme_saec/components/task_card
+
+    One assignment card in the Student Tasks Hub. data-status backs the
+    hub's own client-side status filter pills — "cerrada" (closed, never
+    submitted) is grouped under the same "Entregadas" filter pill as
+    "entregada", per this hub's spec, even though its own status/badge stay
+    visually distinct. data-search backs a possible future text filter and
+    doubles as a readable debug hook today.
+
+    Exactly one of ispending/issubmitted/isgraded/isclosed is true, driving
+    both the urgency badge (only ever shown for "pendiente" — nothing else
+    is still a to-do) and the action area. "isclosed" gets no action link at
+    all — the submission window is gone, so there's nothing to click through
+    to that isn't already said by its own status pill.
+
+    Example context (json):
+    {
+        "cmid": 27, "courseid": 5, "coursename": "Desarrollo de Sistemas Web II",
+        "courseshortname": "DSW-2026", "title": "Tarea: Diseño de API REST",
+        "hasduedate": true, "duedatelabel": "15/09/26, 23:59",
+        "status": "pendiente", "statuslabel": "Pendiente",
+        "urgency": "urgente", "hasurgencylabel": true, "urgencylabel": "Urgente",
+        "ispending": true, "issubmitted": false, "isgraded": false, "isclosed": false,
+        "viewurl": "https://example.org/mod/assign/view.php?id=27",
+        "hasgradelabel": false, "gradelabel": null
+    }
+}}
+<div class="uptex-task-card" data-status="{{ status }}" data-search="{{ title }}{{ coursename }}{{ courseshortname }}">
+    <div class="uptex-task-card__header">
+        <div class="uptex-task-card__course">
+            <span class="uptex-task-card__course-badge">{{ courseshortname }}</span>
+            <span class="uptex-task-card__course-name">{{ coursename }}</span>
+        </div>
+        {{#hasurgencylabel}}
+            <span class="uptex-task-card__urgency uptex-task-card__urgency--{{ urgency }}">{{ urgencylabel }}</span>
+        {{/hasurgencylabel}}
+    </div>
+
+    <h3 class="uptex-task-card__title">{{ title }}</h3>
+    <p class="uptex-task-card__due">{{ duedatelabel }}</p>
+
+    <div class="uptex-task-card__footer">
+        <span class="uptex-task-card__status uptex-task-card__status--{{ status }}">{{ statuslabel }}</span>
+
+        {{#ispending}}
+            <a href="{{{ viewurl }}}" class="btn btn-primary btn-sm">{{#str}} studenttasksactionsubmit, theme_saec {{/str}}</a>
+        {{/ispending}}
+        {{#issubmitted}}
+            <a href="{{{ viewurl }}}" class="btn btn-outline-primary btn-sm">{{#str}} studenttasksactionview, theme_saec {{/str}}</a>
+        {{/issubmitted}}
+        {{#isgraded}}
+            <div class="uptex-task-card__graded">
+                {{#hasgradelabel}}
+                    <span class="uptex-task-card__grade">{{ gradelabel }}</span>
+                {{/hasgradelabel}}
+                <a href="{{{ viewurl }}}" class="btn btn-outline-primary btn-sm">{{#str}} studenttasksactionfeedback, theme_saec {{/str}}</a>
+            </div>
+        {{/isgraded}}
+        {{#isclosed}}
+            <button type="button" class="btn btn-outline-secondary btn-sm disabled" disabled aria-disabled="true">
+                {{#str}} studenttasksactionsubmit, theme_saec {{/str}}
+            </button>
+        {{/isclosed}}
+    </div>
+</div>

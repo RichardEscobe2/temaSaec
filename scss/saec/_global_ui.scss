@@ -1,0 +1,219 @@
+// -----------------------------------------------------------------------
+// GLOBAL UI MODERNIZATION SUITE — restyles native Bootstrap/Moodle
+// components that are NOT already covered by custom.scss's "Bootstrap
+// Overrides" section (.btn, .form-control, .card, .badge, .progress,
+// .table are already themed there — not duplicated here) or by any
+// page-specific partial (course_subpages.scss, navigation.scss, etc.).
+//
+// Confirmed live via Chrome audit (Participantes, Configuración del
+// curso, Foro > discusión, Cuestionario > intento) on
+// http://localhost/moodle/ — 2026-08-25:
+//   - .forumpost had zero theme_saec styling (raw Boost box).
+//   - .que (quiz question) kept Moodle's default pale-teal tint.
+//   - Native <input type="checkbox">/<input type="radio"> were unstyled
+//     browser controls (course settings date-enable toggles, quiz answers).
+//   - Generic .alert / .modal-content / .nav-tabs outside course context
+//     had no theme_saec rules anywhere in the codebase (grepped clean).
+// Every rule below uses only $uptex-* tokens already defined in
+// custom.scss (imported above this file in post.scss) — no new palette.
+// -----------------------------------------------------------------------
+
+// =========================================================================
+// FORM CONTROLS — comfortable sizing + label spacing on top of the
+// radius/focus-ring custom.scss already sets for .form-control/.custom-select.
+// =========================================================================
+.form-control,
+.custom-select {
+    min-height: 44px;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+textarea.form-control {
+    min-height: 44px;
+    height: auto;
+}
+
+.form-group > label,
+.fitem .fitemtitle,
+label.col-form-label {
+    font-weight: 600;
+    color: $uptex-text-dark;
+    margin-bottom: 0.35rem;
+}
+
+// Native checkboxes/radios rendered without Bootstrap's .custom-control
+// wrapper (e.g. course settings "Habilitar" date toggles, quiz attempt
+// answers) — accent-color is supported by every browser this project
+// targets and re-tints the native control with zero markup changes.
+input[type="checkbox"],
+input[type="radio"] {
+    accent-color: $uptex-primary;
+}
+
+// Bootstrap 4's own wrapped variant, where present.
+.custom-control-input:checked ~ .custom-control-label::before {
+    background-color: $uptex-primary;
+    border-color: $uptex-primary;
+}
+
+.custom-control-input:focus ~ .custom-control-label::before {
+    box-shadow: 0 0 0 2px $uptex-primary-soft;
+}
+
+// =========================================================================
+// TABLES — horizontal-scroll safety net for native tables that render
+// without their own overflow wrapper. Pages that already solved this
+// (grader report, in course_subpages.scss) keep their own rule; this is
+// only a fallback so no other native table can blow out the layout on
+// narrow viewports.
+// =========================================================================
+@media (max-width: 767.98px) {
+    .generaltable,
+    .flexible {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+// =========================================================================
+// CARDS & CONTAINERS — native components with no card treatment yet.
+// =========================================================================
+
+// -- Forum posts (/mod/forum/discuss.php) --
+.forumpost {
+    background-color: $uptex-surface;
+    border: 1px solid $uptex-border-color;
+    border-radius: $uptex-radius-lg;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    transition: $uptex-transition;
+
+    &:hover {
+        box-shadow: $uptex-shadow-sm;
+    }
+
+    .subject {
+        font-weight: 700;
+        color: $uptex-text-dark;
+    }
+
+    .author {
+        color: $uptex-text-muted;
+        font-size: 0.85rem;
+    }
+}
+
+// -- Generic activity list item (native course-format rendering, where
+// the theme's custom dashboard/course-view overlay doesn't apply) --
+.activity-item {
+    border: 1px solid $uptex-border-color;
+    border-radius: $uptex-radius-sm;
+    transition: $uptex-transition;
+
+    &:hover {
+        box-shadow: $uptex-shadow-sm;
+    }
+}
+
+// -- Quiz question containers (/mod/quiz/attempt.php, review.php) --
+.que {
+    background-color: $uptex-surface;
+    border: 1px solid $uptex-border-color;
+    border-radius: $uptex-radius-lg;
+    box-shadow: none;
+
+    .info,
+    .formulation {
+        background-color: transparent;
+    }
+
+    &.correct {
+        border-color: $uptex-accent-green;
+    }
+
+    &.incorrect {
+        border-color: $uptex-danger;
+    }
+}
+
+// =========================================================================
+// ALERTS, BADGES & MODALS
+// =========================================================================
+.alert {
+    border: none;
+    border-radius: $uptex-radius-lg;
+    padding: 1rem 1.25rem;
+}
+
+.alert-success {
+    background-color: $uptex-accent-green-light;
+    color: darken($uptex-accent-green, 15%);
+}
+
+.alert-danger {
+    background-color: $uptex-danger-light;
+    color: $uptex-danger;
+}
+
+.alert-warning {
+    background-color: rgba(#C8890A, 0.12);
+    color: #a1690a;
+}
+
+.alert-info {
+    background-color: $uptex-primary-light;
+    color: $uptex-primary-hover;
+}
+
+.modal-content {
+    border: none;
+    border-radius: $uptex-radius-lg;
+    box-shadow: $uptex-shadow-elevation;
+}
+
+.modal-header,
+.modal-footer {
+    border-color: $uptex-border-color;
+}
+
+// =========================================================================
+// NAVIGATION — .nav-tabs / .nav-pills outside course context (course
+// context's .secondary-navigation ribbon is already fully themed in
+// navigation.scss; this only reaches plain Bootstrap tab/pill nav used
+// elsewhere, e.g. admin/user preference screens).
+// =========================================================================
+.nav-tabs {
+    border-bottom-color: $uptex-border-color;
+
+    .nav-link {
+        border: none;
+        color: $uptex-text-muted;
+        font-weight: 600;
+
+        &:hover {
+            border-color: transparent;
+            color: $uptex-primary;
+        }
+
+        &.active {
+            color: $uptex-primary;
+            background-color: transparent;
+            border-bottom: 2px solid $uptex-primary;
+        }
+    }
+}
+
+.nav-pills {
+    .nav-link {
+        border-radius: $uptex-radius-pill;
+        color: $uptex-text-muted;
+        font-weight: 600;
+
+        &.active {
+            background-color: $uptex-primary;
+            color: $uptex-surface;
+        }
+    }
+}

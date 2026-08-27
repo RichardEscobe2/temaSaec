@@ -8,7 +8,6 @@ namespace theme_saec\dashboard;
 use completion_info;
 use context_course;
 use context_system;
-use core_course_list_element;
 use moodle_url;
 use stdClass;
 use user_picture;
@@ -111,7 +110,7 @@ class student_dashboard {
         return [
             'firstname' => $user->firstname,
             'fullname' => fullname($user),
-            'avatarurl' => $userpicture->get_url($PAGE)->out(false),
+            'avatarurl' => \theme_saec\course_helper::to_relative_url($userpicture->get_url($PAGE)->out(false)),
             'greeting' => get_string('dashboardwelcomeback', 'theme_saec', $user->firstname),
             'pendingcount' => $pendingcount,
             'haspending' => $pendingcount > 0,
@@ -137,7 +136,8 @@ class student_dashboard {
 
         $gpa = self::compute_gpa($userid, $courseids);
         $attendance = self::compute_attendance_percentage($userid, $courseids);
-        $studyhours = self::compute_study_hours_this_week($userid);
+        $attendanceurl = self::find_any_attendance_url($courseids);
+        $taskstotals = self::compute_task_completion($userid, $courseids);
         $badgecount = $DB->count_records('badge_issued', ['userid' => $userid]);
 
         $icon = fn (string $pix) => $OUTPUT->pix_icon($pix, '', 'moodle', ['class' => 'saec-kpi-card__icon-img']);
@@ -152,8 +152,11 @@ class student_dashboard {
                 'value' => $gpa !== null ? number_format($gpa, 1) : $nodata,
                 'hasvaluesuffix' => $gpa !== null,
                 'valuesuffix' => '/ 10',
+                'valuemodifier' => $gpa !== null ? ($gpa >= 8.0 ? 'good' : 'warn') : '',
                 'hasfootnote' => false,
                 'footnote' => null,
+                'hasurl' => true,
+                'url' => (new moodle_url('/grade/report/overview/index.php'))->out(false),
             ],
             [
                 'key' => 'attendance',
@@ -165,17 +168,25 @@ class student_dashboard {
                 'valuesuffix' => null,
                 'hasfootnote' => false,
                 'footnote' => null,
+                'hasurl' => $attendanceurl !== null,
+                'url' => $attendanceurl,
             ],
             [
-                'key' => 'studyhours',
-                'icon' => $icon('i/calendareventtime'),
+                'key' => 'tasks',
+                'icon' => $icon('i/checkedcircle'),
                 'iconvariant' => 'muted',
-                'label' => get_string('kpistudyhours', 'theme_saec'),
-                'value' => $studyhours !== null ? get_string('kpistudyhoursvalue', 'theme_saec', $studyhours) : $nodata,
+                'label' => get_string('kpitasks', 'theme_saec'),
+                'value' => $taskstotals !== null
+                    ? get_string('kpitasksvalue', 'theme_saec', (object) $taskstotals)
+                    : $nodata,
                 'hasvaluesuffix' => false,
                 'valuesuffix' => null,
-                'hasfootnote' => true,
-                'footnote' => get_string('kpistudyhoursfootnote', 'theme_saec'),
+                'hasfootnote' => $taskstotals !== null,
+                'footnote' => $taskstotals !== null
+                    ? get_string('kpitaskscompletedlabel', 'theme_saec', $taskstotals['percent'])
+                    : null,
+                'hasurl' => false,
+                'url' => null,
             ],
             [
                 'key' => 'badges',
@@ -187,6 +198,8 @@ class student_dashboard {
                 'valuesuffix' => null,
                 'hasfootnote' => true,
                 'footnote' => get_string('kpibadgesfootnote', 'theme_saec'),
+                'hasurl' => true,
+                'url' => (new moodle_url('/badges/mybadges.php'))->out(false),
             ],
         ];
 
@@ -289,7 +302,7 @@ class student_dashboard {
             $badges[] = [
                 'id' => (int) $record->id,
                 'title' => format_string($record->name),
-                'imageurl' => self::resolve_badge_image_url($record)->out(false),
+                'imageurl' => \theme_saec\course_helper::to_relative_url(self::resolve_badge_image_url($record)->out(false)),
                 'date' => get_string('badgeissued', 'theme_saec', userdate($record->dateissued, $dateformat)),
                 'isverified' => (bool) $record->visible,
                 'ispending' => false,
@@ -300,6 +313,32 @@ class student_dashboard {
             'hasbadges' => !empty($badges),
             'badges' => $badges,
             'canexport' => !empty($CFG->badges_allowexternalbackpack),
+        ];
+    }
+
+    /**
+     * Static targets for the Student Dashboard's 1-click quick-action bar.
+     * Mirrors teacher_dashboard::get_teacher_quickaction_links() — every
+     * link routes to an existing, already-working page:
+     * - tasksurl: theme_saec's own Tasks Hub (pages/student_tasks.php).
+     * - boletaurl: /grade/report/overview/index.php, the same URL
+     *   is_student() gates layout/drawers.php's "Mi Rendimiento" overlay on
+     *   — this button is a direct shortcut to that existing sidebar
+     *   destination, not a second/different report.
+     * - badgesurl: core's own badges/mybadges.php, unstyled by theme_saec
+     *   but real and functional.
+     * - calendarurl: reused as-is; layout/drawers.php already computes an
+     *   identical value under the same key for the sidebar's own calendar
+     *   button, so this simply gives the quick-action bar its own copy.
+     *
+     * @return array{tasksurl: string, boletaurl: string, badgesurl: string, quickcalendarurl: string}
+     */
+    public static function get_student_quickaction_links(): array {
+        return [
+            'tasksurl' => (new moodle_url('/theme/saec/pages/student_tasks.php'))->out(false),
+            'boletaurl' => (new moodle_url('/grade/report/overview/index.php'))->out(false),
+            'badgesurl' => (new moodle_url('/badges/mybadges.php'))->out(false),
+            'quickcalendarurl' => (new moodle_url('/calendar/view.php', ['view' => 'month']))->out(false),
         ];
     }
 
@@ -325,7 +364,8 @@ class student_dashboard {
             self::get_student_kpis($userid),
             self::get_student_courses_progress($userid),
             self::get_student_upcoming_deadlines($userid),
-            self::get_student_backpack_data($userid)
+            self::get_student_backpack_data($userid),
+            self::get_student_quickaction_links()
         );
     }
 
@@ -440,36 +480,84 @@ class student_dashboard {
     }
 
     /**
-     * Number of distinct hours this week (Monday to now) in which $userid
-     * generated at least one log entry — a lightweight, honest proxy for
-     * "study hours" since Moodle does not track continuous time-on-task
-     * natively. Returns null when the log store table is unavailable.
+     * URL for the "attendance" KPI card's click-through: mod_attendance's own
+     * view.php?mode=1 ("Todos los cursos" tab) aggregates every attendance
+     * instance the viewing user is enrolled in regardless of which single
+     * instance's cmid the URL is built from (verified against mod_attendance's
+     * own report — the mode=1 branch is student-scoped, not instance-scoped),
+     * so any one real cmid the student has access to is a valid entry point.
+     * Returns null when mod_attendance isn't installed or the student has no
+     * attendance activity in any enrolled course, so the KPI card degrades to
+     * non-clickable rather than linking somewhere broken.
+     *
+     * @param int[] $courseids
+     * @return string|null
+     */
+    private static function find_any_attendance_url(array $courseids): ?string {
+        global $CFG;
+        if (empty($courseids) || !file_exists($CFG->dirroot . '/mod/attendance/version.php')) {
+            return null;
+        }
+        require_once($CFG->dirroot . '/mod/attendance/locallib.php');
+
+        foreach ($courseids as $courseid) {
+            $course = get_course($courseid);
+            foreach (get_all_instances_in_course('attendance', $course) as $instance) {
+                return (new moodle_url('/mod/attendance/view.php', [
+                    'id' => $instance->coursemodule,
+                    'mode' => 1,
+                ]))->out(false);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Submitted-vs-total assignment count across $courseids: every visible
+     * assignment with a real due date (undated assignments aren't "tasks"
+     * on a timeline, so they're excluded rather than counted as always-
+     * pending) versus how many of those $userid has actually submitted.
+     * Returns null when there are no such assignments anywhere, so the KPI
+     * degrades to "N/D" instead of a fabricated 0/0.
      *
      * @param int $userid
-     * @return int|null
+     * @param int[] $courseids
+     * @return array{completed:int, total:int, percent:int}|null
      */
-    private static function compute_study_hours_this_week(int $userid): ?int {
+    private static function compute_task_completion(int $userid, array $courseids): ?array {
         global $DB;
 
-        if (!$DB->get_manager()->table_exists('logstore_standard_log')) {
+        if (empty($courseids)) {
             return null;
         }
 
-        $now = time();
-        $dayofweek = (int) date('N', $now); // 1 (Mon) .. 7 (Sun), server tz is acceptable for a week boundary.
-        $weekstart = usergetmidnight($now) - (($dayofweek - 1) * DAYSECS);
+        list($insql, $inparams) = $DB->get_in_or_equal($courseids, SQL_PARAMS_NAMED, 'course');
 
-        $sql = "SELECT DISTINCT FLOOR(l.timecreated / 3600) AS hourbucket
-                  FROM {logstore_standard_log} l
-                 WHERE l.userid = :userid AND l.timecreated >= :weekstart AND l.anonymous = 0";
+        $totalsql = "SELECT COUNT(1)
+                       FROM {assign} a
+                       JOIN {course_modules} cm ON cm.instance = a.id
+                       JOIN {modules} m ON m.id = cm.module AND m.name = 'assign'
+                      WHERE a.course $insql AND cm.visible = 1 AND a.duedate > 0";
+        $total = (int) $DB->count_records_sql($totalsql, $inparams);
 
-        try {
-            $buckets = $DB->get_records_sql($sql, ['userid' => $userid, 'weekstart' => $weekstart]);
-        } catch (\dml_exception $e) {
+        if ($total === 0) {
             return null;
         }
 
-        return count($buckets);
+        $completedsql = "SELECT COUNT(1)
+                            FROM {assign} a
+                            JOIN {course_modules} cm ON cm.instance = a.id
+                            JOIN {modules} m ON m.id = cm.module AND m.name = 'assign'
+                            JOIN {assign_submission} s ON s.assignment = a.id
+                                 AND s.userid = :userid AND s.latest = 1 AND s.status = 'submitted'
+                           WHERE a.course $insql AND cm.visible = 1 AND a.duedate > 0";
+        $completed = (int) $DB->count_records_sql($completedsql, array_merge($inparams, ['userid' => $userid]));
+
+        return [
+            'completed' => $completed,
+            'total' => $total,
+            'percent' => (int) round(($completed / $total) * 100),
+        ];
     }
 
     /**
@@ -480,21 +568,7 @@ class student_dashboard {
      * @return array
      */
     private static function export_course_progress_card(stdClass $course, int $userid): array {
-        $listcourse = new core_course_list_element($course);
-        $courseimage = null;
-        foreach ($listcourse->get_course_overviewfiles() as $file) {
-            if ($file->is_valid_image()) {
-                $courseimage = moodle_url::make_pluginfile_url(
-                    $file->get_contextid(),
-                    $file->get_component(),
-                    $file->get_filearea(),
-                    $file->get_itemid(),
-                    $file->get_filepath(),
-                    $file->get_filename()
-                )->out(false);
-                break;
-            }
-        }
+        $courseimage = \theme_saec\course_helper::get_course_image_url($course);
 
         $completion = new completion_info($course);
         $progresspercent = null;
@@ -510,11 +584,17 @@ class student_dashboard {
         }
 
         $hascompletiondata = ($totalmodules !== null && $totalmodules > 0);
+        $context = context_course::instance($course->id);
+        $instructor = instructor_resolver::resolve((int) $course->id, $context);
 
         return [
             'id' => (int) $course->id,
-            'fullname' => format_string($course->fullname, true, ['context' => context_course::instance($course->id)]),
+            'fullname' => format_string($course->fullname, true, ['context' => $context]),
             'courseurl' => (new moodle_url('/course/view.php', ['id' => $course->id]))->out(false),
+            'boletaurl' => (new moodle_url('/grade/report/user/index.php', ['id' => $course->id]))->out(false),
+            'hasinstructor' => ($instructor !== null),
+            'instructorname' => $instructor['name'] ?? null,
+            'instructoravatarurl' => $instructor['avatarurl'] ?? null,
             'hascourseimage' => !empty($courseimage),
             'courseimage' => $courseimage,
             'hascompletiondata' => $hascompletiondata,
@@ -548,6 +628,18 @@ class student_dashboard {
 
         $hoursremaining = $sameday ? max(0, (int) round(($event->timestart - $now) / HOURSECS)) : null;
 
+        // 1-click submit shortcut: only for assignments (a quiz's "submission"
+        // is taking the attempt itself, which isn't a single safe click to
+        // send someone straight into from a dashboard tile) and only when the
+        // course module can actually be resolved.
+        $submiturl = null;
+        if ($event->modulename === 'assign') {
+            $cm = get_coursemodule_from_instance('assign', $event->instance, $course->id, false, IGNORE_MISSING);
+            if ($cm) {
+                $submiturl = (new moodle_url('/mod/assign/view.php', ['id' => $cm->id]))->out(false);
+            }
+        }
+
         return [
             'title' => format_string($event->name),
             'coursename' => format_string($course->shortname),
@@ -558,6 +650,8 @@ class student_dashboard {
             'hasclosingnote' => $sameday,
             'closingnote' => $sameday ? get_string('deadlineclosingin', 'theme_saec', $hoursremaining) : null,
             'modulename' => $event->modulename,
+            'hassubmiturl' => ($submiturl !== null),
+            'submiturl' => $submiturl,
         ];
     }
 

@@ -1,0 +1,89 @@
+{{!
+    @template theme_saec/admin_hub
+
+    Site Administration Hub — a standalone theme_saec page
+    (theme/saec/pages/admin_hub.php): a curated, categorized, instantly
+    searchable index of native Site Administration destinations. Context
+    from \theme_saec\dashboard\admin_hub_page::get_context().
+
+    The Executive Command Center (KPIs, quick actions, courses/users
+    summaries) used to live on this same page — it now lives on /my/
+    instead (theme_saec/admin_dashboard, injected by layout/drawers.php)
+    so this page can focus on exactly one job: settings.
+
+    Instant client-side search (same plain-JS-over-prerendered-cards
+    approach as grader_hub_page.mustache): filters category cards' own
+    sub-links by their data-search attribute, keeping a card visible
+    whenever its title or at least one of its own links matches.
+
+    Example context (json):
+    {
+        "searchplaceholder": "Buscar configuración…",
+        "categories": [{
+            "key": "appearance", "title": "Apariencia y Temas", "icon": "<img>",
+            "links": [{"label": "Selector de Temas", "url": "https://example.org/admin/themeselector.php"}]
+        }]
+    }
+}}
+<div class="saec-admin-hub" id="saec-admin-hub-{{uniqid}}">
+    <header class="saec-admin-hub__hero saec-admin-hub__hero--search-only">
+        <div class="saec-admin-hub__search">
+            <span class="saec-admin-hub__search-icon" aria-hidden="true"><i class="icon fa fa-search"></i></span>
+            <label class="sr-only" for="saec-admin-hub-search-{{uniqid}}">{{ searchplaceholder }}</label>
+            <input type="search" id="saec-admin-hub-search-{{uniqid}}"
+                   class="saec-admin-hub__search-input"
+                   placeholder="{{ searchplaceholder }}"
+                   data-saec-admin-hub-globalsearch>
+        </div>
+    </header>
+
+    <section class="saec-admin-hub__section-card">
+        <div class="saec-admin-hub__category-grid row" data-saec-admin-hub-categories>
+            {{#categories}}
+                {{> theme_saec/components/admin_category_card }}
+            {{/categories}}
+        </div>
+        <p class="saec-admin-hub__empty-filtered d-none" data-saec-admin-hub-empty-filtered>
+            {{#str}} adminhubnomatch, theme_saec {{/str}}
+        </p>
+    </section>
+</div>
+{{#js}}
+require(['jquery'], function($) {
+    var root = $('#saec-admin-hub-{{uniqid}}');
+
+    var globalsearch = root.find('[data-saec-admin-hub-globalsearch]');
+    var categorycards = root.find('.uptex-category-card');
+
+    globalsearch.on('keyup input', function() {
+        var query = (globalsearch.val() || '').toLowerCase();
+        var anyvisible = false;
+
+        categorycards.each(function() {
+            var card = $(this);
+            var title = (card.data('category-title') || '').toString().toLowerCase();
+            var titlematches = title.indexOf(query) !== -1;
+            var links = card.find('[data-search]');
+            var visiblelinks = 0;
+
+            links.each(function() {
+                var link = $(this);
+                var text = (link.data('search') || '').toString().toLowerCase();
+                var show = titlematches || text.indexOf(query) !== -1;
+                link.toggle(show);
+                if (show) {
+                    visiblelinks++;
+                }
+            });
+
+            var showcard = visiblelinks > 0;
+            card.toggle(showcard);
+            if (showcard) {
+                anyvisible = true;
+            }
+        });
+
+        root.find('[data-saec-admin-hub-empty-filtered]').toggleClass('d-none', anyvisible);
+    });
+});
+{{/js}}

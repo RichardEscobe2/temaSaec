@@ -1,0 +1,537 @@
+// -----------------------------------------------------------------------
+// ADMIN SAAS COMMAND CENTER (theme/saec/pages/admin_hub.php) — the first
+// custom admin experience in theme_saec. Builds on the shared
+// .uptex-metric-card (custom.scss) and .uptex-table-container /
+// .uptex-avatar table styling reused as-is for the courses/users tables;
+// everything below is new to this page. $uptex-* tokens only, per this
+// project's design-system convention.
+// -----------------------------------------------------------------------
+
+.saec-admin-hub {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1.5rem 0 3rem;
+
+    &__hero {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    &__title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: $uptex-text-dark;
+        margin: 0;
+    }
+
+    &__subtitle {
+        color: $uptex-text-muted;
+        margin: 0.25rem 0 0;
+    }
+
+    &__search {
+        position: relative;
+        flex: 0 0 auto;
+        width: 100%;
+        max-width: 360px;
+    }
+
+    &__search-icon {
+        position: absolute;
+        left: 0.9rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: $uptex-text-muted;
+    }
+
+    &__search-input {
+        width: 100%;
+        padding: 0.65rem 1rem 0.65rem 2.4rem;
+        border: 1px solid $uptex-border-color;
+        border-radius: $uptex-radius-pill;
+        background-color: $uptex-surface;
+        transition: $uptex-transition;
+
+        &:focus {
+            outline: none;
+            border-color: $uptex-primary;
+            box-shadow: 0 0 0 2px $uptex-primary-soft;
+        }
+    }
+
+    &__quickactions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    &__toast {
+        border-radius: $uptex-radius-sm;
+        padding: 0.65rem 1rem;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    &__section-card {
+        background-color: $uptex-surface;
+        border: 1px solid $uptex-border-color;
+        border-radius: $uptex-radius-lg;
+        box-shadow: $uptex-shadow-sm;
+        padding: 1.5rem;
+    }
+
+    &__section-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    &__section-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: $uptex-text-dark;
+        margin: 0 0 1rem;
+    }
+
+    &__section-header &__section-title {
+        margin-bottom: 0;
+    }
+
+    &__filter-input {
+        border: 1px solid $uptex-border-color;
+        border-radius: $uptex-radius-sm;
+        padding: 0.45rem 0.85rem;
+        min-width: 220px;
+
+        &:focus {
+            outline: none;
+            border-color: $uptex-primary;
+            box-shadow: 0 0 0 2px $uptex-primary-soft;
+        }
+    }
+
+    &__row-action {
+        color: $uptex-primary;
+        font-weight: 600;
+        font-size: 0.85rem;
+        margin-left: 0.85rem;
+        white-space: nowrap;
+
+        &:hover {
+            color: $uptex-primary-hover;
+            text-decoration: underline;
+        }
+    }
+
+    &__viewall {
+        display: inline-block;
+        margin-top: 0.85rem;
+        font-weight: 600;
+        color: $uptex-primary;
+
+        &:hover {
+            color: $uptex-primary-hover;
+        }
+    }
+
+    &__category-grid {
+        margin-top: 0.5rem;
+    }
+
+    &__empty-filtered {
+        text-align: center;
+        color: $uptex-text-muted;
+        padding: 1.5rem 0 0;
+    }
+
+    // theme_saec/admin_hub's hero has no title once the Executive Command
+    // Center moved to /my/ (see admin_dashboard.mustache) — just the search
+    // box, right-aligned instead of hugging the left edge with nothing to
+    // balance against.
+    &__hero--search-only {
+        justify-content: flex-end;
+    }
+
+    // -- Lead-teacher cell (Admin Global Course Catalog only) --
+    &__teacher {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+        color: $uptex-text-dark;
+    }
+
+    &__teacher-avatar {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+
+    // -- Course thumbnail cell (Cursos Activos summary + Admin Global
+    // Course Catalog, both via components/admin_course_row.mustache) — a
+    // "table preview" per this round's spec, not a full card, since this
+    // page is a dense audit table rather than a browsing grid. --
+    &__course-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    &__course-thumb {
+        width: 56px;
+        height: 40px;
+        border-radius: $uptex-radius-sm;
+        overflow: hidden;
+        flex-shrink: 0;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    &__course-cell-text {
+        min-width: 0;
+    }
+
+    // -- Status pill filter tabs (Admin Global Course Catalog only) --
+    &__status-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    &__status-tab {
+        background-color: $uptex-surface;
+        border: 1px solid $uptex-border-color;
+        border-radius: $uptex-radius-pill;
+        padding: 0.4rem 1rem;
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: $uptex-text-muted;
+        cursor: pointer;
+        transition: $uptex-transition;
+
+        &:hover {
+            border-color: $uptex-primary;
+            color: $uptex-primary;
+        }
+
+        &--active {
+            background-color: $uptex-primary;
+            border-color: $uptex-primary;
+            color: $uptex-surface;
+
+            &:hover {
+                color: $uptex-surface;
+            }
+        }
+    }
+
+    // -- Per-row "⋮" actions dropdown (Configurar/Participantes/
+    // Calificador/Asistencia + Duplicar/Respaldar) --
+    &__row-dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    &__row-dropdown-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        background-color: $uptex-surface;
+        border: 1px solid $uptex-border-color;
+        border-radius: $uptex-radius-sm;
+        color: $uptex-text-muted;
+        cursor: pointer;
+        font: inherit;
+        transition: $uptex-transition;
+
+        &:hover,
+        &[aria-expanded="true"] {
+            background-color: $uptex-primary-light;
+            border-color: $uptex-primary;
+            color: $uptex-primary;
+        }
+    }
+
+    // position: fixed (not absolute) — top/left are computed and set
+    // inline by admin_courses_page.mustache's JS from the toggle button's
+    // real getBoundingClientRect(), specifically so this menu can escape
+    // .uptex-table-container's overflow: hidden (rounded-corner clipping)
+    // and .table-responsive's overflow-x: auto (which also forces
+    // overflow-y: auto) — an absolutely-positioned menu on a row near the
+    // bottom/right of the table would otherwise be cut off.
+    &__row-dropdown-menu {
+        display: none;
+        position: fixed;
+        z-index: 1060; // Above Boost's drawer/backdrop (see theme/boost/scss/moodle/drawer.scss's $zindex-fixed + 5).
+        min-width: 200px;
+        background-color: $uptex-surface;
+        border: 1px solid $uptex-border-color;
+        border-radius: $uptex-radius-sm;
+        box-shadow: $uptex-shadow-md;
+        padding: 0.4rem 0;
+        text-align: left;
+
+        &--open {
+            display: block;
+        }
+
+        a {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.5rem 1rem;
+            color: $uptex-text-dark;
+            font-weight: 500;
+            font-size: 0.85rem;
+            white-space: nowrap;
+
+            i {
+                width: 14px;
+                text-align: center;
+                color: $uptex-text-muted;
+                transition: $uptex-transition;
+            }
+
+            &:hover {
+                background-color: $uptex-primary-light;
+                color: $uptex-primary;
+
+                i {
+                    color: $uptex-primary;
+                }
+            }
+        }
+    }
+
+    &__row-dropdown-divider {
+        height: 1px;
+        margin: 0.35rem 0;
+        background-color: $uptex-border-color;
+    }
+}
+
+// -- Quick-action pill button — reciprocal/inverted hover contract, shared
+// system-wide by every dashboard's action bar (Admin: admin_quickaction.mustache;
+// Teacher: teacher_dashboard.mustache; Student: student_dashboard.mustache).
+// Two variants, each the other's hover state:
+//   - Secondary/outline (bare .uptex-quickaction): white fill, green text +
+//     border at rest; on hover it fills solid green with white text — i.e.
+//     it turns INTO the solid variant's resting look.
+//   - Primary/solid (.uptex-quickaction--action): solid green fill, white
+//     text at rest; on hover it hollows out to white fill with green text +
+//     border — i.e. it turns INTO the outline variant's resting look.
+// Text/icon colour is set once via `color` on the pill itself (not on
+// __icon-img/<i> separately) so icons that honour currentColor (this
+// theme's FA <i> icons) invert for free; Admin's pix_icon <img> icons are
+// raster and can't recolour via CSS, unchanged from before this round.
+.uptex-quickaction {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: $uptex-surface;
+    color: $uptex-primary;
+    border: 1.5px solid $uptex-primary;
+    border-radius: $uptex-radius-pill;
+    padding: 0.6rem 1.1rem;
+    font-weight: 600;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+
+    &:hover,
+    &:focus {
+        background-color: $uptex-primary;
+        color: $uptex-surface;
+        border-color: $uptex-primary;
+        text-decoration: none;
+    }
+
+    &--action {
+        background-color: $uptex-primary;
+        border-color: $uptex-primary;
+        color: $uptex-surface;
+
+        &:hover,
+        &:focus {
+            background-color: $uptex-surface;
+            color: $uptex-primary;
+            border-color: $uptex-primary;
+        }
+
+        &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    }
+
+    &__icon-img {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+// -- Toast variants (Purgar Caché feedback) --
+.uptex-toast {
+    &--success {
+        background-color: $uptex-accent-green-light;
+        color: darken($uptex-accent-green, 15%);
+    }
+
+    &--error {
+        background-color: $uptex-danger-light;
+        color: $uptex-danger;
+    }
+}
+
+// -- User Directory status pill --
+.uptex-status-pill {
+    display: inline-block;
+    border-radius: $uptex-radius-pill;
+    padding: 0.2rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    background-color: $uptex-accent-green-light;
+    color: darken($uptex-accent-green, 15%);
+
+    &--suspended {
+        background-color: $uptex-danger-light;
+        color: $uptex-danger;
+    }
+
+    // "Sin Docente Asignado" (Admin Global Course Catalog) — a soft warning,
+    // not an error: an unassigned course isn't broken, just incomplete.
+    &--warning {
+        background-color: rgba(#C8890A, 0.12); // Same amber tone _global_ui.scss's .alert-warning already uses.
+        color: #a1690a;
+    }
+
+    // "Oculto" (Admin Global Course Catalog visibility pill) — a merely-
+    // hidden course isn't an error, so it stays neutral gray rather than
+    // reusing --suspended's red/danger tone (that modifier is real account
+    // suspension elsewhere, components/admin_user_row.mustache).
+    &--hidden {
+        background-color: $uptex-bg-alt;
+        color: $uptex-text-muted;
+    }
+}
+
+// Course-catalog visibility pill (components/admin_course_row.mustache,
+// "Visible" state) — exact enterprise green from this round's design spec,
+// scoped to this one cell so the shared .uptex-status-pill default (accent
+// green, User Directory) is untouched elsewhere.
+.saec-admin-hub__course-cell .uptex-status-pill {
+    background-color: $uptex-primary-pale;
+    color: $uptex-primary;
+}
+
+// -- Compact primary action button ("Entrar al Curso →") — Admin Global
+// Course Catalog table rows only (components/admin_course_row.mustache's
+// usecompactactions branch). Same visual language as the Student
+// Dashboard's .saec-btn-enter (scss/saec/_student_dashboard.scss) scaled
+// down for a dense table row instead of a course card footer.
+.saec-btn-enter-sm {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: $uptex-radius-sm;
+    background-color: $uptex-primary;
+    color: $uptex-surface;
+    font-weight: 600;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    text-decoration: none;
+    transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
+
+    &:hover,
+    &:focus {
+        background-color: $uptex-primary-hover;
+        color: $uptex-surface;
+        text-decoration: none;
+        box-shadow: 0 4px 12px rgba($uptex-primary, 0.25);
+        transform: translateY(-1px);
+    }
+
+    i {
+        font-size: 0.7rem;
+    }
+}
+
+.saec-admin-hub__actions-cell {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+// -----------------------------------------------------------------------
+// Core's debug footer (purge-caches link, profiling link, reactive debug
+// panel — lib/outputrenderers.php::debug_footer_html(), only ever rendered
+// for admins in DEBUG_DEVELOPER mode) visually clashes with this theme's
+// polished admin surfaces. Scoped to exactly the 3 pages theme_saec injects
+// custom admin content into — never touched on native Moodle admin pages,
+// where that debug chrome stays exactly as useful as before.
+// -----------------------------------------------------------------------
+body.pagelayout-mydashboard,
+body.page-mycourses,
+body.page-theme-saec-pages-admin-hub {
+    .purgecaches,
+    .profilingfooter,
+    [id$="-reactive-debugpanel"] {
+        display: none;
+    }
+}
+
+// -- Site Administration Hub category card (4-per-row desktop, per this
+// project's Bootstrap grid rule) --
+.uptex-category-card {
+    margin-bottom: 1.5rem;
+
+    &__title {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: 1rem;
+        font-weight: 700;
+        color: $uptex-text-dark;
+        margin-bottom: 0.85rem;
+    }
+
+    &__icon-img {
+        width: 20px;
+        height: 20px;
+    }
+
+    &__links {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    &__link-item a {
+        display: block;
+        color: $uptex-text-muted;
+        font-weight: 500;
+        padding: 0.35rem 0;
+
+        &:hover {
+            color: $uptex-primary;
+        }
+    }
+}

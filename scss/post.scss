@@ -605,6 +605,15 @@ $saec-nav-hover-bg:   #f0fdf4; // Secondary-navigation inactive tab hover tint.
         flex: 1 1 auto;
     }
 
+    // Subtle separator between daily operational nav items and the
+    // governance/system-administration group toward the bottom (Admin
+    // sidebar only — see layout/drawers.php's Admin $navitems order).
+    &__divider {
+        height: 1px;
+        margin: 0.75rem 1rem;
+        background-color: $uptex-divider-color;
+    }
+
     &__footer {
         display: flex;
         flex-direction: column;
@@ -851,6 +860,12 @@ $saec-dashboard-content-maxwidth: 1600px;
 @import "saec/grader_controls";
 
 // ---------------------------------------------------------------------
+// ENTERPRISE GRADER REPORT GRID (/grade/report/grader/index.php) —
+// Sprint 10, the grading grid _grader_controls.scss deliberately skips.
+// ---------------------------------------------------------------------
+@import "saec/grader_report";
+
+// ---------------------------------------------------------------------
 // STUDENT "BOLETA DIGITAL" (/grade/report/user/index.php) — Sprint 6.
 // ---------------------------------------------------------------------
 @import "saec/boleta";
@@ -871,3 +886,39 @@ $saec-dashboard-content-maxwidth: 1600px;
 @import "saec/attendance_hub";
 @import "saec/attendance_manage";
 @import "saec/attendance_take";
+
+// ---------------------------------------------------------------------
+// GLOBAL UI MODERNIZATION SUITE — native Bootstrap/Moodle components not
+// already covered above (forms, tables, forum posts, quiz questions,
+// alerts, modals, nav-tabs/pills outside course context).
+// ---------------------------------------------------------------------
+@import "saec/global_ui";
+
+// ---------------------------------------------------------------------
+// CORE FORM & TABLE MODERNIZATION — Sprint 10 enterprise UI overhaul.
+// Native .mform pages (course settings, CSV upload, every activity
+// settings form) and .generaltable/.flexible admin/report tables.
+// ---------------------------------------------------------------------
+@import "saec/core_forms";
+@import "saec/core_tables";
+
+// ---------------------------------------------------------------------
+// ADMIN SAAS COMMAND CENTER (theme/saec/pages/admin_hub.php) — the
+// Administrator role's first custom page in theme_saec.
+// ---------------------------------------------------------------------
+@import "saec/admin_hub";
+
+// ---------------------------------------------------------------------
+// STUDENT TASKS HUB (theme/saec/pages/student_tasks.php) — "Mis Tareas".
+// ---------------------------------------------------------------------
+@import "saec/student_tasks";
+
+// ---------------------------------------------------------------------
+// PASSWORD RECOVERY INSTITUTIONAL CARD (theme/saec/pages/forgot_password.php).
+// ---------------------------------------------------------------------
+@import "saec/forgot_password";
+
+// ---------------------------------------------------------------------
+// STUDENT DASHBOARD (/my/) — Grid/List enrolled-courses view switcher.
+// ---------------------------------------------------------------------
+@import "saec/student_dashboard";

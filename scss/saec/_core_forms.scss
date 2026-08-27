@@ -1,0 +1,136 @@
+// -----------------------------------------------------------------------
+// CORE FORM & SETTINGS MODERNIZATION — native Moodle .mform pages (course
+// settings, CSV course upload, and every other admin/activity settings
+// form built on the same collapsible-fieldset markup). $uptex-* tokens
+// only. Verified live via Chrome (course/edit.php, admin/tool/uploadcourse)
+// against this exact DOM:
+//   fieldset.collapsible
+//     legend.sr-only                                (accessible name only)
+//     div.d-flex.align-items-center.mb-2             (visible header row)
+//       a.icons-collapse-expand[data-toggle=collapse] i.fa.fa-chevron-*
+//     div.fcontainer.collapseable.collapse.show      (body)
+// Zero core hacks: every selector below targets stable Bootstrap/Moodle
+// classes already in core markup, nothing here overrides PHP/JS behaviour.
+// -----------------------------------------------------------------------
+
+// -- Collapsible section → soft white card ------------------------------
+fieldset.collapsible {
+    background-color: $uptex-surface;
+    border: 1px solid $uptex-divider-color;
+    border-radius: $uptex-radius-lg;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.25rem;
+
+    // core already toggles .collapseable's own collapse/show classes via
+    // Bootstrap's collapse JS — this only makes the height animation feel
+    // smoother, it doesn't touch the show/hide logic itself.
+    .collapseable {
+        transition: height 0.2s ease-in-out;
+    }
+
+    .d-flex.align-items-center.mb-2 {
+        margin-bottom: 1rem !important;
+        padding-bottom: 0.85rem;
+        border-bottom: 1px solid $uptex-divider-color;
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: $uptex-text-dark;
+    }
+
+    .icons-collapse-expand {
+        color: $uptex-primary;
+        transition: transform 0.2s ease-in-out;
+
+        &:hover,
+        &:focus {
+            color: $uptex-primary-hover;
+        }
+
+        // Core rotates the chevron glyph itself between expanded/collapsed
+        // icons rather than one glyph + a CSS rotation — nothing to add
+        // here beyond the colour/hover above, kept as its own rule so a
+        // future rotation-based icon swap has an obvious place to land.
+    }
+}
+
+// -- Inputs, selects, textareas ------------------------------------------
+// Refines the radius/min-height custom.scss and _global_ui.scss already
+// set, with this round's exact enterprise spec (padding/border/focus-ring
+// values) — same selectors, later in the cascade (post.scss imports this
+// file last), so no !important needed.
+.form-control,
+.form-select,
+.custom-select {
+    border-radius: $uptex-radius-sm;
+    padding: 0.6rem 0.875rem;
+    border: 1.5px solid $uptex-divider-color;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+    &:focus {
+        outline: none;
+        border-color: $uptex-primary;
+        box-shadow: 0 0 0 3px rgba($uptex-primary, 0.15);
+    }
+}
+
+// -- Drag & drop filemanager dropzone ------------------------------------
+.filepicker-filelist {
+    .filepicker-container {
+        position: relative;
+        border: 2px dashed $uptex-divider-color;
+        border-radius: $uptex-radius-lg;
+        background-color: $uptex-bg-alt;
+        padding: 1.75rem 1.25rem;
+        text-align: center;
+        transition: border-color 0.15s ease-in-out, background-color 0.15s ease-in-out;
+    }
+
+    // Core toggles .dndupload-ready on the same container while a file is
+    // being dragged over it (dndupload.js) — real state, not decorative.
+    .dndupload-ready .filepicker-container {
+        border-color: $uptex-primary;
+        background-color: $uptex-primary-light;
+    }
+
+    .dndupload-message {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        color: $uptex-text-muted;
+        font-weight: 600;
+    }
+
+    .dndupload-arrow {
+        color: $uptex-primary;
+    }
+}
+
+// -- Tag / multi-select chips --------------------------------------------
+.form-autocomplete-selection {
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        background-color: $uptex-primary-pale !important;
+        color: $uptex-primary !important;
+        border-radius: $uptex-radius-pill;
+        padding: 0.35rem 0.75rem;
+        font-weight: 600;
+
+        // Core's own "×" remove control inside each chip (.icon-no-margin
+        // fa-times / .form-autocomplete-selection .close), restyled to
+        // match the soft-green chip rather than Bootstrap's plain black.
+        [class*="fa-times"],
+        .close {
+            color: $uptex-primary;
+            opacity: 0.7;
+            transition: opacity 0.15s ease-in-out;
+
+            &:hover,
+            &:focus {
+                opacity: 1;
+            }
+        }
+    }
+}

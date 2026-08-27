@@ -25,6 +25,7 @@ $string['nocoursesavailable'] = 'No hay cursos disponibles en este momento.';
 $string['labelcourse'] = 'CURSO';
 $string['labeldata'] = 'DATO';
 $string['placeholderinitial'] = 'SAEC';
+$string['courseimagerequired'] = 'La imagen del curso es obligatoria. Sube una imagen JPG, PNG o WEBP en "Archivos del resumen del curso" antes de guardar.';
 
 // Navbar.
 $string['loginbutton'] = 'Iniciar sesión';
@@ -43,6 +44,10 @@ $string['navcredentials'] = 'Insignias';
 $string['navanalytics'] = 'Mi Rendimiento';
 $string['navsettings'] = 'Configuración';
 $string['navsiteadmin'] = 'Administración del Sitio';
+$string['navadmincoursemanagement'] = 'Gestión de Cursos';
+$string['navadmincredentials'] = 'Insignias y Certificación';
+$string['navuserdirectory'] = 'Directorio de Usuarios';
+$string['navreports'] = 'Reportes y Auditoría';
 
 // Pie de página.
 $string['footertagline'] = 'Sistema de Acreditación y Educación Continua';
@@ -75,17 +80,19 @@ $string['accredit4desc'] = 'Micro-aprendizaje estructurado y modular.';
 // Página de inicio de sesión (extraído de login.mustache / core/loginform.mustache).
 $string['loginwelcometitle'] = 'Bienvenido';
 $string['loginwelcomesubtitle'] = 'Inicia sesión para gestionar tus logros académicos.';
-$string['ssogoogle'] = 'Continuar con Google';
-$string['ssoinstitutional'] = 'Portal Institucional (SSO)';
-$string['ssodivider'] = 'O usa tu correo';
 $string['usernameplaceholder'] = 'nombre@institucion.edu';
-$string['nosignupaccount'] = '¿No tienes una cuenta?';
 $string['loginherotitle'] = 'Accede a tus Insignias Acreditadas y Certificaciones Digitales';
 $string['loginherosubtitle'] = 'Tu portafolio profesional, validado por la tecnología de micro-credenciales de UPTex.';
 $string['loginfootercopyright'] = '© {$a} UPTex. Plataforma de Micro-credenciales Institucionales.';
 $string['legalprivacy'] = 'Privacidad';
 $string['legalterms'] = 'Términos';
 $string['legalaccessibility'] = 'Accesibilidad';
+
+// Recuperación de contraseña — tarjeta de asistencia institucional (pages/forgot_password.php).
+$string['forgotpasswordinstitutionaltitle'] = 'Recuperación de Contraseña';
+$string['forgotpasswordinstitutionalmessage1'] = 'Por políticas de seguridad institucional y control de acreditaciones, la recuperación o restablecimiento de contraseñas se realiza directamente a través del <strong>Administrador del Sistema / Departamento de Control Escolar (SAEC)</strong>.';
+$string['forgotpasswordinstitutionalmessage2'] = 'Por favor acude con el administrador o envía un ticket a la coordinación para solicitar tu nueva clave de acceso.';
+$string['backtologin'] = 'Volver al Inicio de Sesión';
 
 // Saludo del dashboard (drawers.mustache).
 $string['dashboardgreeting'] = '¡Hola, {$a}!';
@@ -274,6 +281,27 @@ $string['nextclassinprogress'] = 'Clase en curso: {$a}';
 $string['nextclassupcoming'] = 'Próxima clase:';
 $string['takeattendanceaction'] = 'Iniciar Pase de Lista';
 $string['gradingefficiencylabel'] = '{$a}% calificado';
+$string['viewstudentboleta'] = 'Ver boleta de alumno...';
+
+// Barra de acciones rápidas del docente (teacher_dashboard.mustache) + modales selector de curso.
+$string['quickactiongradesubmissions'] = 'Calificar Entregas';
+$string['quickactiontakeattendance'] = 'Control de Asistencia';
+$string['quickactionnewtask'] = '+ Nueva Tarea';
+$string['quickactionnewnotice'] = '+ Nuevo Aviso';
+$string['taskpickertitle'] = 'Selecciona el curso para crear la tarea';
+$string['noticepickertitle'] = 'Selecciona el curso para publicar aviso';
+$string['coursepickerempty'] = 'No tienes cursos disponibles para esta acción.';
+
+// Barra de acciones rápidas del alumno (student_dashboard.mustache).
+$string['quickactionmytasks'] = 'Mis Tareas';
+$string['quickactionmyboleta'] = 'Mi Boleta Digital';
+$string['quickactionmybadges'] = 'Mis Insignias';
+$string['quickactionmycalendar'] = 'Calendario';
+
+// Conmutador de vista Cuadrícula/Lista de cursos inscritos (student_dashboard.mustache).
+$string['courseviewswitcherlabel'] = 'Modo de visualización de cursos';
+$string['courseviewgrid'] = 'Vista de cuadrícula';
+$string['courseviewlist'] = 'Vista de lista';
 
 // Mis Cursos del Docente (/my/courses.php) — Sprint 2.
 $string['teachercoursessearchplaceholder'] = 'Buscar por materia...';
@@ -336,3 +364,133 @@ $string['attendancemanagepresent'] = 'Presentes';
 
 // Matriz Rápida de Asistencia (mod/attendance/take.php) — Sprint 9.
 $string['attendancemarkallpresent'] = 'Marcar todos como presentes';
+$string['attendancestatuspresentlabel'] = 'Presente';
+$string['attendancestatuslatelabel'] = 'Retardo';
+$string['attendancestatusexcusedlabel'] = 'Justificado';
+$string['attendancestatusabsentlabel'] = 'Falta';
+
+// Centro de Control del Administrador (theme/saec/pages/admin_hub.php).
+$string['adminhubtitle'] = 'Centro de Control';
+$string['adminhubgreeting'] = 'Bienvenido de nuevo, {$a}. Aquí tienes el resumen ejecutivo del sitio.';
+$string['kpiactivestudents'] = 'Estudiantes Activos';
+$string['kpienrolledteachers'] = 'Docentes Registrados';
+$string['kpiissuedbadges'] = 'Insignias Emitidas';
+$string['adminactioncreatecourse'] = '+ Crear Curso';
+$string['adminactionnewuser'] = '+ Nuevo Usuario';
+$string['adminactionbulkupload'] = 'Carga Masiva (CSV)';
+$string['adminactionbadges'] = 'Gestión de Insignias';
+$string['adminactionpurgecache'] = 'Purgar Caché';
+$string['adminpurgecachesuccess'] = 'Caché purgada correctamente';
+$string['adminpurgecacheerror'] = 'Error al purgar la caché';
+$string['adminsearchplaceholder'] = 'Buscar configuración, curso o usuario…';
+$string['adminsectioncourses'] = 'Cursos Activos';
+$string['adminsectionusers'] = 'Directorio de Usuarios';
+$string['adminsectionsiteadmin'] = 'Administración del Sitio';
+$string['admincoursesempty'] = 'No hay cursos activos.';
+$string['adminusersempty'] = 'No hay usuarios para mostrar.';
+$string['admincoursecolname'] = 'Curso';
+$string['admincoursecolcategory'] = 'Categoría';
+$string['admincoursecolstudents'] = 'Estudiantes';
+$string['admincoursecolactions'] = 'Acciones';
+$string['admincourseactionconfigure'] = 'Configurar Curso';
+$string['admincourseactionparticipants'] = 'Participantes';
+$string['admincourseactiongrades'] = 'Calificador';
+$string['admincourseactionattendance'] = 'Control de Asistencia';
+$string['adminviewallcourses'] = 'Ver todos los cursos';
+$string['adminusercolname'] = 'Usuario';
+$string['adminusercolrole'] = 'Rol';
+$string['adminusercolstatus'] = 'Estado';
+$string['adminuseractionedit'] = 'Editar';
+$string['adminuseractionroles'] = 'Roles';
+$string['adminuserstatusactive'] = 'Activo';
+$string['adminuserstatussuspended'] = 'Suspendido';
+$string['adminrolenone'] = 'Sin rol';
+$string['adminroleteacher'] = 'Docente';
+$string['adminrolestudent'] = 'Estudiante';
+$string['adminviewallusers'] = 'Ver todos los usuarios';
+$string['adminfiltercourses'] = 'Filtrar cursos…';
+$string['adminfilterusers'] = 'Filtrar usuarios…';
+$string['admincategoryappearance'] = 'Apariencia y Temas';
+$string['admincategoryusers'] = 'Usuarios y Cuentas';
+$string['admincategorycourses'] = 'Cursos y Categorías';
+$string['admincategorygrades'] = 'Calificaciones e Insignias';
+$string['admincategoryplugins'] = 'Plugins y Extensiones';
+$string['admincategoryserver'] = 'Servidor, Seguridad y Desarrollo';
+$string['adminlinkthemeselector'] = 'Selector de Temas';
+$string['adminlinksaecsettings'] = 'Configuración Theme SAEC';
+$string['adminlinkadditionalhtml'] = 'HTML Adicional';
+$string['adminlinklogos'] = 'Logotipos y Marca';
+$string['adminlinknavigation'] = 'Navegación del Sitio';
+$string['adminlinkuserlist'] = 'Lista de Usuarios';
+$string['adminlinkroles'] = 'Permisos y Definición de Roles';
+$string['adminlinkenrolmethods'] = 'Métodos de Matriculación';
+$string['adminlinkcoursemanagement'] = 'Administrar Cursos y Categorías';
+$string['adminlinkbackup'] = 'Copias de Seguridad y Restauración';
+$string['adminlinkgradesettings'] = 'Ajustes Generales de Calificaciones';
+$string['adminlinkbadgesettings'] = 'Configuración de Insignias / Open Badges';
+$string['adminlinkcompetencies'] = 'Competencias y Marcos';
+$string['adminlinkpluginsoverview'] = 'Vista General de Plugins';
+$string['adminlinkinstallplugins'] = 'Instalar Plugins';
+$string['adminlinkactivitymodules'] = 'Módulos de Actividad';
+$string['adminlinkenvironment'] = 'Entorno y Estado del Sistema';
+$string['adminlinkscheduledtasks'] = 'Tareas Programadas / Cron';
+$string['adminlinksecurity'] = 'Seguridad y Políticas';
+$string['adminlinkdebugging'] = 'Modo Depuración';
+$string['adminlinklogs'] = 'Registros del Servidor';
+$string['adminlinkpurgecaches'] = 'Purgar Todas las Cachés';
+$string['adminhubnomatch'] = 'Ningún resultado coincide con tu búsqueda.';
+
+// Enriquecimiento del Panel del Alumno — KPI de Tareas, docente/boleta en
+// tarjeta de curso, atajo de entrega en línea de tiempo.
+$string['kpitasks'] = 'Tareas';
+$string['kpitasksvalue'] = '{$a->completed}/{$a->total}';
+$string['kpitaskscompletedlabel'] = '{$a}% completado';
+$string['entercoursebutton'] = 'Entrar al Curso';
+$string['viewboletabutton'] = 'Ver Boleta';
+$string['submitassignmentbutton'] = 'Entregar Tarea';
+
+// Catálogo Global de Cursos del Administrador (/my/courses.php).
+$string['admincoursecatalogheading'] = 'Catálogo de Cursos';
+$string['admincoursecatalogsubheading'] = 'Todos los cursos del sistema, para auditoría y acceso rápido.';
+$string['adminfiltercatalog'] = 'Buscar en el catálogo…';
+$string['adminvisibilityvisible'] = 'Visible';
+$string['adminvisibilityhidden'] = 'Oculto';
+
+// Enriquecimiento del Catálogo de Cursos / Centro de Operaciones Académicas.
+$string['admincoursecatalogcreatebutton'] = '+ Crear Nuevo Curso';
+$string['admincoursecatalogcsvbutton'] = 'Subida Masiva (CSV)';
+$string['admincoursecatalogcategoriesbutton'] = 'Gestionar Categorías';
+$string['adminfilterall'] = 'Todos';
+$string['adminfiltervisible'] = 'Visibles';
+$string['adminfilterhidden'] = 'Ocultos / En Edición';
+$string['admincoursecolteacher'] = 'Docente Titular';
+$string['adminnoteacherassigned'] = 'Sin Docente Asignado';
+$string['admincourseactionmore'] = 'Más ⋯';
+$string['admincourseactionduplicate'] = 'Duplicar';
+$string['admincourseactionbackup'] = 'Respaldar (.mbz)';
+
+// Centro de Tareas del Alumno ("Mis Tareas", theme/saec/pages/student_tasks.php).
+$string['navstudenttasks'] = 'Mis Tareas';
+$string['studenttaskspagetitle'] = 'Mis Tareas';
+$string['studenttaskssubheading'] = 'Todas tus tareas, de todos tus cursos, en un solo lugar.';
+$string['studenttaskskpipending'] = 'Pendientes';
+$string['studenttaskskpisubmitted'] = 'En Revisión';
+$string['studenttaskskpigraded'] = 'Calificadas';
+$string['studenttasksfilterall'] = 'Todas';
+$string['studenttasksfilterpending'] = 'Pendientes / Por Entregar';
+$string['studenttasksfiltersubmitted'] = 'Entregadas';
+$string['studenttasksfiltergraded'] = 'Calificadas';
+$string['studenttasksstatuspendiente'] = 'Pendiente';
+$string['studenttasksstatusentregada'] = 'Entregada';
+$string['studenttasksstatuscalificada'] = 'Calificada';
+$string['studenttasksstatuscerrada'] = 'Cerrada sin entrega';
+$string['studenttasksurgencyurgente'] = 'Urgente';
+$string['studenttasksurgencyproximo'] = 'Próximo';
+$string['studenttasksurgencycontiempo'] = 'Con Tiempo';
+$string['studenttasksnoduedate'] = 'Sin fecha límite';
+$string['studenttasksgradevalue'] = '{$a->grade}/{$a->max}';
+$string['studenttasksactionsubmit'] = 'Entregar Tarea';
+$string['studenttasksactionview'] = 'Ver Entrega';
+$string['studenttasksactionfeedback'] = 'Ver Retroalimentación';
+$string['studenttasksempty'] = 'Aún no tienes tareas asignadas.';
+$string['studenttasksnomatch'] = 'Ninguna tarea coincide con este filtro.';

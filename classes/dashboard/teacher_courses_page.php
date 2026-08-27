@@ -129,6 +129,8 @@ class teacher_courses_page {
             $course = get_course($courseid);
             $context = context_course::instance($courseid);
 
+            $courseimage = \theme_saec\course_helper::get_course_image_url($course);
+
             $cards[] = [
                 'id' => (int) $course->id,
                 'fullname' => format_string($course->fullname, true, ['context' => $context]),
@@ -136,6 +138,8 @@ class teacher_courses_page {
                 'categoryname' => self::resolve_category_name((int) $course->category, $categorycache),
                 'period' => userdate($course->startdate, '%Y'),
                 'studentcount' => $studentcounts[$courseid] ?? 0,
+                'hascourseimage' => !empty($courseimage),
+                'courseimage' => $courseimage,
                 'isvisible' => (bool) $course->visible,
                 'canchangevisibility' => has_capability('moodle/course:visibility', $context, $userid),
                 'courseurl' => (new moodle_url('/course/view.php', ['id' => $courseid]))->out(false),

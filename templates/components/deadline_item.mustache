@@ -10,6 +10,11 @@
     caller (student_dashboard.mustache) is responsible for its own
     hasdeadlines empty-state fallback.
 
+    hassubmiturl/submiturl are optional (default absent) — set only by
+    student_dashboard for 'assign' due dates with a resolvable course
+    module; teacher_dashboard's reuse of this same partial never sets them,
+    so its deadline list renders exactly as before.
+
     Example context (json):
     {
         "title": "Proyecto Final: Fase 1",
@@ -19,24 +24,31 @@
         "time": "11:59 PM",
         "isurgent": true,
         "hasclosingnote": true,
-        "closingnote": "Cierra en 4 horas"
+        "closingnote": "Cierra en 4 horas",
+        "hassubmiturl": true,
+        "submiturl": "https://example.org/mod/assign/view.php?id=16"
     }
 }}
 <div class="uptex-deadline-item {{#isurgent}}uptex-deadline-item--urgent{{/isurgent}}">
-    <div class="uptex-deadline-item__daybox">
-        <span class="uptex-deadline-item__daytag">{{ daytag }}</span>
-        <span class="uptex-deadline-item__daynumber">{{ daynumber }}</span>
-    </div>
-    <div class="uptex-deadline-item__body">
-        <h3 class="uptex-deadline-item__title">{{ title }}</h3>
-        <p class="uptex-deadline-item__course">{{ coursename }}</p>
-        <div class="uptex-deadline-item__time">
-            {{#hasclosingnote}}
-                <span class="uptex-deadline-item__urgent-note">{{ closingnote }}</span>
-            {{/hasclosingnote}}
-            {{^hasclosingnote}}
-                <span>{{ time }}</span>
-            {{/hasclosingnote}}
+    <div class="uptex-deadline-item__row">
+        <div class="uptex-deadline-item__daybox">
+            <span class="uptex-deadline-item__daytag">{{ daytag }}</span>
+            <span class="uptex-deadline-item__daynumber">{{ daynumber }}</span>
+        </div>
+        <div class="uptex-deadline-item__body">
+            <h3 class="uptex-deadline-item__title">{{ title }}</h3>
+            <p class="uptex-deadline-item__course">{{ coursename }}</p>
+            <div class="uptex-deadline-item__time">
+                {{#hasclosingnote}}
+                    <span class="uptex-deadline-item__urgent-note">{{ closingnote }}</span>
+                {{/hasclosingnote}}
+                {{^hasclosingnote}}
+                    <span>{{ time }}</span>
+                {{/hasclosingnote}}
+            </div>
         </div>
     </div>
+    {{#hassubmiturl}}
+        <a href="{{{ submiturl }}}" class="uptex-deadline-item__submit-btn">{{#str}} submitassignmentbutton, theme_saec {{/str}}</a>
+    {{/hassubmiturl}}
 </div>

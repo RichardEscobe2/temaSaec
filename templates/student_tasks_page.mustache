@@ -1,0 +1,110 @@
+{{!
+    @template theme_saec/student_tasks_page
+
+    Student Tasks Hub ("Mis Tareas") — a standalone theme_saec page
+    (theme/saec/pages/student_tasks.php), student-only. Context from
+    \theme_saec\dashboard\student_tasks_page::get_context().
+
+    Instant client-side status filter (same plain-JS-over-prerendered-cards
+    approach as grader_hub_page.mustache): the 4 pills toggle .uptex-task-card
+    elements by their data-status attribute, no AJAX dependency.
+
+    Example context (json):
+    {
+        "kpipending": 3, "kpisubmitted": 1, "kpigraded": 2,
+        "hastasks": true,
+        "tasks": [{"cmid": 27, "courseid": 5, "coursename": "Desarrollo de Sistemas Web II",
+            "courseshortname": "DSW-2026", "title": "Tarea: Diseño de API REST",
+            "hasduedate": true, "duedatelabel": "15/09/26, 23:59",
+            "status": "pendiente", "statuslabel": "Pendiente",
+            "urgency": "urgente", "hasurgencylabel": true, "urgencylabel": "Urgente",
+            "ispending": true, "issubmitted": false, "isgraded": false,
+            "viewurl": "https://example.org/mod/assign/view.php?id=27",
+            "hasgradelabel": false, "gradelabel": null}]
+    }
+}}
+<div class="saec-student-tasks" id="saec-student-tasks-{{uniqid}}">
+    <header class="saec-student-tasks__hero">
+        <h1 class="saec-student-tasks__title">{{#str}} studenttaskspagetitle, theme_saec {{/str}}</h1>
+        <p class="saec-student-tasks__subtitle">{{#str}} studenttaskssubheading, theme_saec {{/str}}</p>
+    </header>
+
+    <div class="saec-student-tasks__kpis">
+        <div class="uptex-task-chip">
+            <span class="uptex-task-chip__value">{{ kpipending }}</span>
+            <span class="uptex-task-chip__label">{{#str}} studenttaskskpipending, theme_saec {{/str}}</span>
+        </div>
+        <div class="uptex-task-chip">
+            <span class="uptex-task-chip__value">{{ kpisubmitted }}</span>
+            <span class="uptex-task-chip__label">{{#str}} studenttaskskpisubmitted, theme_saec {{/str}}</span>
+        </div>
+        <div class="uptex-task-chip">
+            <span class="uptex-task-chip__value">{{ kpigraded }}</span>
+            <span class="uptex-task-chip__label">{{#str}} studenttaskskpigraded, theme_saec {{/str}}</span>
+        </div>
+    </div>
+
+    {{#hastasks}}
+        <div class="saec-student-tasks__filters" data-saec-tasks-filters>
+            <button type="button" class="saec-student-tasks__filter saec-student-tasks__filter--active" data-task-filter="all">
+                {{#str}} studenttasksfilterall, theme_saec {{/str}}
+            </button>
+            <button type="button" class="saec-student-tasks__filter" data-task-filter="pendiente">
+                {{#str}} studenttasksfilterpending, theme_saec {{/str}}
+            </button>
+            <button type="button" class="saec-student-tasks__filter" data-task-filter="entregada">
+                {{#str}} studenttasksfiltersubmitted, theme_saec {{/str}}
+            </button>
+            <button type="button" class="saec-student-tasks__filter" data-task-filter="calificada">
+                {{#str}} studenttasksfiltergraded, theme_saec {{/str}}
+            </button>
+        </div>
+
+        <div class="saec-student-tasks__grid" data-saec-tasks-grid>
+            {{#tasks}}
+                {{> theme_saec/components/task_card }}
+            {{/tasks}}
+        </div>
+        <p class="saec-student-tasks__empty-filtered d-none" data-saec-tasks-empty-filtered>
+            {{#str}} studenttasksnomatch, theme_saec {{/str}}
+        </p>
+    {{/hastasks}}
+    {{^hastasks}}
+        <div class="saec-student-tasks__empty">
+            <i class="icon fa fa-check-circle-o" aria-hidden="true"></i>
+            <p>{{#str}} studenttasksempty, theme_saec {{/str}}</p>
+        </div>
+    {{/hastasks}}
+</div>
+{{#js}}
+require(['jquery'], function($) {
+    var root = $('#saec-student-tasks-{{uniqid}}');
+    var filters = root.find('[data-task-filter]');
+    var cards = root.find('.uptex-task-card');
+
+    filters.on('click', function() {
+        filters.removeClass('saec-student-tasks__filter--active');
+        $(this).addClass('saec-student-tasks__filter--active');
+        var status = $(this).data('task-filter');
+        var visiblecount = 0;
+
+        cards.each(function() {
+            var card = $(this);
+            var cardstatus = card.data('status');
+            // "Entregadas" groups both real submissions and closed/never-
+            // submitted tasks — per this hub's spec, "cerrada" is its own
+            // distinct status/badge, but shares the "Entregadas" tab rather
+            // than getting a 5th pill of its own.
+            var show = (status === 'all')
+                || (cardstatus === status)
+                || (status === 'entregada' && cardstatus === 'cerrada');
+            card.toggle(show);
+            if (show) {
+                visiblecount++;
+            }
+        });
+
+        root.find('[data-saec-tasks-empty-filtered]').toggleClass('d-none', visiblecount !== 0);
+    });
+});
+{{/js}}

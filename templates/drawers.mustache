@@ -98,6 +98,7 @@
                         prematuro y fuga de texto literal al DOM. }}
                     {{^showstudentdashboard}}
                     {{^showteacherdashboard}}
+                    {{^showadmindashboard}}
                     {{#isDashboard}}
                     <div class="uptex-card mb-4">
                         <div class="p-4">
@@ -122,6 +123,7 @@
                         </div>
                     </div>
                     {{/isDashboard}}
+                    {{/showadmindashboard}}
                     {{/showteacherdashboard}}
                     {{/showstudentdashboard}}
                     {{! --- FIN: BANNER DE BIENVENIDA UPTEX/SAEC --- }}
@@ -146,12 +148,18 @@
                             {{#showteacherdashboard}}
                                 {{{ teacherdashboardhtml }}}
                             {{/showteacherdashboard}}
+                            {{#showadmindashboard}}
+                                {{{ admindashboardhtml }}}
+                            {{/showadmindashboard}}
                             {{#showcoursespage}}
                                 {{{ coursespagehtml }}}
                             {{/showcoursespage}}
                             {{#showteachercoursespage}}
                                 {{{ teachercoursespagehtml }}}
                             {{/showteachercoursespage}}
+                            {{#showadmincoursespage}}
+                                {{{ admincoursespagehtml }}}
+                            {{/showadmincoursespage}}
                             {{#showbadgespage}}
                                 {{{ badgespagehtml }}}
                             {{/showbadgespage}}
