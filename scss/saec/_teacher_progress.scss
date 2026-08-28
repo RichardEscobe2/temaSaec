@@ -206,43 +206,6 @@ body.page-teacher-progress {
     }
 }
 
-// -- Responsividad: Mobile (<768px) --
-@include media-breakpoint-down(md) {
-    .saec-teacher-progress-page {
-        &__header {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        &__course-selector {
-            max-width: 100%;
-        }
-    }
-
-    .saec-progress-atrisk__item {
-        width: 100%;
-    }
-
-    // The 4 KPI cards use Bootstrap's col-lg-3/col-md-6/col-12 — a single
-    // stacked column below md (768px), the same as everywhere col-12 is
-    // used. Below md specifically for THIS grid we want a 2x2 layout
-    // instead of stacking, so this overrides just the col-12 breakpoint's
-    // own flex-basis/max-width (Bootstrap's own .col-6 values) rather than
-    // introducing a parallel CSS Grid that would fight the existing .row's
-    // negative-margin gutters.
-    .saec-teacher-progress-page__kpi-grid > [class*="col-"] {
-        flex: 0 0 50%;
-        max-width: 50%;
-    }
-}
-
-// Below ~380px even a half-width KPI card is too narrow for its own
-// label/value to stay on one line comfortably — fall back to a single
-// column exactly like the pre-existing (unmodified for >= 768px) mobile
-// default.
-@media (max-width: 379.98px) {
-    .saec-teacher-progress-page__kpi-grid > [class*="col-"] {
-        flex: 0 0 100%;
-        max-width: 100%;
-    }
-}
+// Mobile layout (<768px, and the <380px KPI 1-column fallback) for
+// .saec-teacher-progress-page — moved to scss/saec/_responsive.scss
+// (consolidated mobile module, imported last in post.scss).

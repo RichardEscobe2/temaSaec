@@ -1,0 +1,262 @@
+// theme_saec — scss/saec/_responsive.scss
+//
+// Consolidated mobile/tablet module — every breakpoint-scoped rule in this
+// theme lives here now, instead of scattered one-off @media blocks at the
+// bottom of each component's own file. Imported LAST in post.scss (after
+// every other saec/* partial and after custom.scss/Boost's own compiled
+// SCSS), so plain source order alone is enough for these rules to win the
+// cascade against anything upstream with equal selector specificity —
+// no !important anywhere in this file.
+//
+// Breakpoint reference (Bootstrap 4's own breakpoint-max(), verified
+// against the bundled mixin source rather than assumed from the name):
+//   media-breakpoint-down(xs) → max-width: 575.98px  ("<576px")
+//   media-breakpoint-down(sm) → max-width: 767.98px  ("<768px")
+//   media-breakpoint-down(md) → max-width: 991.98px  ("<992px")
+// "down(sm)" does NOT mean "<576px" despite the name resemblance — it
+// resolves to the NEXT breakpoint's min minus 0.02, i.e. "sm and
+// everything below it" = under md. Every rule below names its real
+// compiled threshold in its own comment so this file stays self-auditing.
+//
+// This theme's own components stop needing tablet/desktop-specific
+// overrides above 991.98px — >= 992px is this project's own "desktop,
+// certified, do not touch" line, so nothing in this file ever targets
+// min-width: 992px or above.
+// -----------------------------------------------------------------------
+
+// =========================================================================
+// 1. NAVBAR & POPOVERS (Notificaciones / Mensajes) — <576px
+// =========================================================================
+//
+// Root cause (verified, not assumed): core Boost's own popover-region.scss
+// already ships two mobile overrides of its own —
+//   @media (max-width: 767px)  { .popover-region-container { right: -70px; } }
+//   @media (max-width: 480px)  { .popover-region-container { position: fixed; top: 46px; left: 0; right: 0; ... } }
+// — neither is calibrated to THIS theme's navbar. The 767px rule keeps
+// Boost's fixed 380px width, which overflows a phone-width viewport
+// regardless of the -70px nudge; the 480px rule's top: 46px assumes
+// Boost's own (shorter) stock navbar, not .saec-navbar's real rendered
+// height (64px content row + 2×8px Bootstrap $navbar-padding-y + 1px
+// bottom border = 81px) — leaving a visible gap/overlap under our actual
+// navbar. Checked and ruled out as a contributing cause: #page-wrapper and
+// .saec-navbar carry no overflow: hidden/clip anywhere in this theme's
+// SCSS (the only 3 overflow: hidden rules in post.scss belong to the
+// carousel image stage and two unrelated card/avatar containers, verified
+// by grep) — this was a positioning-geometry mismatch, not a clipping
+// ancestor.
+//
+// Fix: one self-contained rule scoped to .saec-navbar specifically. Its
+// selector (.saec-navbar .popover-region .popover-region-container, 3
+// classes) already carries more specificity than Boost's own 2-class
+// ".navbar .popover-region-container", so it wins on specificity alone —
+// this file's import position (last) makes that doubly certain without
+// having to rely on it.
+@include media-breakpoint-down(xs) {
+    // <576px.
+    .saec-navbar .popover-region .popover-region-container {
+        position: fixed;
+        top: 81px; // .saec-navbar's real rendered height — see rationale above.
+        left: 12px;
+        right: 12px;
+        width: auto;
+        max-width: calc(100vw - 24px);
+        height: auto;
+        max-height: calc(100vh - 93px);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        z-index: 1050;
+    }
+
+    .saec-navbar .popover-region-header-container {
+        padding: 0.85rem 1rem;
+        min-height: 44px;
+        box-sizing: border-box;
+    }
+
+    .saec-navbar .content-item-container {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    // The "Ver todo"/"View all" footer link is the popover's own last tap
+    // target — same 44px comfortable-touch-height floor as every other
+    // interactive row in this fix.
+    .saec-navbar .popover-region .see-all-link {
+        min-height: 44px;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    // Compact horizontal rhythm for the navbar row itself at true phone
+    // widths (brand, drawer toggle, language menu, notification bell, chat
+    // icon, user avatar all share one row here).
+    .saec-navbar__row {
+        padding: 8px 12px;
+    }
+
+    // Keeps that same icon set on a single row instead of wrapping onto a
+    // second line — flex containers already default to nowrap, so this is
+    // mostly defensive insurance that survives future icons being added to
+    // this row without silently regressing.
+    .saec-navbar__row,
+    .saec-navbar__actions {
+        flex-wrap: nowrap;
+    }
+}
+
+// =========================================================================
+// 2. DASHBOARD HERO BANNER (Alumno / Docente / Admin) — <768px
+// =========================================================================
+@include media-breakpoint-down(sm) {
+    // <768px.
+    .saec-hero-card {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+        padding: 1.25rem;
+    }
+
+    .saec-hero-actionbar {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    // Full-width, stacked pill + CTA instead of the desktop's inline
+    // side-by-side pair — easier to scan and tap with a thumb than two
+    // narrow items sharing one row.
+    .saec-hero-pill {
+        width: 100%;
+        justify-content: center;
+        box-sizing: border-box;
+    }
+
+    .saec-hero-action-btn.btn-saec-primary {
+        width: 100%;
+        text-align: center;
+        // 44px is the standard minimum comfortable touch-target height
+        // (Apple HIG / Material Design both use it); box-sizing so the
+        // existing padding doesn't push the real height past this floor.
+        min-height: 44px;
+        box-sizing: border-box;
+    }
+}
+
+// The hero's title uses fluid clamp() sizing at the BASE (unconditional)
+// level in scss/saec/_hero.scss, not here — at any desktop-width viewport
+// its vw component already exceeds the clamp() ceiling, so it resolves to
+// the exact same 1.5rem as before there. Nothing to duplicate/override in
+// this file.
+
+// =========================================================================
+// 3. KPI METRIC CARDS — <768px, with a <380px 1-column fallback
+// =========================================================================
+//
+// Cursos Activos (Admin), Reportes y Auditoría (Admin), Estudiantes y
+// Progreso (Docente) all lay their 4 KPI cards out with Bootstrap's own
+// col-lg-3/col-md-6/col-12 grid — which already gives 2-per-row starting
+// exactly at 768px (col-md-6) and 4-per-row at 992px (col-lg-3), but
+// stacks to a single column below 768px (col-12). This overrides just
+// that col-12 breakpoint's own flex-basis/max-width (the same values
+// Bootstrap's own .col-6 already uses) to keep the 2x2 layout going all
+// the way down to 380px, instead of introducing a parallel CSS Grid that
+// would fight the existing .row's negative-margin gutters. Below 380px a
+// half-width card is too narrow for its own label/value to stay on one
+// line, so that range falls back to the original single column.
+@include media-breakpoint-down(md) {
+    // <992px — Bootstrap's own col-md-6 already provides identical 50%
+    // sizing from 768px up, so this rule is only ever load-bearing in the
+    // 0–767px range; between 768–991px it's redundant with col-md-6 (same
+    // computed values, no visual conflict) rather than a second competing
+    // breakpoint.
+    .saec-admin-hub__kpi-grid > [class*="col-"],
+    .saec-admin-reports-page__kpi-grid > [class*="col-"],
+    .saec-teacher-progress-page__kpi-grid > [class*="col-"] {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}
+
+@media (max-width: 379.98px) {
+    .saec-admin-hub__kpi-grid > [class*="col-"],
+    .saec-admin-reports-page__kpi-grid > [class*="col-"],
+    .saec-teacher-progress-page__kpi-grid > [class*="col-"] {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    // Tighter, more thumb-appropriate gap once quick-action pills are
+    // this close to the screen edges — the desktop/tablet 0.75rem gap
+    // (scss/saec/_admin_hub.scss) stays untouched above this breakpoint.
+    .saec-admin-hub__quickactions {
+        gap: 0.5rem;
+    }
+}
+
+// Section-header/course-selector/at-risk-item stacking for the two admin/
+// teacher analytics pages — <768px, same range as the KPI grid above.
+@include media-breakpoint-down(sm) {
+    .saec-admin-reports-page__header,
+    .saec-teacher-progress-page__header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .saec-teacher-progress-page__course-selector {
+        max-width: 100%;
+    }
+
+    .saec-progress-atrisk__item {
+        width: 100%;
+    }
+
+    .saec-activity-trend {
+        height: 140px;
+        gap: 0.5rem;
+    }
+}
+
+// =========================================================================
+// 4. DATA TABLES (Cursos Activos, Estudiantes y Progreso, Bitácora de
+//    Auditoría, and every other .uptex-table-container/.generaltable/
+//    .flexible table) — <768px
+// =========================================================================
+//
+// Horizontal touch scrolling itself needs no rule here: Bootstrap's own
+// .table-responsive already ships overflow-x: auto AND
+// -webkit-overflow-scrolling: touch natively (verified in the bundled
+// bootstrap/_tables.scss), and every wrapped table in this theme already
+// sits inside one. The "⋮" row-actions dropdown
+// (scss/saec/_admin_hub.scss's .saec-admin-hub__row-dropdown-menu) already
+// escapes both that scroll container and .uptex-table-container's own
+// rounded-corner overflow: hidden via position: fixed with JS-computed
+// viewport coordinates — also unaffected by viewport width, already
+// mobile-safe, nothing to add here. What was genuinely missing was denser
+// cell padding to fit more real data before the horizontal scroll kicks
+// in.
+@include media-breakpoint-down(sm) {
+    // <768px.
+    .uptex-table-container .table td,
+    .uptex-table-container .table th,
+    .generaltable td,
+    .generaltable th,
+    .flexible td,
+    .flexible th {
+        padding: 0.5rem 0.75rem;
+    }
+}
+
+// =========================================================================
+// 5. NAVIGATION DRAWER (Mobile Sidebar)
+// =========================================================================
+//
+// No rule needed here: theme_boost/drawer (core AMD module, required via
+// the {{#js}} block at the bottom of templates/drawers.mustache) already
+// implements the slide-in transition, dark backdrop overlay, and close-on
+// -outside-tap/route-change behavior natively for the drawer markup this
+// theme reuses unmodified (theme_boost/drawer.mustache). That JS only
+// started reliably reaching the browser once this theme's own
+// standard_end_of_body_html duplication bug was fixed in an earlier pass
+// — the drawer's mobile behavior was never a CSS gap.

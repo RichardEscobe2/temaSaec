@@ -533,59 +533,6 @@ input[type="radio"] {
     }
 }
 
-// -- Mobile flyout fix (<576px) — core Boost's own popover-region.scss
-// already has two mobile overrides of its own (@media max-width: 767px
-// nudges .popover-region-container by right:-70px; @media max-width: 480px
-// turns it into a full-bleed position:fixed panel) but neither is
-// calibrated to THIS theme's navbar: the 767px rule still uses a fixed
-// 380px width that overflows a narrow phone, and the 480px rule's
-// top: 46px assumes Boost's own (shorter) stock navbar height, not
-// .saec-navbar's real one (64px content row + 2×8px Bootstrap
-// $navbar-padding-y + 1px bottom border = 81px) — leaving a visible gap
-// or overlap under our actual navbar. This replaces both with one
-// self-contained rule, scoped to .saec-navbar specifically (3 classes of
-// specificity beats core's own 2-class ".navbar .popover-region-container"
-// regardless of stylesheet order, so this always wins).
-//
-// Deliberately media-breakpoint-down(xs), not (sm): Bootstrap's own
-// breakpoint-max() resolves "down(sm)" to the NEXT breakpoint's min minus
-// 0.02 (576px → 767.98px, i.e. "sm and below" = everything under md) —
-// down(xs) is the one that actually compiles to max-width: 575.98px, the
-// <576px this fix is scoped to. A tablet-width viewport already has
-// plenty of room for the existing 380px popover; only true phone widths
-// need the full-bleed treatment. --
-@include media-breakpoint-down(xs) {
-    .saec-navbar .popover-region .popover-region-container {
-        position: fixed;
-        top: 81px; // .saec-navbar's real rendered height — see comment above.
-        left: 12px;
-        right: 12px;
-        width: auto;
-        max-width: calc(100vw - 24px);
-        height: auto;
-        max-height: calc(100vh - 93px);
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-        z-index: 1050;
-    }
-
-    .saec-navbar .popover-region-header-container {
-        padding: 0.85rem 1rem;
-    }
-
-    .saec-navbar .content-item-container {
-        padding: 0.75rem 1rem;
-        font-size: 0.9rem;
-    }
-
-    // Keeps brand/drawer-toggle/language menu/notification/message/user-menu
-    // icons on a single row instead of wrapping onto a second line — the
-    // icon set here is already compact enough that this is mostly
-    // defensive insurance (flex containers default to nowrap), but an
-    // explicit rule survives future icons being added to this row without
-    // silently regressing.
-    .saec-navbar__row,
-    .saec-navbar__actions {
-        flex-wrap: nowrap;
-    }
-}
+// Mobile flyout fix (<576px) for .popover-region-container — moved to
+// scss/saec/_responsive.scss (consolidated mobile module, imported last in
+// post.scss) along with every other breakpoint-scoped rule in this theme.

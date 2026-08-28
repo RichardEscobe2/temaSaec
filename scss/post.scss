@@ -1076,3 +1076,13 @@ $saec-dashboard-content-maxwidth: 1600px;
 // platform-wide audit dashboard.
 // ---------------------------------------------------------------------
 @import "saec/admin_reports";
+
+// ---------------------------------------------------------------------
+// CONSOLIDATED MOBILE/TABLET MODULE — every breakpoint-scoped rule in this
+// theme lives in this one file (scss/saec/_responsive.scss). Imported
+// LAST, after every other saec/* partial above and after custom.scss, so
+// plain source order backs up these rules' own selector specificity
+// against anything upstream (including core Boost's own popover-region.scss
+// mobile overrides) — no !important anywhere in it.
+// ---------------------------------------------------------------------
+@import "saec/responsive";
