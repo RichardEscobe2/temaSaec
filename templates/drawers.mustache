@@ -261,8 +261,17 @@
     {{{ output.standard_after_main_region_html }}}
 </div>
 
+{{! theme_boost/footer (included just above) already calls
+    output.standard_end_of_body_html itself — adding a second call here
+    would duplicate that placeholder token, and core_renderer::footer()'s
+    plain str_replace() fills EVERY occurrence with the exact same
+    get_end_code() payload, loading require.min.js/RequireJS's bootstrap
+    twice. The second load stomps on the first instance's in-flight AMD
+    resolution and throws "require is not a function", silently killing
+    every pending require() call including theme_boost/loader's own — this
+    is a confirmed real bug (verified in a real browser), not a hypothetical
+    one, so do not re-add this call here. }}
 {{{ messagedrawerhtml }}}
-{{{ output.standard_end_of_body_html }}}
 </body>
 </html>
 {{#js}}

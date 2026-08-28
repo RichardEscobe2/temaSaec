@@ -13,10 +13,13 @@
     every AMD module queued via js_call_amd() AND every template's own
     inline-script block (Mustache's own js-helper queues those through the
     exact same requirements-manager token, core\output\mustache_javascript_helper).
-    Omitting this hook doesn't just skip an optional footer snippet, it
-    silently drops literally all of the page's JavaScript — this file used
-    to omit it (confirmed against footer()'s source), which was corrected
-    for exactly that reason.
+    theme_saec/footer (included below) already calls this hook itself
+    (templates/footer.mustache) — do NOT add a second call anywhere in this
+    file. A duplicate token here once caused core_renderer::footer()'s
+    str_replace() to fill BOTH occurrences with the same payload, loading
+    require.min.js twice and breaking every require() call on the page
+    (confirmed in a real browser — the guest language-menu dropdown
+    silently stopped working, "require is not a function").
 
     output.main_content is produced by theme_saec_core_course_renderer
     (theme/saec/renderers.php), which overrides
@@ -204,7 +207,16 @@
     {{{ output.standard_after_main_region_html }}}
 </div>
 
-{{{ output.standard_end_of_body_html }}}
+{{! theme_saec/footer (included just above) already calls
+    output.standard_end_of_body_html itself (see templates/footer.mustache) —
+    adding a second call here duplicates that placeholder token, and
+    core_renderer::footer()'s plain str_replace() fills EVERY occurrence
+    with the exact same get_end_code() payload, loading require.min.js
+    twice. The second load stomps on the first instance's in-flight AMD
+    resolution and throws "require is not a function" in a real browser,
+    silently killing every pending require() call including
+    theme_boost/loader's own (verified: this broke the language-menu
+    dropdown on the guest landing page). Do not re-add this call here. }}
 </body>
 </html>
 {{#js}}
