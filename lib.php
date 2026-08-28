@@ -32,3 +32,47 @@ function theme_saec_get_extra_scss($theme) {
     }
     return '';
 }
+
+/**
+ * Forces $CFG->forgottenpasswordurl to always resolve dynamically against
+ * the current request's $CFG->wwwroot, instead of trusting whatever
+ * absolute URL happens to be frozen in mdl_config.
+ *
+ * pages/forgot_password.php exists specifically because core's own
+ * /login/forgot_password.php throws an uncaught exception on this install
+ * (no local SMTP configured) — the "Alternate forgotten password URL" site
+ * setting (Administration > Security > Site security settings) is
+ * Moodle's own officially-supported redirect point for that, and an admin
+ * pointed it at this page at some point by typing an absolute URL into
+ * that settings field. That URL is a plain DB string
+ * (mdl_config.forgottenpasswordurl): it never re-resolves itself when the
+ * site's real host/port changes (dev -> staging -> production, or even a
+ * docker port remap), so it can silently go stale and start pointing at a
+ * host nobody can reach (confirmed: this install's own stored value was
+ * still "http://localhost/moodle/...", not the current
+ * "http://localhost:8080" wwwroot).
+ *
+ * get_plugins_with_function('after_config', 'lib.php') (lib/setup.php,
+ * called unconditionally near the end of every bootstrap, before any page
+ * controller runs) is Moodle's own supported hook for exactly this shape
+ * of problem: adjust a $CFG value early, on every request, without a
+ * permanent write to mdl_config and without touching core. By the time
+ * this runs, $CFG->wwwroot is already correct for the current request
+ * (config.php resolves it from $_SERVER before including setup.php) and
+ * lib/weblib.php (moodle_url) is already loaded (required a few hundred
+ * lines above the after_config dispatch in setup.php), so both are safe
+ * to use here.
+ *
+ * Only touches the value when the site has one configured at all — an
+ * admin explicitly clearing this setting (falling back to core's native
+ * email flow) is a real choice this function must not override.
+ */
+function theme_saec_after_config() {
+    global $CFG;
+
+    if (empty($CFG->forgottenpasswordurl)) {
+        return;
+    }
+
+    $CFG->forgottenpasswordurl = (new moodle_url('/theme/saec/pages/forgot_password.php'))->out(false);
+}

@@ -695,7 +695,16 @@ if (isloggedin() && !isguestuser()) {
     $sidebaropen = get_user_preferences('drawer-open-index', true);
 }
 
-$hasblocks = $OUTPUT->blocks_for_region('side-pre');
+// Igual que el drawer principal (ver $sidebaropen arriba): el drawer de
+// bloques nunca se ofrece a sesiones anónimas/invitado. Sin esta guarda,
+// theme_boost/drawer.js igual inicializa ese drawer para cualquier
+// visitante (blocks_for_region() no distingue por sesión), registrando su
+// listener global de "resize" y, si el visitante abre/cierra el drawer,
+// intentando persistir la preferencia vía set_user_preference() — una
+// llamada AJAX a core_user_set_user_preferences que una sesión invitada no
+// puede completar con éxito. Cortarlo aquí evita que el drawer se renderice
+// del todo para esos visitantes, no solo que falle la llamada.
+$hasblocks = (isloggedin() && !isguestuser()) && $OUTPUT->blocks_for_region('side-pre');
 $blockdraweropen = false;
 if ($hasblocks) {
     $blockdraweropen = get_user_preferences('drawer-open-block', true);
