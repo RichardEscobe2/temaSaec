@@ -83,9 +83,14 @@ $string['legalterms'] = 'Terms';
 $string['legalaccessibility'] = 'Accessibility';
 
 // Password recovery — institutional assistance card (pages/forgot_password.php).
-$string['forgotpasswordinstitutionaltitle'] = 'Password Recovery';
+$string['forgotpasswordinstitutionaltitle'] = 'Institutional Password Reset';
 $string['forgotpasswordinstitutionalmessage1'] = 'For institutional security policies and accreditation control, password recovery or reset is handled directly by the <strong>System Administrator / Academic Records Office (SAEC)</strong>.';
-$string['forgotpasswordinstitutionalmessage2'] = 'Please contact the administrator or submit a ticket to the coordination office to request your new access credentials.';
+$string['forgotpasswordinstitutionalmessage2'] = 'Your password cannot be reset from this site. Request it directly from the relevant office listed below.';
+$string['forgotpasswordsupportheading'] = 'Who should I contact?';
+$string['forgotpasswordsupportstudentslabel'] = 'Students';
+$string['forgotpasswordsupportstudentscontact'] = 'Go to the Academic Records Office or submit a ticket to your program coordination.';
+$string['forgotpasswordsupportstafflabel'] = 'Teaching and Administrative Staff';
+$string['forgotpasswordsupportstaffcontact'] = 'Contact the Information Technology (IT) Department to reset your account.';
 $string['backtologin'] = 'Back to Login';
 
 // Dashboard greeting (drawers.mustache).

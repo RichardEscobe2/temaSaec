@@ -83,10 +83,15 @@ $string['legalterms'] = 'Términos';
 $string['legalaccessibility'] = 'Accesibilidad';
 
 // Recuperación de contraseña — tarjeta de asistencia institucional (pages/forgot_password.php).
-$string['forgotpasswordinstitutionaltitle'] = 'Recuperación de Contraseña';
+$string['forgotpasswordinstitutionaltitle'] = 'Restablecimiento Institucional de Contraseña';
 $string['forgotpasswordinstitutionalmessage1'] = 'Por políticas de seguridad institucional y control de acreditaciones, la recuperación o restablecimiento de contraseñas se realiza directamente a través del <strong>Administrador del Sistema / Departamento de Control Escolar (SAEC)</strong>.';
-$string['forgotpasswordinstitutionalmessage2'] = 'Por favor acude con el administrador o envía un ticket a la coordinación para solicitar tu nueva clave de acceso.';
-$string['backtologin'] = 'Volver al Inicio de Sesión';
+$string['forgotpasswordinstitutionalmessage2'] = 'No es posible restablecer tu contraseña desde este sitio. Solicítala directamente con el área correspondiente indicada abajo.';
+$string['forgotpasswordsupportheading'] = '¿A quién contactar?';
+$string['forgotpasswordsupportstudentslabel'] = 'Estudiantes';
+$string['forgotpasswordsupportstudentscontact'] = 'Acude al Departamento de Control Escolar o envía un ticket a la coordinación de tu programa.';
+$string['forgotpasswordsupportstafflabel'] = 'Personal Docente y Administrativo';
+$string['forgotpasswordsupportstaffcontact'] = 'Contacta al Departamento de Tecnologías de la Información (TI) para el restablecimiento de tu cuenta.';
+$string['backtologin'] = 'Regresar al Inicio de Sesión';
 
 // Saludo del dashboard (drawers.mustache).
 $string['dashboardgreeting'] = '¡Hola, {$a}!';
