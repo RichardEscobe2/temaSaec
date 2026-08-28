@@ -39,7 +39,19 @@
                 </div>
             {{/drawercontent}}
             {{$drawerpreferencename}}drawer-open-block{{/drawerpreferencename}}
-            {{$forceopen}}{{#forceblockdraweropen}}1{{/forceblockdraweropen}}{{/forceopen}}
+            {{! This line overrides theme_boost/drawer's own "forceopen"
+                block, and a block override REPLACES the parent's content
+                outright rather than falling back to it — a single
+                true-only conditional here would render completely empty
+                whenever the underlying value is false, instead of the
+                parent's own literal zero default (confirmed by inspecting
+                this template's actual compiled output). The pair of
+                positive and negative branches below exists so the
+                resulting data attribute always holds a real one-or-zero
+                value, never an empty string, regardless of how forgiving
+                the JS that later reads it happens to be about that
+                distinction. }}
+            {{$forceopen}}{{#forceblockdraweropen}}1{{/forceblockdraweropen}}{{^forceblockdraweropen}}0{{/forceblockdraweropen}}{{/forceopen}}
             {{$drawerstate}}show-drawer-right{{/drawerstate}}
             {{$tooltipplacement}}left{{/tooltipplacement}}
             {{$drawercloseonresize}}1{{/drawercloseonresize}}
