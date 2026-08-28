@@ -6,11 +6,20 @@
     theme_saec/components/badge_catalog_card, then read via JS and passed
     as core/modal's `body` config on click. The badge title itself becomes
     the modal's `title` config instead of being repeated in here.
-    Context is identical to badge_catalog_card's — see its docblock.
+    Context is identical to badge_catalog_card's — see its docblock — plus
+    recipientname/credentialtitle (added by badges_page::get_earned_badges())
+    for theme_saec/components/badge_credential_canvas, only rendered for
+    already-issued badges: an in-progress badge has no recipient yet, so it
+    keeps the plain image with no name/title overlay.
 }}
 <div class="saec-badge-modal">
     <div class="saec-badge-modal__media">
-        <img src="{{{ imageurl }}}" alt="">
+        {{#hasissued}}
+            {{> theme_saec/components/badge_credential_canvas }}
+        {{/hasissued}}
+        {{^hasissued}}
+            <img src="{{{ imageurl }}}" alt="">
+        {{/hasissued}}
     </div>
 
     {{#hasissued}}

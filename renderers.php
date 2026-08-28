@@ -214,6 +214,13 @@ class theme_saec_core_badges_renderer extends core_badges_renderer {
         $data->verifyurl = $verifyurl;
         $data->hasexpiry = !empty($data->expiredate) || !empty($data->expireddate);
 
+        // Plain aliases for theme_saec/components/badge_credential_canvas
+        // (shared with the "Mi Mochila" detail modal, see badges_page::
+        // get_earned_badges()) — recipientname is already native on $data,
+        // no alias needed for that one field.
+        $data->imageurl = $data->badgeimage;
+        $data->credentialtitle = $data->badgename;
+
         // LinkedIn's "Add to Profile" only makes sense for the badge's own
         // recipient — downloadurl is already gated on that same condition
         // by issued_badge::export_for_template(), so reusing its presence

@@ -83,6 +83,11 @@ class badges_page {
         $categorycache = [];
         $dateformat = get_string('strftimedatefullshort', 'langconfig');
 
+        // Every badge here belongs to the same $userid — resolved once,
+        // not per badge — for theme_saec/components/badge_credential_canvas
+        // (the "Mi Mochila" detail modal's name/title overlay).
+        $recipientname = fullname(\core_user::get_user($userid));
+
         $badges = [];
         foreach ($records as $record) {
             // A full \badge object (not just the badges_get_user_badges() row)
@@ -95,6 +100,8 @@ class badges_page {
                 'badgeid' => (int) $record->id,
                 'title' => format_string($record->name),
                 'imageurl' => \theme_saec\course_helper::to_relative_url(self::resolve_badge_object_image_url($badgeobj)->out(false)),
+                'recipientname' => $recipientname,
+                'credentialtitle' => format_string($record->name),
                 'hasissued' => true,
                 'subtitle' => self::resolve_earned_subtitle($record, $categorycache),
                 'issuername' => format_string($badgeobj->issuername ?? ''),

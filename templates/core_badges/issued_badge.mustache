@@ -13,16 +13,23 @@
     criteria, issuedby/issuedbyemailobfuscated, hasotherfields + version/language/
     imageauthor*/imagecaption, endorsement, hasrelatedbadges/relatedbadges,
     hasalignments/alignments, hostedurl, badgetag, downloadurl, addtobackpackurl)
-    — only the markup/classes changed. verifyurl/hasexpiry/linkedinurl are new,
-    added by theme_saec_core_badges_renderer::render_issued_badge() (see
+    — only the markup/classes changed. verifyurl/hasexpiry/linkedinurl/
+    imageurl/credentialtitle are new, added by
+    theme_saec_core_badges_renderer::render_issued_badge() (see
     theme/saec/renderers.php) without touching badges/classes/output/issued_badge.php.
+    imageurl/credentialtitle are plain aliases of the already-native
+    badgeimage/badgename — added so this template's media card can share
+    theme_saec/components/badge_credential_canvas with badge_detail_body.mustache
+    without either caller needing different field names.
 
     Example context (json): see core's own badges/templates/issued_badge.mustache —
     identical shape, plus:
     {
         "verifyurl": "https://example.org/badges/badge.php?hash=abc",
         "hasexpiry": false,
-        "linkedinurl": "https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME&name=..."
+        "linkedinurl": "https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME&name=...",
+        "imageurl": "https://example.org/pix/badges/badge_python_template.png",
+        "credentialtitle": "Microcredencial en Python"
     }
 }}
 <div class="saec-verify-page">
@@ -40,7 +47,7 @@
     <div class="saec-verify-page__grid">
         <div class="saec-verify-page__media-col">
             <div class="saec-verify-page__media-card">
-                <img src="{{badgeimage}}" alt="{{imagecaption}}">
+                {{> theme_saec/components/badge_credential_canvas }}
                 {{#expireddateformatted}}
                     <span class="saec-verify-page__expired-flag">
                         {{# pix }} i/expired, core, {{# str }} expireddate, badges, {{expireddateformatted}} {{/ str }}{{/ pix }}

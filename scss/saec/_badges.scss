@@ -280,3 +280,118 @@ body.page-mybadges {
         gap: 0.75rem;
     }
 }
+
+// -----------------------------------------------------------------------
+// CREDENTIAL CANVAS — theme_saec/components/badge_credential_canvas.
+// Overlays the recipient's name + credential title on top of a badge's
+// own real image, used by the public verification page
+// (templates/core_badges/issued_badge.mustache) and the "Mi Mochila"
+// detail modal (templates/components/badge_detail_body.mustache, issued
+// badges only).
+//
+// The overlay's geometry (left/right/top/bottom % below) is not a guess —
+// it was measured directly against pix/badges/badge_python_template.png's
+// real pixels (a 1000×1000 PNG): sampling columns/rows of that image found
+// its empty content rectangle at x 222–779, y 334–694, with its own
+// baked-in divider glow line sitting exactly at y 514 — i.e. precisely the
+// vertical midpoint of that rectangle. Because that divider is already
+// part of the artwork, this deliberately does NOT draw a second one in
+// CSS (that would duplicate/misalign against the real glow line already
+// printed on the badge) — the name/title split simply lands on either
+// side of it.
+// -----------------------------------------------------------------------
+
+// Sampled from the template's own glow line / ribbon (#10b981-ish,
+// Tailwind calls this "emerald-500") — not $saec-success (#7cb342, a
+// yellower green) or the $ff5252 red the brief offered as an option:
+// either would clash visibly against this specific artwork's own neon-mint
+// palette. Scoped to this one component, same precedent as
+// $uptex-linkedin-blue/$uptex-trend-down elsewhere in this theme for a
+// third-party/asset-matched color that isn't part of the core palette.
+$saec-badge-canvas-accent: #10b981;
+
+.saec-badge-credential-canvas {
+    position: relative;
+    width: 100%;
+    max-width: 320px;
+    aspect-ratio: 1 / 1;
+    margin: 0 auto;
+    // Lets __name/__title scale off this element's own rendered width via
+    // cqi units below, instead of the viewport's — correct whether this
+    // canvas ends up as a small modal thumbnail or a full verification-page
+    // hero image.
+    container-type: inline-size;
+
+    &__frame {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+
+    &__overlay {
+        position: absolute;
+        left: 22.2%;
+        right: 22.1%;
+        top: 33.4%;
+        bottom: 30.6%;
+        // Grid, not flex: -webkit-line-clamp needs display:-webkit-box on
+        // &__name/&__title themselves, and a flex/grid child that's
+        // *stretched* to fill its track gets a used height forced onto it
+        // that fights the box model line-clamp relies on internally —
+        // verified via a real Playwright render, an extreme-length name
+        // overflowed straight past its slot instead of ellipsizing at 2
+        // lines. align-items: center is the other half of the fix: it
+        // stops the grid from stretching each child to its 1fr row, so
+        // &__name/&__title size themselves purely from their own clamped
+        // content, then sit centred inside the row they were given.
+        display: grid;
+        grid-template-rows: 1fr 1fr;
+        align-items: center;
+        text-align: center;
+        font-family: $saec-font-family;
+        // Keeps long names/titles off the frame's own hexagon border —
+        // real content, but never allowed to bleed past the measured
+        // rectangle above.
+        overflow: hidden;
+    }
+
+    // display: -webkit-box is not a mistake — it's the one display mode
+    // -webkit-line-clamp actually clamps under, and -webkit-box-pack/
+    // -webkit-box-align are that same legacy box model's own alignment
+    // properties (not flexbox's), so line-clamping and 2D centering both
+    // work together here without one silently overriding the other.
+    &__name,
+    &__title {
+        min-height: 0;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-box-pack: center;
+        -webkit-box-align: center;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding: 0 4%;
+    }
+
+    &__name {
+        color: $saec-surface;
+        font-weight: 700;
+        line-height: 1.15;
+        // Fallback for browsers without container query units, immediately
+        // superseded by the cqi-based rule below wherever it's supported.
+        font-size: 1.05rem;
+        font-size: clamp(0.75rem, 7.2cqi, 1.3rem);
+        text-shadow: 0 0 12px rgba($saec-badge-canvas-accent, 0.45), 0 1px 2px rgba(0, 0, 0, 0.6);
+    }
+
+    &__title {
+        color: $saec-badge-canvas-accent;
+        font-weight: 600;
+        line-height: 1.2;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        font-size: 0.72rem;
+        font-size: clamp(0.6rem, 4.6cqi, 0.9rem);
+    }
+}
