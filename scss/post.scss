@@ -1058,3 +1058,9 @@ $saec-dashboard-content-maxwidth: 1600px;
 // STUDENT DASHBOARD (/my/) — Grid/List enrolled-courses view switcher.
 // ---------------------------------------------------------------------
 @import "saec/student_dashboard";
+
+// ---------------------------------------------------------------------
+// "MI MOCHILA DE INSIGNIAS" (/badges/mybadges.php) — extracted out of
+// custom.scss (former section 11) during the modularization pass.
+// ---------------------------------------------------------------------
+@import "saec/badges";

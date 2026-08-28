@@ -1,0 +1,282 @@
+// theme_saec — scss/saec/_badges.scss
+//
+// "Mi Mochila de Insignias" (/badges/mybadges.php) — extracted verbatim
+// from scss/custom.scss (former section 11) as part of the modularization
+// pass moving each page's styling into its own scss/saec/*.scss file,
+// mirroring every other module (gradebook, attendance, dashboards, etc.).
+// $uptex-* tokens are defined in custom.scss, imported before this file in
+// post.scss, so they remain in scope here unchanged.
+// -----------------------------------------------------------------------
+
+// El renderer nativo (core_badges\output\badge_user_collection) sigue
+// renderizándose (badges/mybadges.php es core: su HTML es el placeholder
+// obligatorio que header()/footer() necesitan encontrar para empalmar el
+// contenido — ver el comentario grande en drawers.mustache), así que en vez
+// de tocar ese archivo se ocultan sus hermanos dentro de .uptex-content-wrapper
+// (cabecera "Mis insignias de ... sitio web", buscador, grid nativo,
+// "insignias de otros sitios web", etc.) — todo lo que NO sea nuestro propio
+// .saec-badges-page — en lugar de listar sus clases nativas una por una.
+// #page-header (breadcrumb "Preferencias / Gestionar insignias" + tarjeta de
+// perfil con avatar/nombre/"Mensaje", propias de output.full_header cuando
+// el contexto de página es de usuario) se oculta igual que en
+// body.page-mycourses — ambas reglas scoped por body class exclusiva de
+// esta página, sin afectar el resto de /badges/ ni el resto del sitio.
+body.page-mybadges {
+    #page-header {
+        display: none;
+    }
+
+    .uptex-content-wrapper > :not(.saec-badges-page) {
+        display: none;
+    }
+}
+
+.saec-badges-page {
+    &__header {
+        margin-bottom: 1.5rem;
+    }
+
+    &__title {
+        font-weight: 800;
+        margin-bottom: 0.25rem;
+    }
+
+    &__subtitle {
+        color: $uptex-text-muted;
+        margin: 0;
+    }
+
+    &__tabs {
+        display: flex;
+        gap: 1.5rem;
+        border-bottom: 1px solid $uptex-border-color;
+        margin-bottom: 1.5rem;
+    }
+
+    &__tab {
+        background: none;
+        border: none;
+        border-bottom: 2px solid transparent;
+        padding: 0.75rem 0.1rem;
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: $uptex-text-muted;
+        transition: color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+
+        &:hover,
+        &:focus {
+            color: $uptex-primary;
+        }
+
+        &.active {
+            color: $uptex-primary;
+            border-bottom-color: $uptex-primary;
+        }
+    }
+}
+
+.saec-badges-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.5rem;
+}
+
+.saec-badge-catalog-card {
+    background-color: $uptex-surface;
+    border: 1px solid $uptex-border-color;
+    border-radius: $uptex-radius-lg;
+    padding: 1.25rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+
+    // Fase 10: toda la tarjeta es el disparador del modal de detalle
+    // (badges_page.mustache) — el ligero scale (no sólo la elevación ya
+    // usada en el resto del catálogo) marca visualmente que es clicable,
+    // no sólo "hover-able" como las tarjetas de curso.
+    &:hover,
+    &:focus-within {
+        transform: translateY(-4px) scale(1.02);
+        box-shadow: $uptex-shadow-card-hover;
+    }
+
+    &:focus-visible {
+        outline: 2px solid $uptex-primary;
+        outline-offset: 2px;
+    }
+
+    &__media {
+        width: 96px;
+        height: 96px;
+        margin-bottom: 0.75rem;
+        border-radius: 50%;
+        overflow: hidden;
+        background-color: $uptex-bg-subtle;
+        border: 1px solid $uptex-border-color;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+    }
+
+    &__body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.35rem;
+    }
+
+    &__title {
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: $uptex-text-dark;
+        margin: 0;
+    }
+
+    &__subtitle {
+        font-size: 0.8rem;
+        color: $uptex-text-muted;
+        margin: 0;
+    }
+
+    &__pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.25rem 0.75rem;
+        border-radius: $uptex-radius-pill;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+
+        &--granted {
+            background-color: $uptex-accent-green-light;
+            color: darken($uptex-accent-green, 15%);
+        }
+
+        &--inprogress {
+            background-color: $uptex-slate-soft;
+            color: $uptex-slate;
+        }
+    }
+
+    &__date {
+        font-size: 0.75rem;
+        color: $uptex-text-muted;
+        margin: 0;
+    }
+}
+
+// ---------------------------------------------------------------------
+// BADGE DETAIL MODAL (Fase 10) — body content of the core/modal opened
+// from a .saec-badge-catalog-card click (badges_page.mustache). The modal
+// chrome itself (header/footer/backdrop/close button) is core/modal's own
+// theme_boost styling, untouched; only the body content gets UPTex
+// tokens/typography here, via templates/components/badge_detail_body.
+// ---------------------------------------------------------------------
+.saec-badge-modal {
+    text-align: center;
+
+    &__media {
+        width: 140px;
+        height: 140px;
+        margin: 0 auto 1rem;
+        border-radius: 50%;
+        overflow: hidden;
+        background-color: $uptex-bg-subtle;
+        border: 1px solid $uptex-border-color;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+    }
+
+    &__subtitle {
+        color: $uptex-text-muted;
+        margin-bottom: 0.5rem;
+    }
+
+    &__date {
+        font-size: 0.85rem;
+        color: $uptex-text-muted;
+        margin: 0.5rem 0 0;
+    }
+
+    // Fase 11: metadatos restaurados (emisor, expiración, hash/verificación)
+    // — filas etiqueta/valor de dos columnas, alineadas a la izquierda a
+    // diferencia del resto del modal (imagen/pill/fecha, centrados).
+    &__meta {
+        text-align: left;
+        margin-top: 1.25rem;
+        padding-top: 1.25rem;
+        border-top: 1px solid $uptex-border-color;
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+    }
+
+    &__meta-row {
+        display: flex;
+        align-items: baseline;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    &__meta-label {
+        flex-shrink: 0;
+        color: $uptex-text-muted;
+        font-weight: 700;
+    }
+
+    &__meta-value {
+        color: $uptex-text-dark;
+
+        &--expiry {
+            color: $uptex-danger;
+            font-weight: 600;
+        }
+    }
+
+    &__hash {
+        font-family: monospace;
+        font-size: 0.75rem;
+        word-break: break-all;
+    }
+
+    &__description {
+        text-align: left;
+        color: $uptex-text-dark;
+        margin-top: 1.25rem;
+        padding-top: 1.25rem;
+        border-top: 1px solid $uptex-border-color;
+    }
+
+    &__criteria {
+        text-align: left;
+        margin-top: 1.25rem;
+        padding-top: 1.25rem;
+        border-top: 1px solid $uptex-border-color;
+
+        h4 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: $uptex-text-dark;
+            margin-bottom: 0.5rem;
+        }
+    }
+
+    &__actions {
+        margin-top: 1.5rem;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.75rem;
+    }
+}

@@ -4,20 +4,10 @@ defined('MOODLE_INTERNAL') || die();
 $string['pluginname'] = 'SAEC Corporativo';
 $string['choosereadme'] = 'Custom theme for SAEC.';
 
-// Frontpage hero carousel.
-$string['slide1title'] = 'Welcome to SAEC';
-$string['slide1subtitle'] = 'Continuing education and institutional accreditation.';
-$string['slide2title'] = 'Learn at your own pace';
-$string['slide2subtitle'] = 'Flexible programmes designed for working professionals.';
-$string['slide3title'] = 'Recognised quality';
-$string['slide3subtitle'] = 'Accredited courses backed by the SAEC institution.';
-
 // Frontpage course grid.
 $string['coursesheading'] = 'Available courses';
 $string['coursessubheading'] = 'Explore the programmes currently open for enrolment.';
 $string['nocoursesavailable'] = 'There are no courses available right now.';
-$string['labelcourse'] = 'COURSE';
-$string['labeldata'] = 'INFO';
 $string['placeholderinitial'] = 'SAEC';
 $string['courseimagerequired'] = 'A course image is required. Please upload a JPG, PNG or WEBP image in "Course summary files" before saving.';
 
@@ -116,7 +106,6 @@ $string['kpigpa'] = 'Overall GPA';
 $string['kpiattendance'] = 'Attendance';
 $string['kpistudyhours'] = 'Study Hours';
 $string['kpistudyhoursvalue'] = '{$a}h';
-$string['kpistudyhoursfootnote'] = 'This week';
 $string['kpibadges'] = 'Badges';
 $string['kpibadgesfootnote'] = 'Earned';
 $string['courseprogresslabel'] = '{$a->completed} of {$a->total} modules';
@@ -137,7 +126,6 @@ $string['opencalendar'] = 'Open Moodle Calendar';
 $string['mybackpackheading'] = 'My Backpack';
 $string['nobadgesyet'] = "You haven't earned any badges yet.";
 $string['courseprogresslabelheading'] = 'Course progress';
-$string['continuecourse'] = 'Continue';
 
 // "My Courses" page (/my/courses.php — classes/dashboard/courses_page.php,
 // templates/my_courses_page.mustache, Phase 8).
@@ -223,10 +211,6 @@ $string['roleadmin'] = 'Administrator';
 
 // "Course" SaaS overlay (/course/view.php — classes/dashboard/course_view_page.php,
 // templates/components/course_view_*.mustache, Phase 17).
-$string['coursetabcourse'] = 'Course';
-$string['coursetabparticipants'] = 'Participants';
-$string['coursetabgrades'] = 'Grades';
-$string['coursetabcompetencies'] = 'Competencies';
 $string['teacherrolelabel'] = 'Teacher:';
 $string['sendmessage'] = 'Send Message';
 $string['courseprogressheading'] = 'Course progress';
@@ -244,7 +228,6 @@ $string['quicklinkgrades'] = 'Gradebook';
 $string['quicklinkparticipants'] = 'Participants Directory';
 $string['quicklinksyllabus'] = 'Guide / Course Syllabus';
 $string['sidebarresume'] = 'Resume Last Lesson';
-$string['resumelesson'] = 'Continue';
 $string['noresume'] = "You haven't visited any activity in this course yet.";
 $string['assignstatuspendiente'] = 'Pending';
 $string['assignstatusentregado'] = 'Submitted';
@@ -379,7 +362,6 @@ $string['attendancestatusexcusedlabel'] = 'Excused';
 $string['attendancestatusabsentlabel'] = 'Absent';
 
 // Admin SaaS Command Center (theme/saec/pages/admin_hub.php).
-$string['adminhubtitle'] = 'Command Center';
 $string['adminhubgreeting'] = 'Welcome back, {$a}. Here is the site\'s executive summary.';
 $string['kpiactivestudents'] = 'Active Students';
 $string['kpienrolledteachers'] = 'Enrolled Teachers';
@@ -398,7 +380,6 @@ $string['adminsectionsiteadmin'] = 'Site Administration';
 $string['admincoursesempty'] = 'No active courses.';
 $string['adminusersempty'] = 'No users to display.';
 $string['admincoursecolname'] = 'Course';
-$string['admincoursecolcategory'] = 'Category';
 $string['admincoursecolstudents'] = 'Students';
 $string['admincoursecolactions'] = 'Actions';
 $string['admincourseactionconfigure'] = 'Configure Course';
