@@ -903,6 +903,15 @@ $saec-dashboard-content-maxwidth: 1600px;
 }
 
 // ---------------------------------------------------------------------
+// UNIFIED DASHBOARD HERO (/my/) — Student, Teacher and Admin dashboards all
+// render templates/components/hero_banner.mustache; imported before all
+// three so .btn-saec-primary (scss/saec/_forgot_password.scss, imported
+// later below) doesn't need to know this override exists — the compound
+// selector's higher specificity wins regardless of import order anyway.
+// ---------------------------------------------------------------------
+@import "saec/hero";
+
+// ---------------------------------------------------------------------
 // TEACHER DASHBOARD (/my/) — Sprint 1. Imported last so it can use every
 // $saec-* token defined above (Sass requires definition-before-use).
 // ---------------------------------------------------------------------

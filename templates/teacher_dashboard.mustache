@@ -34,6 +34,14 @@
             "inprogress": false,
             "takeattendanceurl": "https://example.org/mod/attendance/take.php?id=8&sessionid=84&grouptype=0"
         },
+        "herotitle": "Panel del Docente",
+        "herosubtitle": "Bienvenido de nuevo, Prof. Alejandro Ruiz. Aquí está el resumen de sus cursos.",
+        "pillicon": "fa-clock-o",
+        "pilltext": "Próxima clase: DW-2024-B1 · HOY 12:00 PM",
+        "pillvariant": "primary",
+        "actionlabel": "Iniciar Pase de Lista",
+        "actionurl": "https://example.org/mod/attendance/take.php?id=8&sessionid=84&grouptype=0",
+        "ispurgeaction": false,
         "activecourseskpi": {
             "icon": "<i class=\"icon fa fa-graduation-cap\" aria-hidden=\"true\"></i>",
             "iconvariant": "primary", "label": "Cursos Activos", "value": "3",
@@ -87,34 +95,7 @@
     }
 }}
 <div class="saec-teacher-dashboard">
-    <div class="uptex-dashboard-hero">
-        <div class="uptex-dashboard-hero__avatar">
-            {{#avatarurl}}
-                <img src="{{{ avatarurl }}}" alt="">
-            {{/avatarurl}}
-        </div>
-        <div>
-            <h1 class="uptex-dashboard-hero__title">{{#str}} teacherdashheading, theme_saec {{/str}}</h1>
-            <p class="uptex-dashboard-hero__subtitle">{{ greeting }}</p>
-            {{#hasnextclass}}
-                <div class="saec-next-class-badge {{#nextclass.inprogress}}saec-next-class-badge--inprogress{{/nextclass.inprogress}}">
-                    <i class="icon fa fa-clock-o" aria-hidden="true"></i>
-                    <span class="saec-next-class-badge__text">
-                        {{#nextclass.inprogress}}
-                            {{#str}} nextclassinprogress, theme_saec, {{nextclass.coursename}} {{/str}}
-                        {{/nextclass.inprogress}}
-                        {{^nextclass.inprogress}}
-                            {{#str}} nextclassupcoming, theme_saec {{/str}}
-                            {{ nextclass.coursename }} &middot; {{ nextclass.daylabel }} {{ nextclass.time }}
-                        {{/nextclass.inprogress}}
-                    </span>
-                    <a href="{{{ nextclass.takeattendanceurl }}}" class="saec-btn saec-btn--outline saec-next-class-badge__cta">
-                        {{#str}} takeattendanceaction, theme_saec {{/str}}
-                    </a>
-                </div>
-            {{/hasnextclass}}
-        </div>
-    </div>
+    {{> theme_saec/components/hero_banner }}
 
     <div class="saec-teacher-dashboard-grid">
         <div class="saec-teacher-dashboard-grid__main">

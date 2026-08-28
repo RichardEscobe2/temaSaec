@@ -262,8 +262,18 @@ $string['assignrubricnivel'] = 'Achievement Level';
 // Teacher Dashboard (/my/) — Sprint 1.
 $string['teacherdashheading'] = 'Teacher Dashboard';
 $string['teacherdashwelcome'] = 'Welcome back, {$a}. Here is a summary of your courses.';
+$string['noupcomingclass'] = 'No upcoming classes scheduled.';
 $string['kpipendingsubmissions'] = 'Pending Submissions';
 $string['kpiactivecourses'] = 'Active Courses';
+
+// Unified Hero Banner (/my/) — Student, Teacher, Admin all share the same
+// structure (components/hero_banner.mustache); these 3 strings were the
+// ones missing per role (Teacher already had its own above).
+$string['studentdashheading'] = 'Student Dashboard';
+$string['admindashheading'] = 'Admin Dashboard';
+$string['adminsystemstatuspill'] = 'System Status: Operational · {$a} Active Courses';
+$string['heroactionviewtasks'] = 'View Tasks';
+$string['heroactionsubmittask'] = 'Submit Task';
 $string['pendinggradingheading'] = 'Grading & Pending Submissions';
 $string['pendinggradingempty'] = 'No submissions are waiting for grading. Great job!';
 $string['colstudent'] = 'Student';

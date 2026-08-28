@@ -262,8 +262,18 @@ $string['assignrubricnivel'] = 'Nivel de Logro';
 // Panel del Docente (/my/) — Sprint 1.
 $string['teacherdashheading'] = 'Panel del Docente';
 $string['teacherdashwelcome'] = 'Bienvenido de nuevo, {$a}. Aquí está el resumen de sus cursos.';
+$string['noupcomingclass'] = 'Sin clases programadas próximamente.';
 $string['kpipendingsubmissions'] = 'Entregas Pendientes';
 $string['kpiactivecourses'] = 'Cursos Activos';
+
+// Hero Banner unificado (/my/) — Alumno, Docente, Admin comparten la misma
+// estructura (components/hero_banner.mustache); estas 3 cadenas son las
+// que faltaban por rol (Docente ya tenía las suyas arriba).
+$string['studentdashheading'] = 'Panel del Alumno';
+$string['admindashheading'] = 'Panel del Administrador';
+$string['adminsystemstatuspill'] = 'Estado del Sistema: Operativo · {$a} Cursos Activos';
+$string['heroactionviewtasks'] = 'Ver Tareas';
+$string['heroactionsubmittask'] = 'Entregar Tarea';
 $string['pendinggradingheading'] = 'Calificador y Entregas Pendientes';
 $string['pendinggradingempty'] = 'No hay entregas pendientes por calificar. ¡Buen trabajo!';
 $string['colstudent'] = 'Estudiante';

@@ -20,6 +20,15 @@
     Example context (json):
     {
         "fullname": "Admin User", "greeting": "¡Hola, Admin User!",
+        "avatarurl": "https://example.org/pluginfile.php/1/user/icon/f1.jpg",
+        "herotitle": "Panel del Administrador",
+        "herosubtitle": "Bienvenido de nuevo, Admin User. Aquí tienes el resumen ejecutivo del sitio.",
+        "pillicon": "fa-check-circle",
+        "pilltext": "Estado del Sistema: Operativo · 12 Cursos Activos",
+        "pillvariant": "success",
+        "actionlabel": "Purgar Caché",
+        "actionurl": null,
+        "ispurgeaction": true,
         "sesskey": "abc123",
         "kpis": [{"key": "activestudents", "icon": "<img>", "iconvariant": "primary",
             "label": "Estudiantes Activos", "value": "128", "hasvaluesuffix": false,
@@ -31,11 +40,7 @@
     }
 }}
 <div class="saec-admin-hub" id="saec-admin-dashboard-{{uniqid}}">
-    <header class="saec-admin-hub__hero">
-        <div>
-            <h1 class="saec-admin-hub__title">{{ greeting }}</h1>
-        </div>
-    </header>
+    {{> theme_saec/components/hero_banner }}
 
     <div class="saec-admin-hub__kpi-grid row">
         {{#kpis}}

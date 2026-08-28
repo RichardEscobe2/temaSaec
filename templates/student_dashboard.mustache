@@ -24,6 +24,14 @@
         "greeting": "Bienvenido de nuevo, Alex",
         "haspending": true,
         "pendingmessage": "Tienes 3 entregas pendientes para esta semana.",
+        "herotitle": "Panel del Alumno",
+        "herosubtitle": "Bienvenido de nuevo, Alex García. Tienes 3 entregas pendientes para esta semana.",
+        "pillicon": "fa-clock-o",
+        "pilltext": "Proyecto Final: Fase 1 · Sistemas Operativos",
+        "pillvariant": "warning",
+        "actionlabel": "Entregar Tarea",
+        "actionurl": "https://example.org/mod/assign/view.php?id=5",
+        "ispurgeaction": false,
         "mycoursesurl": "https://example.org/my/courses.php",
         "calendarurl": "https://example.org/calendar/view.php",
         "hascourses": true,
@@ -67,19 +75,7 @@
     }
 }}
 <div class="uptex-student-dashboard">
-    <div class="uptex-dashboard-hero">
-        <div class="uptex-dashboard-hero__avatar">
-            {{#avatarurl}}
-                <img src="{{{ avatarurl }}}" alt="">
-            {{/avatarurl}}
-        </div>
-        <div>
-            <h1 class="uptex-dashboard-hero__title">{{ greeting }}</h1>
-            <p class="uptex-dashboard-hero__subtitle {{#haspending}}uptex-dashboard-hero__subtitle--pending{{/haspending}}">
-                {{ pendingmessage }}
-            </p>
-        </div>
-    </div>
+    {{> theme_saec/components/hero_banner }}
 
     <section class="uptex-dashboard-section mb-4">
         <div class="uptex-dashboard-section__header">

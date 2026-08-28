@@ -36,38 +36,9 @@
 }
 
 .saec-teacher-dashboard {
-    .uptex-dashboard-hero {
-        display: flex;
-        align-items: center;
-        gap: 1.25rem;
-        margin-bottom: 2rem;
-        padding: 1.5rem;
-        background-color: $saec-surface;
-        border: 1px solid $saec-border;
-        border-radius: $saec-radius;
-        box-shadow: $saec-shadow-md;
-
-        &__avatar img {
-            width: 64px;
-            height: 64px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid $saec-primary;
-            box-shadow: 0 0 0 3px $saec-primary-light;
-        }
-
-        &__title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: $saec-text-dark;
-            margin: 0 0 0.2rem;
-        }
-
-        &__subtitle {
-            color: $saec-text-muted;
-            margin: 0;
-        }
-    }
+    // .uptex-dashboard-hero used to live here — replaced by the shared
+    // .saec-hero-card (scss/saec/_hero.scss), rendered via
+    // templates/components/hero_banner.mustache.
 
     .uptex-dashboard-section {
         &__header {
@@ -226,45 +197,10 @@
     }
 }
 
-// -----------------------------------------------------------------------
-// NEXT-CLASS BADGE — .saec-next-class-badge (welcome hero micro-badge +
-// "Iniciar Pase de Lista" quick action)
-// -----------------------------------------------------------------------
-.saec-next-class-badge {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.6rem;
-    margin-top: 0.75rem;
-    padding: 0.45rem 0.9rem;
-    background-color: $saec-primary-light;
-    border-radius: 999px;
-    font-size: 0.8rem;
-    color: $saec-primary-hover;
-
-    i {
-        color: $saec-primary;
-    }
-
-    &--inprogress {
-        background-color: rgba($saec-accent, 0.1);
-        color: $saec-accent;
-
-        i {
-            color: $saec-accent;
-        }
-    }
-
-    &__text {
-        font-weight: 600;
-    }
-
-    &__cta {
-        margin-left: auto;
-        padding: 0.3rem 0.85rem;
-        font-size: 0.75rem;
-    }
-}
+// .saec-next-class-badge (welcome hero micro-badge + "Iniciar Pase de
+// Lista" quick action) used to live here — the next-class state is now
+// rendered as the shared hero's dynamic pill/action button instead (see
+// scss/saec/_hero.scss, .saec-hero-pill/.saec-hero-action-btn).
 
 // -----------------------------------------------------------------------
 // GRADING EFFICIENCY BAR — .saec-grading-kpi-card (nested inside the

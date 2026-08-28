@@ -343,6 +343,52 @@ class student_dashboard {
     }
 
     /**
+     * Unified hero fields (templates/components/hero_banner.mustache):
+     * static role title, a fullname-based greeting as the subtitle
+     * (deliberately reuses 'dashboardwelcomeback' with the full name rather
+     * than just firstname, for parity with Teacher/Admin's own fullname
+     * greetings), and the nearest upcoming deadline (already computed by
+     * get_student_upcoming_deadlines(), not re-queried here) reshaped into
+     * the pill + action button — "Entregar Tarea" straight to the
+     * assignment when a 1-click submit URL exists, otherwise a generic
+     * "Ver Tareas" link to the Tasks Hub. All-clear (no deadlines) reuses
+     * the existing 'dashboardnopending' string as the pill text.
+     *
+     * @param array $context the already-merged context (must contain 'fullname', 'hasdeadlines', 'deadlines', 'tasksurl').
+     * @return array
+     */
+    private static function get_student_hero_data(array $context): array {
+        $hero = [
+            'herotitle' => get_string('studentdashheading', 'theme_saec'),
+            'herosubtitle' => get_string('dashboardwelcomeback', 'theme_saec', $context['fullname']),
+            'pillicon' => 'fa-clock-o',
+            'ispurgeaction' => false,
+        ];
+
+        if (empty($context['hasdeadlines'])) {
+            return $hero + [
+                'pilltext' => get_string('dashboardnopending', 'theme_saec'),
+                'pillicon' => 'fa-check-circle',
+                'pillvariant' => 'success',
+                'actionlabel' => get_string('heroactionviewtasks', 'theme_saec'),
+                'actionurl' => $context['tasksurl'],
+            ];
+        }
+
+        $next = $context['deadlines'][0];
+        $hassubmiturl = !empty($next['hassubmiturl']);
+
+        return $hero + [
+            'pilltext' => $next['title'] . ' · ' . $next['coursename'],
+            'pillvariant' => !empty($next['isurgent']) ? 'accent' : 'warning',
+            'actionlabel' => $hassubmiturl
+                ? get_string('heroactionsubmittask', 'theme_saec')
+                : get_string('heroactionviewtasks', 'theme_saec'),
+            'actionurl' => $hassubmiturl ? $next['submiturl'] : $context['tasksurl'],
+        ];
+    }
+
+    /**
      * Unified context for student_dashboard.mustache. Returns null when the
      * logged-in user is not a student (teacher/admin dashboards are out of
      * scope for this context builder).
@@ -359,7 +405,7 @@ class student_dashboard {
             return null;
         }
 
-        return array_merge(
+        $context = array_merge(
             self::get_student_header_data($userid),
             self::get_student_kpis($userid),
             self::get_student_courses_progress($userid),
@@ -367,6 +413,8 @@ class student_dashboard {
             self::get_student_backpack_data($userid),
             self::get_student_quickaction_links()
         );
+
+        return array_merge($context, self::get_student_hero_data($context));
     }
 
     /**

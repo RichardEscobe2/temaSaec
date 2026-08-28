@@ -1,0 +1,73 @@
+{{!
+    @template theme_saec/components/hero_banner
+
+    Unified Dashboard Hero — shared by student_dashboard.mustache,
+    teacher_dashboard.mustache and admin_dashboard.mustache so every role's
+    /my/ hero (avatar + role title + welcome subtitle + dynamic status pill
+    + one primary action) follows the same structure and markup, styled by
+    scss/saec/_hero.scss's .saec-hero-card. Each role's own PHP context
+    builder (classes/dashboard/*_dashboard.php) is responsible for shaping
+    its own real data into these plain fields — this partial has no
+    role-specific logic of its own.
+
+    Fields:
+    - avatarurl: user's picture URL, or falsy to omit the avatar image.
+    - herotitle: static role heading ("Panel del Alumno", etc.).
+    - herosubtitle: "Bienvenido de nuevo, {fullname}. {resumen}" sentence.
+    - pillicon: FontAwesome class suffix (e.g. "fa-clock-o"), no "fa " prefix.
+    - pilltext: dynamic status text (next task/class, or system status).
+    - pillvariant: one of primary|accent|warning|success — controls the
+      pill's colour via a matching modifier class (scss/saec/_hero.scss).
+    - actionlabel: falsy hides the action button entirely.
+    - ispurgeaction: true renders a <button data-saec-admin-purge-cache>
+      instead of a plain link, letting admin_dashboard.mustache's existing
+      inline JS (root.find('[data-saec-admin-purge-cache]')) wire it up
+      automatically — no template-specific JS needed here.
+    - actionurl: link target when ispurgeaction is false.
+
+    Example context (json):
+    {
+        "avatarurl": "https://example.org/pluginfile.php/1/user/icon/f1.jpg",
+        "herotitle": "Panel del Alumno",
+        "herosubtitle": "Bienvenido de nuevo, Ana García. Tienes 2 entregas pendientes.",
+        "pillicon": "fa-clock-o",
+        "pilltext": "Proyecto Final: Fase 1 · DW-2024-B1",
+        "pillvariant": "warning",
+        "actionlabel": "Entregar Tarea",
+        "actionurl": "https://example.org/mod/assign/view.php?id=5",
+        "ispurgeaction": false
+    }
+}}
+<div class="saec-hero-card">
+    <div class="saec-hero-avatar">
+        {{#avatarurl}}
+            <img src="{{{ avatarurl }}}" alt="">
+        {{/avatarurl}}
+    </div>
+    <div class="saec-hero-body">
+        <h1 class="saec-hero-title">{{ herotitle }}</h1>
+        <p class="saec-hero-subtitle">{{ herosubtitle }}</p>
+
+        <div class="saec-hero-actionbar">
+            {{#pilltext}}
+                <span class="saec-hero-pill saec-hero-pill--{{ pillvariant }}">
+                    {{#pillicon}}<i class="icon fa {{ pillicon }}" aria-hidden="true"></i>{{/pillicon}}
+                    <span class="saec-hero-pill__text">{{ pilltext }}</span>
+                </span>
+            {{/pilltext}}
+
+            {{#actionlabel}}
+                {{#ispurgeaction}}
+                    <button type="button" class="btn-saec-primary saec-hero-action-btn" data-saec-admin-purge-cache>
+                        {{ actionlabel }}
+                    </button>
+                {{/ispurgeaction}}
+                {{^ispurgeaction}}
+                    <a href="{{{ actionurl }}}" class="btn-saec-primary saec-hero-action-btn">
+                        {{ actionlabel }}
+                    </a>
+                {{/ispurgeaction}}
+            {{/actionlabel}}
+        </div>
+    </div>
+</div>

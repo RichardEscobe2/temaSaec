@@ -1475,47 +1475,9 @@ $uptex-shadow-feature-hover: 0 12px 24px rgba(0, 0, 0, 0.06);
    =========================================================================== */
 .uptex-student-dashboard {
 
-    // -- Hero de bienvenida: superficie "glass" (mismo patrón que .glass-card
-    // en stitch_uptex/mi_panel_de_alumno_actualizado/code.html) -------------
-    .uptex-dashboard-hero {
-        display: flex;
-        align-items: center;
-        gap: 1.25rem;
-        margin-bottom: 2rem;
-        padding: 1.5rem;
-        background-color: rgba($uptex-surface, 0.75);
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-        border: 1px solid $uptex-border-soft;
-        border-radius: $uptex-radius-lg;
-        box-shadow: $uptex-shadow-elevation;
-
-        &__avatar img {
-            width: 64px;
-            height: 64px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid $uptex-primary;
-            box-shadow: 0 0 0 3px $uptex-primary-light;
-        }
-
-        &__title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: $uptex-text-dark;
-            margin: 0 0 0.2rem;
-        }
-
-        &__subtitle {
-            color: $uptex-text-muted;
-            margin: 0;
-
-            &--pending {
-                color: $uptex-danger;
-                font-weight: 600;
-            }
-        }
-    }
+    // .uptex-dashboard-hero used to live here — replaced by the shared
+    // .saec-hero-card (scss/saec/_hero.scss), rendered via
+    // templates/components/hero_banner.mustache.
 
     // -- Encabezado de sección genérico (Cursos, Resumen, Entregas, Mochila) -
     .uptex-dashboard-section {
@@ -1813,12 +1775,6 @@ $uptex-shadow-feature-hover: 0 12px 24px rgba(0, 0, 0, 0.06);
 
     // -- Responsividad: Mobile (<768px) ---------------------------------------
     @include media-breakpoint-down(md) {
-        .uptex-dashboard-hero {
-            flex-direction: column;
-            text-align: center;
-            padding: 1.25rem;
-        }
-
         .uptex-dashboard-section__header {
             flex-direction: column;
             align-items: flex-start;
@@ -1831,10 +1787,6 @@ $uptex-shadow-feature-hover: 0 12px 24px rgba(0, 0, 0, 0.06);
     }
 
     @include media-breakpoint-down(sm) {
-        .uptex-dashboard-hero__title {
-            font-size: 1.25rem;
-        }
-
         .uptex-badge-grid {
             gap: 0.75rem;
         }

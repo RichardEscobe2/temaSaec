@@ -1,0 +1,132 @@
+// theme_saec — scss/saec/_hero.scss
+//
+// Unified Dashboard Hero (.saec-hero-card), shared by all three /my/ role
+// dashboards via templates/components/hero_banner.mustache. Replaces the
+// two role-specific, duplicated ".uptex-dashboard-hero" rules that used to
+// live in scss/custom.scss (Student) and scss/saec/_teacher_dashboard.scss
+// (Teacher) — both removed now that neither template renders that markup
+// any more — plus a brand-new hero for Admin, which previously had no
+// avatar/subtitle/pill/action markup at all.
+// -----------------------------------------------------------------------
+
+.saec-hero-card {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background-color: $saec-surface;
+    border: 1px solid $saec-border;
+    border-radius: $saec-radius;
+    box-shadow: $saec-shadow-md;
+}
+
+.saec-hero-avatar img {
+    display: block;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid $saec-primary;
+    box-shadow: 0 0 0 3px $saec-primary-light;
+}
+
+.saec-hero-body {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.saec-hero-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: $saec-text-dark;
+    margin: 0 0 0.2rem;
+}
+
+.saec-hero-subtitle {
+    color: $saec-text-muted;
+    margin: 0;
+}
+
+.saec-hero-actionbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.9rem;
+}
+
+.saec-hero-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.45rem 0.9rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background-color: $saec-primary-light;
+    color: $saec-primary-hover;
+
+    i {
+        color: $saec-primary;
+    }
+
+    &--accent {
+        background-color: rgba($saec-accent, 0.1);
+        color: $saec-accent;
+
+        i {
+            color: $saec-accent;
+        }
+    }
+
+    &--warning {
+        background-color: $saec-warning-light;
+        color: $saec-warning;
+
+        i {
+            color: $saec-warning;
+        }
+    }
+
+    &--success {
+        background-color: rgba($saec-success, 0.12);
+        color: darken($saec-success, 18%);
+
+        i {
+            color: $saec-success;
+        }
+    }
+}
+
+// The hero's action button reuses .btn-saec-primary (scss/saec/_forgot_password.scss)
+// for a single consistent CTA style across the theme, but that rule sets
+// width: 100% for its own full-width card context — not appropriate for an
+// inline button sitting next to a pill. Scoping the override to
+// .saec-hero-action-btn keeps it specific to this context regardless of
+// either partial's SCSS import order.
+.saec-hero-action-btn.btn-saec-primary {
+    width: auto;
+    padding: 0.5rem 1.25rem;
+    font-size: 0.85rem;
+}
+
+// -- Responsividad: Mobile (<576px) — avatar/title stack above the
+// subtitle and action bar instead of sitting side-by-side. -------------
+@include media-breakpoint-down(sm) {
+    .saec-hero-card {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+        padding: 1.25rem;
+    }
+
+    .saec-hero-actionbar {
+        width: 100%;
+    }
+
+    .saec-hero-action-btn.btn-saec-primary {
+        flex: 1 1 auto;
+        text-align: center;
+    }
+}

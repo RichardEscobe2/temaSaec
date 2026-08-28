@@ -379,6 +379,53 @@ class teacher_dashboard {
     }
 
     /**
+     * Unified hero fields (templates/components/hero_banner.mustache):
+     * static role title, the existing greeting as the subtitle, and the
+     * next-class state (already computed by get_teacher_next_class(), not
+     * re-queried here) reshaped from the old bespoke
+     * .saec-next-class-badge markup into the shared pill + action button.
+     * No pill/button at all when there's no next class, matching the
+     * previous behaviour of simply omitting the badge.
+     *
+     * @param array $context the already-merged context (must contain 'hasnextclass', 'nextclass', 'greeting').
+     * @return array
+     */
+    private static function get_teacher_hero_data(array $context): array {
+        $hero = [
+            'herotitle' => get_string('teacherdashheading', 'theme_saec'),
+            'herosubtitle' => $context['greeting'],
+            'pillicon' => 'fa-clock-o',
+            'ispurgeaction' => false,
+        ];
+
+        if (empty($context['hasnextclass'])) {
+            return $hero + [
+                'pilltext' => get_string('noupcomingclass', 'theme_saec'),
+                'pillvariant' => 'success',
+                'actionlabel' => null,
+                'actionurl' => null,
+            ];
+        }
+
+        $nextclass = $context['nextclass'];
+        if (!empty($nextclass['inprogress'])) {
+            $pilltext = get_string('nextclassinprogress', 'theme_saec', $nextclass['coursename']);
+            $pillvariant = 'accent';
+        } else {
+            $pilltext = get_string('nextclassupcoming', 'theme_saec') . ' ' . $nextclass['coursename']
+                . ' · ' . $nextclass['daylabel'] . ' ' . $nextclass['time'];
+            $pillvariant = 'primary';
+        }
+
+        return $hero + [
+            'pilltext' => $pilltext,
+            'pillvariant' => $pillvariant,
+            'actionlabel' => get_string('takeattendanceaction', 'theme_saec'),
+            'actionurl' => $nextclass['takeattendanceurl'],
+        ];
+    }
+
+    /**
      * Course lists backing the two 2-click course-picker modals (+ Nueva
      * Tarea, + Nuevo Aviso) — supersedes the old single-click "post to the
      * first course's forum" shortcut (get_teacher_quick_announcement(), now
@@ -509,6 +556,7 @@ class teacher_dashboard {
             self::get_teacher_quickaction_links(),
             self::get_teacher_course_pickers($userid)
         );
+        $context = array_merge($context, self::get_teacher_hero_data($context));
 
         self::$contextmemo[$userid] = $context;
         return $context;

@@ -7,6 +7,7 @@ namespace theme_saec\dashboard;
 
 use context_course;
 use moodle_url;
+use user_picture;
 
 /**
  * Backend data preparation for the Admin Executive Command Center, injected
@@ -43,7 +44,7 @@ class admin_dashboard {
             return null;
         }
 
-        return array_merge(
+        $context = array_merge(
             self::get_header_data($userid),
             ['sesskey' => sesskey()],
             self::get_kpis(),
@@ -51,22 +52,71 @@ class admin_dashboard {
             self::get_courses_section(),
             self::get_users_section()
         );
+
+        return array_merge($context, self::get_hero_data($context));
     }
 
     /**
-     * Header/greeting data: identity only (the hero is the KPI row, not a
-     * personal greeting card).
+     * Header/greeting data: identity and avatar, mirroring
+     * student_dashboard::get_student_header_data()/
+     * teacher_dashboard::get_teacher_header_data() so the unified hero
+     * (templates/components/hero_banner.mustache) has the same avatarurl
+     * shape to work with regardless of role.
      *
      * @param int $userid
      * @return array
      */
     private static function get_header_data(int $userid): array {
+        global $PAGE;
+
         $user = \core_user::get_user($userid, '*', IGNORE_MISSING);
         $fullname = $user ? fullname($user) : '';
+        $avatarurl = null;
+        if ($user) {
+            $userpicture = new user_picture($user);
+            $userpicture->size = 100;
+            $avatarurl = \theme_saec\course_helper::to_relative_url($userpicture->get_url($PAGE)->out(false));
+        }
 
         return [
             'fullname' => $fullname,
+            'avatarurl' => $avatarurl,
             'greeting' => get_string('adminhubgreeting', 'theme_saec', $fullname),
+        ];
+    }
+
+    /**
+     * Unified hero fields (templates/components/hero_banner.mustache):
+     * static role title, the existing greeting as the subtitle, an
+     * "Operational" status pill carrying the real active-course count
+     * already computed by get_kpis() (no second query), and a "Purge
+     * Cache" action button that reuses the exact same
+     * data-saec-admin-purge-cache / root.find(...) AJAX wiring
+     * templates/admin_dashboard.mustache's inline JS already sets up for
+     * the quick-actions bar's own purge button — both fire independently,
+     * no extra JS needed here.
+     *
+     * @param array $context the already-merged context (must contain 'kpis' and 'greeting').
+     * @return array
+     */
+    private static function get_hero_data(array $context): array {
+        $activecourses = '0';
+        foreach ($context['kpis'] ?? [] as $kpi) {
+            if (($kpi['key'] ?? '') === 'activecourses') {
+                $activecourses = $kpi['value'];
+                break;
+            }
+        }
+
+        return [
+            'herotitle' => get_string('admindashheading', 'theme_saec'),
+            'herosubtitle' => $context['greeting'],
+            'pillicon' => 'fa-check-circle',
+            'pilltext' => get_string('adminsystemstatuspill', 'theme_saec', $activecourses),
+            'pillvariant' => 'success',
+            'actionlabel' => get_string('adminactionpurgecache', 'theme_saec'),
+            'actionurl' => null,
+            'ispurgeaction' => true,
         ];
     }
 
