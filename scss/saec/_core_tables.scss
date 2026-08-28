@@ -101,3 +101,21 @@
     }
 }
 
+// -- Responsividad: Mobile (<768px) — compact cell padding so more real
+// data fits before the horizontal scroll (already enabled natively by
+// Bootstrap's own .table-responsive, no change needed there) kicks in.
+// Covers every wrapped-table page this applies to (Cursos Activos,
+// Estudiantes y Progreso, Bitácora de Auditoría, and any other
+// .uptex-table-container table), plus the native .generaltable/.flexible
+// reports this file already themes above. --
+@include media-breakpoint-down(md) {
+    .uptex-table-container .table td,
+    .uptex-table-container .table th,
+    .generaltable td,
+    .generaltable th,
+    .flexible td,
+    .flexible th {
+        padding: 0.5rem 0.75rem;
+    }
+}
+

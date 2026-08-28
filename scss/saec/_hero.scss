@@ -37,7 +37,13 @@
 }
 
 .saec-hero-title {
-    font-size: 1.5rem;
+    // clamp()'s own upper bound (1.5rem) is identical to the old fixed
+    // value, and at any desktop-width viewport 3.5vw already exceeds that
+    // bound (e.g. 3.5vw = 42px at 1200px), so clamp() always resolves to
+    // exactly 1.5rem there — this is fluid sizing on narrow screens with
+    // zero desktop difference, not something that needs its own mobile-only
+    // media query.
+    font-size: clamp(1.2rem, 3.5vw, 1.5rem);
     font-weight: 700;
     color: $saec-text-dark;
     margin: 0 0 0.2rem;
@@ -111,8 +117,13 @@
     font-size: 0.85rem;
 }
 
-// -- Responsividad: Mobile (<576px) — avatar/title stack above the
-// subtitle and action bar instead of sitting side-by-side. -------------
+// -- Responsividad: Mobile (<768px) — avatar/title stack above the
+// subtitle and action bar instead of sitting side-by-side. Note:
+// media-breakpoint-down(sm) actually compiles to max-width: 767.98px
+// (Bootstrap's breakpoint-max() resolves "down(sm)" to "sm and below" =
+// everything under md), matching the <768px this task's own hero-banner
+// spec asks for — this was mislabeled "<576px" before, though the
+// behavior itself was already correct. -------------------------------
 @include media-breakpoint-down(sm) {
     .saec-hero-card {
         flex-direction: column;
@@ -123,10 +134,26 @@
 
     .saec-hero-actionbar {
         width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    // Full-width, stacked pill + CTA instead of the desktop's inline
+    // side-by-side pair — easier to scan and tap with a thumb than two
+    // narrow items sharing one row.
+    .saec-hero-pill {
+        width: 100%;
+        justify-content: center;
+        box-sizing: border-box;
     }
 
     .saec-hero-action-btn.btn-saec-primary {
-        flex: 1 1 auto;
+        width: 100%;
         text-align: center;
+        // 44px is the standard minimum comfortable touch-target height
+        // (Apple HIG / Material Design both use it); box-sizing so the
+        // existing padding doesn't push the real height past this floor.
+        min-height: 44px;
+        box-sizing: border-box;
     }
 }
