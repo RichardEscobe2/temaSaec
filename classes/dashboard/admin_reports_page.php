@@ -225,21 +225,7 @@ class admin_reports_page {
      * @return array{hasauditlog: bool, auditlog: array[]}
      */
     private static function get_audit_trail(): array {
-        global $DB;
-
-        // \core_user\fields::get_name_fields() returns bare column names
-        // (firstname, lastname, ...) with no table prefix — safe to use
-        // unqualified here since {logstore_standard_log} has no columns of
-        // the same name to collide with (same pattern already used by
-        // admin_dashboard::get_users_section()).
-        $namefields = implode(', ', \core_user\fields::get_name_fields());
-        $sql = "SELECT l.id, l.timecreated, l.eventname, l.contextlevel, l.ip, l.userid, l.anonymous,
-                       u.id AS uid, $namefields
-                  FROM {logstore_standard_log} l
-             LEFT JOIN {user} u ON u.id = l.userid
-              ORDER BY l.timecreated DESC, l.id DESC";
-
-        $rows = $DB->get_records_sql($sql, [], 0, self::AUDIT_TRAIL_LIMIT);
+        $rows = self::fetch_log_rows(self::AUDIT_TRAIL_LIMIT);
 
         $auditlog = [];
         foreach ($rows as $row) {
@@ -253,6 +239,72 @@ class admin_reports_page {
         }
 
         return ['hasauditlog' => !empty($auditlog), 'auditlog' => $auditlog];
+    }
+
+    /**
+     * Raw logstore_standard_log rows (joined with {user} for the acting
+     * user's name fields/email), newest first — the shared query behind
+     * both get_audit_trail() (15-row dashboard widget) and
+     * get_export_rows() (theme/saec/pages/export_report.php's full CSV/
+     * Excel download), so the two can never drift apart on what counts as
+     * "the log."
+     *
+     * @param int $limit
+     * @return \stdClass[]
+     */
+    private static function fetch_log_rows(int $limit): array {
+        global $DB;
+
+        // \core_user\fields::get_name_fields() returns bare column names
+        // (firstname, lastname, ...) with no table prefix — safe to use
+        // unqualified here since {logstore_standard_log} has no columns of
+        // the same name to collide with (same pattern already used by
+        // admin_dashboard::get_users_section()).
+        $namefields = implode(', ', \core_user\fields::get_name_fields());
+        $sql = "SELECT l.id, l.timecreated, l.eventname, l.component, l.action, l.contextlevel, l.ip,
+                       l.userid, l.anonymous, u.id AS uid, u.email, $namefields
+                  FROM {logstore_standard_log} l
+             LEFT JOIN {user} u ON u.id = l.userid
+              ORDER BY l.timecreated DESC, l.id DESC";
+
+        return array_values($DB->get_records_sql($sql, [], 0, $limit));
+    }
+
+    /**
+     * Full export rows (theme/saec/pages/export_report.php) — same acting-
+     * user/event-name/context resolution as the dashboard's own audit
+     * trail widget, plus email and a raw component/action column, as
+     * plain formatted strings ready for fputcsv()/an HTML table (no
+     * Mustache-shaped booleans here, this never touches a template).
+     *
+     * @param int $limit
+     * @return array{header: string[], rows: array[]}
+     */
+    public static function get_export_rows(int $limit = 500): array {
+        $header = [
+            get_string('adminreportscoltimestamp', 'theme_saec'),
+            get_string('adminreportscoluser', 'theme_saec'),
+            get_string('adminreportscoluseremail', 'theme_saec'),
+            get_string('adminreportscolevent', 'theme_saec'),
+            get_string('adminreportscolcomponentaction', 'theme_saec'),
+            get_string('adminreportscolip', 'theme_saec'),
+            get_string('adminreportscolcontext', 'theme_saec'),
+        ];
+
+        $rows = [];
+        foreach (self::fetch_log_rows($limit) as $row) {
+            $rows[] = [
+                userdate((int) $row->timecreated, get_string('strftimedatetimeshort', 'langconfig')),
+                self::resolve_actor_label($row),
+                (!empty($row->anonymous) || empty($row->userid)) ? '—' : (string) $row->email,
+                self::resolve_event_name($row->eventname),
+                trim($row->component . ' / ' . $row->action),
+                $row->ip ?: '—',
+                self::resolve_context_label((int) $row->contextlevel),
+            ];
+        }
+
+        return ['header' => $header, 'rows' => $rows];
     }
 
     /**
@@ -307,19 +359,29 @@ class admin_reports_page {
     }
 
     /**
-     * Direct download links to the native Site Logs report's own CSV/
-     * Excel export (report/log/index.php's own $logformat = optional_param
-     * ('download', ...) branch) — the only sitewide (not single-course)
-     * native export this platform actually has; /grade/export/*'s own
-     * controllers all required_param() a specific course id, so linking
-     * them here without one would 404/error rather than degrade cleanly.
+     * Direct download links to this theme's own export handler
+     * (pages/export_report.php). Originally these pointed straight at the
+     * native Site Logs report's $logformat = optional_param('download', ...)
+     * branch — but that branch only ever runs when chooselog=1 is ALSO
+     * present (report/log/index.php gates its whole table-setup-and-export
+     * flow behind "if (!empty($chooselog))"), so a plain ?download=csv
+     * link silently did nothing. Rather than reverse-engineer that native
+     * report's full postback contract, this theme owns a small, self-
+     * contained handler that reuses the exact same query as the dashboard's
+     * own audit trail widget (get_export_rows()).
      *
      * @return array{exportcsvurl: string, exportexcelurl: string}
      */
     private static function get_export_links(): array {
         return [
-            'exportcsvurl' => (new moodle_url('/report/log/index.php', ['download' => 'csv']))->out(false),
-            'exportexcelurl' => (new moodle_url('/report/log/index.php', ['download' => 'excel']))->out(false),
+            'exportcsvurl' => (new moodle_url('/theme/saec/pages/export_report.php', [
+                'format' => 'csv',
+                'sesskey' => sesskey(),
+            ]))->out(false),
+            'exportexcelurl' => (new moodle_url('/theme/saec/pages/export_report.php', [
+                'format' => 'excel',
+                'sesskey' => sesskey(),
+            ]))->out(false),
         ];
     }
 }
