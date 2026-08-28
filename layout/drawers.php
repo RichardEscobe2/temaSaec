@@ -982,6 +982,18 @@ $templatecontext = [
     'config' => ['wwwroot' => $CFG->wwwroot, 'homeurl' => (new moodle_url('/'))->out(false)],
     'sidepreblocks' => $OUTPUT->blocks('side-pre'),
     'hasblocks' => $hasblocks,
+    // templates/drawers.mustache's blocks-drawer override of theme_boost/drawer's
+    // "forceopen" block reads this key ({{#forceblockdraweropen}}1{{/forceblockdraweropen}})
+    // — it was never actually supplied here, so Mustache silently rendered
+    // that section as empty (data-forceopen="") instead of the parent
+    // template's own real default ("0"). Harmless in practice (core's own
+    // drawers.js only ever compares dataset.forceopen == 1 with loose
+    // equality, and "" == 1 is false exactly like "0" == 1), but a real gap
+    // between the template and its own context all the same — this drawer
+    // is never meant to force itself open regardless of the stored
+    // preference, so the correct value is a real, explicit false, not an
+    // accidentally-undefined key.
+    'forceblockdraweropen' => false,
     'bodyattributes' => $bodyattributes,
     'primarymoremenu' => $primarymoremenu,
     'secondarymoremenu' => $secondaryinitial,

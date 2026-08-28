@@ -34,23 +34,27 @@ function theme_saec_get_extra_scss($theme) {
 }
 
 /**
- * Forces $CFG->forgottenpasswordurl to always resolve dynamically against
- * the current request's $CFG->wwwroot, instead of trusting whatever
- * absolute URL happens to be frozen in mdl_config.
+ * Unconditionally forces $CFG->forgottenpasswordurl to this theme's own
+ * institutional support card, resolved dynamically against the current
+ * request's $CFG->wwwroot — every request, regardless of what (if
+ * anything) is stored in mdl_config.forgottenpasswordurl.
  *
  * pages/forgot_password.php exists specifically because core's own
- * /login/forgot_password.php throws an uncaught exception on this install
- * (no local SMTP configured) — the "Alternate forgotten password URL" site
- * setting (Administration > Security > Site security settings) is
- * Moodle's own officially-supported redirect point for that, and an admin
- * pointed it at this page at some point by typing an absolute URL into
- * that settings field. That URL is a plain DB string
- * (mdl_config.forgottenpasswordurl): it never re-resolves itself when the
- * site's real host/port changes (dev -> staging -> production, or even a
- * docker port remap), so it can silently go stale and start pointing at a
- * host nobody can reach (confirmed: this install's own stored value was
- * still "http://localhost/moodle/...", not the current
- * "http://localhost:8080" wwwroot).
+ * /login/forgot_password.php search form throws an uncaught exception on
+ * this install (no local SMTP configured) the moment a real username/email
+ * is submitted — send_password_change_confirmation_email() fails deep
+ * inside login/lib.php, before theme_saec's own layout ever gets a chance
+ * to render anything. There is no safe "let core handle it" fallback here:
+ * core's native flow is not just cosmetically wrong on this install, it is
+ * broken. So unlike a normal site override (which should respect an admin
+ * clearing the setting to opt back into core behaviour), this one is
+ * deliberately NOT conditional — this theme has no working native
+ * password-reset path to fall back to, so nothing may ever leave
+ * $CFG->forgottenpasswordurl empty or pointing anywhere else, including a
+ * stale absolute URL typed into the site setting by hand (confirmed: this
+ * install's own stored value was still "http://localhost/moodle/...", not
+ * the current "http://localhost:8080" wwwroot) or a future admin blanking
+ * the field via Administration > Security > Site security settings.
  *
  * get_plugins_with_function('after_config', 'lib.php') (lib/setup.php,
  * called unconditionally near the end of every bootstrap, before any page
@@ -62,17 +66,9 @@ function theme_saec_get_extra_scss($theme) {
  * lib/weblib.php (moodle_url) is already loaded (required a few hundred
  * lines above the after_config dispatch in setup.php), so both are safe
  * to use here.
- *
- * Only touches the value when the site has one configured at all — an
- * admin explicitly clearing this setting (falling back to core's native
- * email flow) is a real choice this function must not override.
  */
 function theme_saec_after_config() {
     global $CFG;
-
-    if (empty($CFG->forgottenpasswordurl)) {
-        return;
-    }
 
     $CFG->forgottenpasswordurl = (new moodle_url('/theme/saec/pages/forgot_password.php'))->out(false);
 }
