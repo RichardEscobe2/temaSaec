@@ -5,8 +5,18 @@
     dual CTA), 3 value-proposition cards, a 100% dynamic course grid, an
     institutional accreditation banner, and the global footer. Every
     mandatory Moodle core hook (standard_top_of_body_html,
-    standard_after_main_region_html, main_content, page_heading_button) is
-    preserved.
+    standard_after_main_region_html, standard_end_of_body_html,
+    main_content, page_heading_button) is preserved.
+
+    standard_end_of_body_html is not cosmetic: core_renderer::footer()
+    replaces its placeholder token with $PAGE->requires->get_end_code() —
+    every AMD module queued via js_call_amd() AND every template's own
+    inline-script block (Mustache's own js-helper queues those through the
+    exact same requirements-manager token, core\output\mustache_javascript_helper).
+    Omitting this hook doesn't just skip an optional footer snippet, it
+    silently drops literally all of the page's JavaScript — this file used
+    to omit it (confirmed against footer()'s source), which was corrected
+    for exactly that reason.
 
     output.main_content is produced by theme_saec_core_course_renderer
     (theme/saec/renderers.php), which overrides
@@ -29,6 +39,7 @@
         "output": {
             "standard_top_of_body_html": "",
             "standard_after_main_region_html": "",
+            "standard_end_of_body_html": "",
             "page_heading_button": "",
             "main_content": ""
         },
@@ -193,6 +204,7 @@
     {{{ output.standard_after_main_region_html }}}
 </div>
 
+{{{ output.standard_end_of_body_html }}}
 </body>
 </html>
 {{#js}}

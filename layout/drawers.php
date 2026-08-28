@@ -975,6 +975,18 @@ $logouturl = (new moodle_url('/login/logout.php', ['sesskey' => sesskey()]))->ou
 $languagemenu = new \core\output\language_menu($PAGE);
 $langmenudata = $languagemenu->export_for_template($renderer);
 
+// 3e. MESSAGE DRAWER (chat): the navbar's chat toggle
+// (core_message/message_popover, rendered above via output.navbar_plugin_output)
+// only ever publishes a TOGGLE_VISIBILITY PubSub event — it renders no
+// panel of its own. The panel itself (core_message/message_drawer, a
+// {{< core/drawer}} instance carrying its own {{#js}} init block) has to
+// be explicitly rendered into the page by the theme; core_message::
+// render_messaging_widget() is the official API for that (it already
+// bails out to '' for guests/logged-out/messaging-disabled, so no extra
+// guard is needed here). Neither theme_boost's own layouts call this
+// either — messaging drawers are opt-in per theme, not automatic.
+$messagedrawerhtml = \core_message\helper::render_messaging_widget(true);
+
 // 4. CONTEXTO COMPLETO PARA MUSTACHE
 $templatecontext = [
     'sitename' => format_string($SITE->fullname),
@@ -1000,6 +1012,7 @@ $templatecontext = [
     'mobileprimarynav' => $primarymoremenu,
     'usermenu' => $usermenudata, // Pasa los datos que la plantilla core/user_menu necesita
     'langmenu' => $langmenudata,
+    'messagedrawerhtml' => $messagedrawerhtml,
     'regionmainsettingsmenu' => $regionmainsettingsmenu,
     'hasregionmainsettingsmenu' => !empty($regionmainsettingsmenu),
     'headercontent' => $headercontent,

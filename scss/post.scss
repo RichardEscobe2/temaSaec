@@ -179,6 +179,39 @@ h1, .h1, h2, .h2, h3, .h3 {
         display: flex;
         align-items: center;
         gap: 1rem;
+
+        // Language menu toggle (theme_boost/language_menu, {{#langmenu}}
+        // in navbar.mustache) — matches the circular hover treatment the
+        // notification/message popover toggles already use
+        // (.popover-region-toggle, _global_ui.scss), so all three navbar
+        // icon buttons read as one consistent icon-button family instead
+        // of the plain default Bootstrap .btn look.
+        .langmenu {
+            #lang-menu-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.35rem;
+                height: 40px;
+                padding: 0 0.75rem;
+                border-radius: $saec-radius-lg;
+                color: $saec-text-muted;
+                transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+
+                &:hover,
+                &:focus,
+                &[aria-expanded="true"] {
+                    background-color: $saec-primary-light;
+                    color: $saec-primary;
+                    text-decoration: none;
+                }
+
+                .langbutton {
+                    font-size: 0.85rem;
+                    font-weight: 600;
+                }
+            }
+        }
     }
 }
 
