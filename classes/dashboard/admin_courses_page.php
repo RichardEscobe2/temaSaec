@@ -141,10 +141,16 @@ class admin_courses_page {
      * here since resolve() is only ever a single get_enrolled_users() query
      * per course, not a heavier join.
      *
+     * Public (mirrors admin_dashboard::fetch_courseids_with_attendance's own
+     * public-for-cross-reuse convention) so admin_dashboard's "Cursos
+     * Activos" summary can show the exact same Lead Teacher column, from
+     * the exact same resolution logic, without a second implementation to
+     * keep in sync.
+     *
      * @param int[] $courseids
      * @return array<int, array{name: string, avatarurl: string, messageurl: string}>
      */
-    private static function fetch_lead_teachers(array $courseids): array {
+    public static function fetch_lead_teachers(array $courseids): array {
         $teachers = [];
         foreach ($courseids as $courseid) {
             $teacher = instructor_resolver::resolve($courseid, context_course::instance($courseid));

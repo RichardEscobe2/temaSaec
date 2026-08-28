@@ -289,11 +289,20 @@ class admin_dashboard {
      * Active Courses summary table: the most recent visible courses (site
      * course excluded) capped at MAX_COURSES — a "resumen", not the full
      * catalog (that's admin_courses_page, reachable via "Ver todos los
-     * cursos" / the Mis Cursos sidebar link). Batched student counts (reuses
-     * teacher_courses_page::fetch_student_counts() — same query shape,
-     * teacher-scoped there only because its $courseids argument is
-     * teacher-scoped, not because the SQL itself is), each row carrying
-     * Configurar/Participantes/Calificador/Asistencia shortcuts.
+     * cursos" / the Mis Cursos sidebar link). Shares its exact row shape —
+     * thumbnail, visibility pill, Lead Teacher avatar, "Entrar al Curso →"
+     * primary button + "⋮" actions dropdown — with that same catalog, via
+     * the same components/admin_course_row.mustache partial
+     * (usecompactactions branch) and the same batched lookups
+     * (teacher_courses_page::fetch_student_counts(),
+     * admin_courses_page::fetch_lead_teachers(),
+     * \theme_saec\course_helper::get_course_image_url()), so the two never
+     * drift apart visually or in what each row actually links to.
+     *
+     * Deliberately does NOT set hascatalogactions (Duplicar/Respaldar) —
+     * those are full-catalog audit actions out of place in a quick-glance
+     * dashboard widget; admin_courses_page.php is where an admin doing that
+     * kind of bulk course-ops work already lives.
      *
      * @return array{hascourses: bool, courses: array[], coursesmoreurl: string}
      */
@@ -315,6 +324,7 @@ class admin_dashboard {
         }
 
         $studentcounts = teacher_courses_page::fetch_student_counts($courseids);
+        $teachers = admin_courses_page::fetch_lead_teachers($courseids);
         $attendancecourseids = self::fetch_courseids_with_attendance($courseids);
         $categorycache = [];
 
@@ -322,21 +332,34 @@ class admin_dashboard {
         foreach ($courseids as $courseid) {
             $course = get_course($courseid);
             $context = context_course::instance($courseid);
+            $teacher = $teachers[$courseid] ?? null;
+            $courseimage = \theme_saec\course_helper::get_course_image_url($course);
+            $hasattendance = in_array($courseid, $attendancecourseids, true);
 
             $courses[] = [
                 'id' => $courseid,
                 'fullname' => format_string($course->fullname, true, ['context' => $context]),
+                'shortname' => format_string($course->shortname, true, ['context' => $context]),
                 'categoryname' => teacher_courses_page::resolve_category_name((int) $course->category, $categorycache),
                 'studentcount' => $studentcounts[$courseid] ?? 0,
-                'hasentercourse' => false,
-                'entercourseurl' => null,
+                'hascourseimage' => !empty($courseimage),
+                'courseimage' => $courseimage,
+                'showvisibility' => true,
+                'isvisible' => (bool) $course->visible,
+                'hasteachercolumn' => true,
+                'hasteacher' => ($teacher !== null),
+                'teachername' => $teacher['name'] ?? null,
+                'teacheravatarurl' => $teacher['avatarurl'] ?? null,
+                'hasentercourse' => true,
+                'entercourseurl' => (new moodle_url('/course/view.php', ['id' => $courseid]))->out(false),
                 'configureurl' => (new moodle_url('/course/edit.php', ['id' => $courseid]))->out(false),
                 'participantsurl' => (new moodle_url('/user/index.php', ['id' => $courseid]))->out(false),
-                'gradesurl' => (new moodle_url('/grade/report/index.php', ['id' => $courseid]))->out(false),
-                'hasattendance' => in_array($courseid, $attendancecourseids, true),
-                'attendanceurl' => in_array($courseid, $attendancecourseids, true)
+                'gradesurl' => (new moodle_url('/grade/report/grader/index.php', ['id' => $courseid]))->out(false),
+                'hasattendance' => $hasattendance,
+                'attendanceurl' => $hasattendance
                     ? (new moodle_url('/mod/attendance/index.php', ['id' => $courseid]))->out(false)
                     : null,
+                'usecompactactions' => true,
             ];
         }
 

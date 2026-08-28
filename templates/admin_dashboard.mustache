@@ -35,7 +35,22 @@
             "hasfootnote": false, "hasurl": false}],
         "quickactions": [{"label": "+ Crear Curso", "icon": "<img>",
             "url": "https://example.org/course/edit.php?category=1", "ispurge": false}],
-        "hascourses": true, "courses": [], "coursesmoreurl": "https://example.org/my/courses.php",
+        "hascourses": true,
+        "courses": [{
+            "id": 5, "fullname": "Desarrollo de Sistemas Web II", "shortname": "DSW-2026",
+            "categoryname": "Ingeniería", "studentcount": 24,
+            "hascourseimage": true, "courseimage": "https://example.org/pluginfile.php/1/course/overviewfiles/f1.jpg",
+            "showvisibility": true, "isvisible": true,
+            "hasteachercolumn": true, "hasteacher": true, "teachername": "Carlos Gomez",
+            "teacheravatarurl": "https://example.org/pluginfile.php/1/user/icon/f1.jpg",
+            "hasentercourse": true, "entercourseurl": "https://example.org/course/view.php?id=5",
+            "configureurl": "https://example.org/course/edit.php?id=5",
+            "participantsurl": "https://example.org/user/index.php?id=5",
+            "gradesurl": "https://example.org/grade/report/grader/index.php?id=5",
+            "hasattendance": false, "attendanceurl": null,
+            "usecompactactions": true
+        }],
+        "coursesmoreurl": "https://example.org/my/courses.php",
         "hasusers": true, "users": [], "usersmoreurl": "https://example.org/admin/user.php"
     }
 }}
@@ -61,9 +76,16 @@
         <div class="saec-admin-hub__section-header">
             <h2 class="saec-admin-hub__section-title">{{#str}} adminsectioncourses, theme_saec {{/str}}</h2>
             {{#hascourses}}
-                <input type="search" class="saec-admin-hub__filter-input"
-                       placeholder="{{#str}} adminfiltercourses, theme_saec {{/str}}"
-                       data-saec-admin-hub-coursefilter>
+                <div class="saec-admin-hub__search">
+                    <span class="saec-admin-hub__search-icon" aria-hidden="true"><i class="icon fa fa-search"></i></span>
+                    <label class="sr-only" for="saec-admin-dashboard-coursefilter-{{uniqid}}">
+                        {{#str}} adminfiltercourses, theme_saec {{/str}}
+                    </label>
+                    <input type="search" id="saec-admin-dashboard-coursefilter-{{uniqid}}"
+                           class="saec-admin-hub__search-input"
+                           placeholder="{{#str}} adminfiltercourses, theme_saec {{/str}}"
+                           data-saec-admin-hub-coursefilter>
+                </div>
             {{/hascourses}}
         </div>
         {{#hascourses}}
@@ -73,6 +95,7 @@
                         <thead>
                             <tr>
                                 <th>{{#str}} admincoursecolname, theme_saec {{/str}}</th>
+                                <th>{{#str}} admincoursecolteacher, theme_saec {{/str}}</th>
                                 <th class="text-center">{{#str}} admincoursecolstudents, theme_saec {{/str}}</th>
                                 <th class="text-right">{{#str}} admincoursecolactions, theme_saec {{/str}}</th>
                             </tr>
