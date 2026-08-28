@@ -1,0 +1,110 @@
+{{!
+    @template theme_saec/admin_reports_page
+
+    "Reportes y Auditoría" (platform-wide admin audit dashboard) — replaces
+    /report/log/index.php's bare native log table for site admins. Context
+    from \theme_saec\dashboard\admin_reports_page::get_context(), injected
+    by layout/drawers.php.
+
+    Every number/row here comes from a real query (mdl_user.lastaccess,
+    grade_grades/grade_items, badge_issued, logstore_standard_log) — no
+    placeholder/example figures are ever rendered by the real page.
+
+    Example context (json):
+    {
+        "kpis": [
+            {"key": "activeusers", "icon": "<i class=\"icon fa fa-user\" aria-hidden=\"true\"></i>", "iconvariant": "primary", "label": "Usuarios Activos (7 días)", "value": "128", "hasvaluesuffix": false, "hasfootnote": false}
+        ],
+        "trenddays": [
+            {"label": "24 ago", "count": 340, "heightpercent": 72}
+        ],
+        "hastrenddata": true,
+        "hasauditlog": true,
+        "auditlog": [
+            {"timestamp": "24 ago, 11:42", "userfullname": "Carlos Gómez", "eventname": "Usuario ha iniciado sesión", "ip": "192.168.1.10", "contextlabel": "Sistema"}
+        ],
+        "exportcsvurl": "https://example.org/report/log/index.php?download=csv",
+        "exportexcelurl": "https://example.org/report/log/index.php?download=excel"
+    }
+}}
+<div class="saec-admin-reports-page">
+    <header class="saec-admin-reports-page__header">
+        <div>
+            <h1 class="saec-admin-reports-page__title">{{#str}} adminreportstitle, theme_saec {{/str}}</h1>
+            <p class="saec-admin-reports-page__subtitle">{{#str}} adminreportssubtitle, theme_saec {{/str}}</p>
+        </div>
+        <div class="saec-admin-reports-page__exports">
+            <a href="{{{ exportcsvurl }}}" class="uptex-quickaction">
+                <i class="icon fa fa-file-text-o" aria-hidden="true"></i>
+                {{#str}} adminreportsexportcsv, theme_saec {{/str}}
+            </a>
+            <a href="{{{ exportexcelurl }}}" class="uptex-quickaction">
+                <i class="icon fa fa-file-excel-o" aria-hidden="true"></i>
+                {{#str}} adminreportsexportexcel, theme_saec {{/str}}
+            </a>
+        </div>
+    </header>
+
+    <div class="saec-admin-reports-page__kpi-grid row">
+        {{#kpis}}
+            <div class="col-lg-3 col-md-6 col-12">
+                {{> theme_saec/components/metric_card }}
+            </div>
+        {{/kpis}}
+    </div>
+
+    <section class="saec-admin-reports-page__section-card">
+        <h2 class="saec-admin-reports-page__section-title">{{#str}} adminreportstrendheading, theme_saec {{/str}}</h2>
+        {{#hastrenddata}}
+            <div class="saec-activity-trend">
+                {{#trenddays}}
+                    <div class="saec-activity-trend__col">
+                        <div class="saec-activity-trend__bar-track">
+                            <div class="saec-activity-trend__bar" style="height: {{ heightpercent }}%" title="{{ count }}"></div>
+                        </div>
+                        <span class="saec-activity-trend__count">{{ count }}</span>
+                        <span class="saec-activity-trend__label">{{ label }}</span>
+                    </div>
+                {{/trenddays}}
+            </div>
+        {{/hastrenddata}}
+        {{^hastrenddata}}
+            <p class="text-muted mb-0">{{#str}} adminreportsnotrend, theme_saec {{/str}}</p>
+        {{/hastrenddata}}
+    </section>
+
+    <section class="saec-admin-reports-page__section-card">
+        <h2 class="saec-admin-reports-page__section-title">{{#str}} adminreportsauditheading, theme_saec {{/str}}</h2>
+        {{#hasauditlog}}
+            <div class="uptex-table-container">
+                <div class="table-responsive">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th>{{#str}} adminreportscoltimestamp, theme_saec {{/str}}</th>
+                                <th>{{#str}} adminreportscoluser, theme_saec {{/str}}</th>
+                                <th>{{#str}} adminreportscolevent, theme_saec {{/str}}</th>
+                                <th>{{#str}} adminreportscolip, theme_saec {{/str}}</th>
+                                <th>{{#str}} adminreportscolcontext, theme_saec {{/str}}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#auditlog}}
+                                <tr>
+                                    <td class="text-nowrap">{{ timestamp }}</td>
+                                    <td>{{ userfullname }}</td>
+                                    <td>{{ eventname }}</td>
+                                    <td class="text-nowrap">{{ ip }}</td>
+                                    <td>{{ contextlabel }}</td>
+                                </tr>
+                            {{/auditlog}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {{/hasauditlog}}
+        {{^hasauditlog}}
+            <p class="text-muted mb-0">{{#str}} adminreportsnoaudit, theme_saec {{/str}}</p>
+        {{/hasauditlog}}
+    </section>
+</div>

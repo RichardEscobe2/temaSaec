@@ -1064,3 +1064,15 @@ $saec-dashboard-content-maxwidth: 1600px;
 // custom.scss (former section 11) during the modularization pass.
 // ---------------------------------------------------------------------
 @import "saec/badges";
+
+// ---------------------------------------------------------------------
+// "ESTUDIANTES Y PROGRESO" (/grade/report/user/index.php, teacher branch)
+// — course-scoped analytics dashboard.
+// ---------------------------------------------------------------------
+@import "saec/teacher_progress";
+
+// ---------------------------------------------------------------------
+// "REPORTES Y AUDITORÍA" (/report/log/index.php, admin branch) —
+// platform-wide audit dashboard.
+// ---------------------------------------------------------------------
+@import "saec/admin_reports";

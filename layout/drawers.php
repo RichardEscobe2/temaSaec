@@ -5,6 +5,7 @@ require_once($CFG->libdir . '/behat/lib.php');
 
 use theme_saec\dashboard\admin_courses_page;
 use theme_saec\dashboard\admin_dashboard;
+use theme_saec\dashboard\admin_reports_page;
 use theme_saec\dashboard\analytics_page;
 use theme_saec\dashboard\badges_page;
 use theme_saec\dashboard\courses_page;
@@ -13,6 +14,7 @@ use theme_saec\dashboard\student_dashboard;
 use theme_saec\dashboard\teacher_course_view_page;
 use theme_saec\dashboard\teacher_courses_page;
 use theme_saec\dashboard\teacher_dashboard;
+use theme_saec\dashboard\teacher_progress_page;
 
 // NOTA CRÍTICA (Fase 18 — bug de "doctype() no llamado" en mod_assign):
 // $PAGE y $OUTPUT NO se globalizan aquí a propósito. core_renderer::
@@ -254,6 +256,30 @@ if ($isanalyticspage && $analyticspagehtml === null && isloggedin() && !isguestu
     }
 }
 
+// 1g-quater. "ESTUDIANTES Y PROGRESO" — course-scoped teacher analytics
+// (/grade/report/user/index.php, Fase 20). This exact URL serves two
+// different native reports depending on the userid querystring param:
+// userid=0 (or absent) shows the whole-course table this overlay replaces;
+// a real userid=<studentid> shows core's own untouched per-student report
+// (this overlay's own roster CTAs link straight into that second form,
+// so they must never be intercepted here — hence the strict === 0 check,
+// not just a truthiness check, matching /grade/report/user/index.php's
+// own optional_param('userid', null, PARAM_INT) semantics where an
+// explicit userid=0 means "show all").
+$teacherprogresspagehtml = null;
+$isteacherprogresspage = ($PAGE->url->out_omit_querystring()
+    === (new moodle_url('/grade/report/user/index.php'))->out_omit_querystring());
+if ($isteacherprogresspage && isloggedin() && !isguestuser()
+        && optional_param('userid', 0, PARAM_INT) === 0) {
+    $teacherprogresspagecontext = teacher_progress_page::get_context();
+    if ($teacherprogresspagecontext !== null) {
+        $teacherprogresspagehtml = $OUTPUT->render_from_template(
+            'theme_saec/teacher_progress_page',
+            $teacherprogresspagecontext
+        );
+    }
+}
+
 // 1g-ter. ATTENDANCE SESSION CARDS (/mod/attendance/manage.php, Sprint 9):
 // unlike every overlay above, this does NOT hide or replace the native
 // session table — its real per-row action links (take/edit/delete) carry
@@ -439,6 +465,22 @@ if ($issettingspage && isloggedin() && !isguestuser()) {
         'rolelabel' => $prefsrolelabel,
     ];
     $settingspagehtml = $OUTPUT->render_from_template('theme_saec/preferences_hero', $settingspagecontext);
+}
+
+// 1h-bis. "REPORTES Y AUDITORÍA" — platform-wide admin audit dashboard
+// (/report/log/index.php, Fase 20). Unlike the teacher-facing "Estudiantes
+// y Progreso" overlay above, this native report has no required 'id'
+// param and no per-record single-item view to stay compatible with — the
+// whole page is always the sitewide log table, so the guard is simply
+// "is this the URL, is a real logged-in site admin viewing it."
+$adminreportspagehtml = null;
+$isadminreportspage = ($PAGE->url->out_omit_querystring()
+    === (new moodle_url('/report/log/index.php'))->out_omit_querystring());
+if ($isadminreportspage && isloggedin() && !isguestuser() && $is_admin) {
+    $adminreportspagecontext = admin_reports_page::get_context();
+    if ($adminreportspagecontext !== null) {
+        $adminreportspagehtml = $OUTPUT->render_from_template('theme_saec/admin_reports_page', $adminreportspagecontext);
+    }
 }
 
 // 1i. VISTA DE CURSO — SaaS OVERLAY (/course/view.php, Fase 17): a diferencia
@@ -631,6 +673,12 @@ if ($analyticspagehtml !== null) {
 }
 if ($graderhubpagehtml !== null) {
     $extraclasses[] = 'page-grader-hub';
+}
+if ($teacherprogresspagehtml !== null) {
+    $extraclasses[] = 'page-teacher-progress';
+}
+if ($adminreportspagehtml !== null) {
+    $extraclasses[] = 'page-admin-reports';
 }
 if ($settingspagehtml !== null) {
     $extraclasses[] = 'page-settings';
@@ -871,8 +919,19 @@ if ($showmainnav) {
             ? new moodle_url('/theme/saec/pages/attendance_hub.php')
             : new moodle_url('/my/courses.php');
 
-        $progressurl = $courseid
-            ? new moodle_url('/grade/report/user/index.php', ['id' => $courseid])
+        // /grade/report/user/index.php's own 'id' param is required_param()
+        // — unlike Calificador/Asistencia above, there's no "id-less"
+        // landing to fall back to, so outside a course context this
+        // resolves a real course id from the teacher's own manageable
+        // courses (teacher_progress_page::get_context() applies this exact
+        // same "first manageable course" fallback again once landed, so
+        // the two never disagree). userid=0 is explicit (not omitted) so
+        // this always deterministically lands on the "all students" roster
+        // rather than whatever course/student the PHP session happened to
+        // have last cached for grade/report/user's own native controller.
+        $progresscourseid = $courseid ?: (teacher_progress_page::get_manageable_courseids((int) $USER->id)[0] ?? 0);
+        $progressurl = $progresscourseid
+            ? new moodle_url('/grade/report/user/index.php', ['id' => $progresscourseid, 'userid' => 0])
             : new moodle_url('/my/courses.php');
 
         // Course-scoped badge management (2 = BADGE_TYPE_COURSE — see the
@@ -1044,6 +1103,10 @@ $templatecontext = [
     'analyticspagehtml' => $analyticspagehtml,
     'showgraderhubpage' => ($graderhubpagehtml !== null),
     'graderhubpagehtml' => $graderhubpagehtml,
+    'showteacherprogresspage' => ($teacherprogresspagehtml !== null),
+    'teacherprogresspagehtml' => $teacherprogresspagehtml,
+    'showadminreportspage' => ($adminreportspagehtml !== null),
+    'adminreportspagehtml' => $adminreportspagehtml,
     'showsettingspage' => ($settingspagehtml !== null),
     'settingspagehtml' => $settingspagehtml,
     'showcourseviewpage' => ($courseviewheaderhtml !== null),

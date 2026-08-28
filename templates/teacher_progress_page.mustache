@@ -1,0 +1,182 @@
+{{!
+    @template theme_saec/teacher_progress_page
+
+    "Estudiantes y Progreso" (course-scoped teacher analytics) — replaces
+    /grade/report/user/index.php's bare "all students" table for the
+    logged-in teacher. Context from
+    \theme_saec\dashboard\teacher_progress_page::get_context(), injected by
+    layout/drawers.php (only when ?userid is 0/absent — a real ?userid=N
+    lands on core's own untouched per-student report instead, see that
+    class's docblock).
+
+    Every number here comes from a real query (enrolment, grade_grades,
+    assign_submission, mod_attendance) — no placeholder/example figures are
+    ever rendered by the real page; a metric with no underlying data shows
+    "N/D" instead.
+
+    Example context (json):
+    {
+        "courseid": 5,
+        "coursefullname": "Desarrollo de Sistemas Web II",
+        "courses": [
+            {"id": 5, "fullname": "Desarrollo de Sistemas Web II", "url": "https://example.org/grade/report/user/index.php?id=5", "isselected": true}
+        ],
+        "kpis": [
+            {"key": "enrolled", "icon": "<i class=\"icon fa fa-users\" aria-hidden=\"true\"></i>", "iconvariant": "primary", "label": "Alumnos Inscritos", "value": "24", "hasvaluesuffix": false, "hasfootnote": false}
+        ],
+        "hasatriskstudents": true,
+        "atriskstudents": [
+            {"id": 6, "fullname": "Ana García Méndez", "avatarurl": "https://example.org/pluginfile.php/1/user/icon/f1.jpg",
+             "hasgrade": true, "grade": "5.8", "hasattendance": true, "attendancepercent": 62,
+             "reporturl": "https://example.org/grade/report/user/index.php?id=5&userid=6"}
+        ],
+        "hasstudents": true,
+        "students": [
+            {"id": 6, "fullname": "Ana García Méndez", "email": "ana@example.org", "hasavatar": true,
+             "avatarurl": "https://example.org/pluginfile.php/1/user/icon/f1.jpg",
+             "hasprogress": true, "progresspercent": 40,
+             "hasgrade": true, "grade": "5.8", "hasattendance": true, "attendancepercent": 62,
+             "isatrisk": true, "status": "enriesgo", "statuslabel": "En Riesgo",
+             "reporturl": "https://example.org/grade/report/user/index.php?id=5&userid=6"}
+        ],
+        "hasattendance": true
+    }
+}}
+<div class="saec-teacher-progress-page">
+    <header class="saec-teacher-progress-page__header">
+        <div>
+            <h1 class="saec-teacher-progress-page__title">{{#str}} teacherprogresstitle, theme_saec {{/str}}</h1>
+            <p class="saec-teacher-progress-page__subtitle">{{ coursefullname }}</p>
+        </div>
+        {{#courses.1}}
+            <div class="saec-teacher-progress-page__course-selector">
+                <label class="sr-only" for="saec-progress-course-{{uniqid}}">
+                    {{#str}} teacherprogresscourseselector, theme_saec {{/str}}
+                </label>
+                <select id="saec-progress-course-{{uniqid}}" class="saec-teacher-progress-page__course-select"
+                        data-saec-progress-course-select>
+                    {{#courses}}
+                        <option value="{{{ url }}}" {{#isselected}}selected{{/isselected}}>{{ fullname }}</option>
+                    {{/courses}}
+                </select>
+            </div>
+        {{/courses.1}}
+    </header>
+
+    <div class="saec-teacher-progress-page__kpi-grid row">
+        {{#kpis}}
+            <div class="col-lg-3 col-md-6 col-12">
+                {{> theme_saec/components/metric_card }}
+            </div>
+        {{/kpis}}
+    </div>
+
+    {{#hasatriskstudents}}
+        <section class="saec-progress-atrisk">
+            <h2 class="saec-progress-atrisk__heading">
+                <i class="icon fa fa-exclamation-triangle" aria-hidden="true"></i>
+                {{#str}} teacherprogressatriskheading, theme_saec {{/str}}
+            </h2>
+            <div class="saec-progress-atrisk__list">
+                {{#atriskstudents}}
+                    <a href="{{{ reporturl }}}" class="saec-progress-atrisk__item">
+                        <img src="{{{ avatarurl }}}" alt="" class="saec-progress-atrisk__avatar">
+                        <span class="saec-progress-atrisk__name">{{ fullname }}</span>
+                        <span class="saec-progress-atrisk__reason">
+                            {{#hasgrade}}
+                                <span class="saec-progress-atrisk__metric">{{#str}} teacherprogressgradeabbrev, theme_saec {{/str}}: {{ grade }}</span>
+                            {{/hasgrade}}
+                            {{#hasattendance}}
+                                <span class="saec-progress-atrisk__metric">{{#str}} teacherprogressattendanceabbrev, theme_saec {{/str}}: {{ attendancepercent }}%</span>
+                            {{/hasattendance}}
+                        </span>
+                    </a>
+                {{/atriskstudents}}
+            </div>
+        </section>
+    {{/hasatriskstudents}}
+
+    <section class="saec-teacher-progress-page__section-card">
+        <h2 class="saec-teacher-progress-page__section-title">{{#str}} teacherprogressrosterheading, theme_saec {{/str}}</h2>
+        {{#hasstudents}}
+            <div class="uptex-table-container">
+                <div class="table-responsive">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th>{{#str}} teacherprogresscolstudent, theme_saec {{/str}}</th>
+                                <th class="text-center">{{#str}} teacherprogresscolprogress, theme_saec {{/str}}</th>
+                                <th class="text-center">{{#str}} teacherprogresscolgrade, theme_saec {{/str}}</th>
+                                <th class="text-center">{{#str}} teacherprogresscolattendance, theme_saec {{/str}}</th>
+                                <th class="text-center">{{#str}} teacherprogresscolstatus, theme_saec {{/str}}</th>
+                                <th class="text-right">{{#str}} teacherprogresscolactions, theme_saec {{/str}}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#students}}
+                                <tr>
+                                    <td>
+                                        <div class="uptex-table-student">
+                                            <span class="uptex-avatar uptex-avatar--sm">
+                                                {{#hasavatar}}<img src="{{{ avatarurl }}}" alt="">{{/hasavatar}}
+                                            </span>
+                                            <div>
+                                                <p class="uptex-table-student__name mb-0">{{ fullname }}</p>
+                                                <p class="uptex-table-student__subtext mb-0">{{ email }}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        {{#hasprogress}}
+                                            <div class="saec-progress-bar-mini">
+                                                <div class="progress saec-progress-bar-mini__track">
+                                                    <div class="progress-bar" role="progressbar" style="width: {{ progresspercent }}%"
+                                                         aria-valuenow="{{ progresspercent }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                                <span class="saec-progress-bar-mini__label">{{ progresspercent }}%</span>
+                                            </div>
+                                        {{/hasprogress}}
+                                        {{^hasprogress}}
+                                            <span class="text-muted">{{#str}} kpinodata, theme_saec {{/str}}</span>
+                                        {{/hasprogress}}
+                                    </td>
+                                    <td class="text-center">
+                                        {{#hasgrade}}{{ grade }}{{/hasgrade}}
+                                        {{^hasgrade}}<span class="text-muted">{{#str}} kpinodata, theme_saec {{/str}}</span>{{/hasgrade}}
+                                    </td>
+                                    <td class="text-center">
+                                        {{#hasattendance}}{{ attendancepercent }}%{{/hasattendance}}
+                                        {{^hasattendance}}<span class="text-muted">{{#str}} kpinodata, theme_saec {{/str}}</span>{{/hasattendance}}
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="saec-progress-status saec-progress-status--{{ status }}">{{ statuslabel }}</span>
+                                    </td>
+                                    <td class="text-right">
+                                        <a href="{{{ reporturl }}}" class="saec-btn-enter-sm">
+                                            {{#str}} teacherprogressviewreport, theme_saec {{/str}}
+                                            <i class="icon fa fa-arrow-right" aria-hidden="true"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {{/students}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {{/hasstudents}}
+        {{^hasstudents}}
+            <p class="text-muted mb-0">{{#str}} teacherprogressnostudents, theme_saec {{/str}}</p>
+        {{/hasstudents}}
+    </section>
+</div>
+{{#js}}
+require(['jquery'], function($) {
+    document.querySelectorAll('[data-saec-progress-course-select]').forEach(function(select) {
+        select.addEventListener('change', function() {
+            if (this.value) {
+                window.location.href = this.value;
+            }
+        });
+    });
+});
+{{/js}}

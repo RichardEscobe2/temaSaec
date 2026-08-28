@@ -1,0 +1,225 @@
+// theme_saec — scss/saec/_teacher_progress.scss
+//
+// "Estudiantes y Progreso" (/grade/report/user/index.php, teacher-facing
+// course-scoped analytics overlay). The native report still renders (core,
+// can't be skipped — see the placeholder-token comment in
+// templates/drawers.mustache) and is hidden here, exactly like every other
+// *_page overlay in this theme (body.page-analytics, body.page-grader-hub,
+// etc.).
+// -----------------------------------------------------------------------
+
+body.page-teacher-progress {
+    #page-header {
+        display: none;
+    }
+
+    .uptex-content-wrapper > :not(.saec-teacher-progress-page) {
+        display: none;
+    }
+}
+
+.saec-teacher-progress-page {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1.5rem 0 3rem;
+
+    &__header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    &__title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: $saec-text-dark;
+        margin: 0;
+    }
+
+    &__subtitle {
+        color: $saec-text-muted;
+        margin: 0.25rem 0 0;
+    }
+
+    &__course-selector {
+        flex: 0 0 auto;
+        width: 100%;
+        max-width: 320px;
+    }
+
+    &__course-select {
+        width: 100%;
+        padding: 0.55rem 0.85rem;
+        border: 1px solid $saec-border;
+        border-radius: $saec-radius;
+        background-color: $saec-surface;
+        color: $saec-text-dark;
+        font-weight: 600;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+        &:focus {
+            outline: none;
+            border-color: $saec-primary;
+            box-shadow: 0 0 0 2px $saec-primary-light;
+        }
+    }
+
+    &__kpi-grid {
+        margin: 0;
+    }
+
+    &__section-card {
+        background-color: $saec-surface;
+        border: 1px solid $saec-border;
+        border-radius: $saec-radius-lg;
+        box-shadow: $saec-shadow-md;
+        padding: 1.5rem;
+    }
+
+    &__section-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: $saec-text-dark;
+        margin: 0 0 1rem;
+    }
+}
+
+// -- "Alumnos en Riesgo" alert widget — dynamic academic-status alarm,
+// only rendered when at least one student meets the risk thresholds
+// (\theme_saec\dashboard\teacher_progress_page::AT_RISK_*_THRESHOLD). --
+.saec-progress-atrisk {
+    background-color: rgba($saec-accent, 0.06);
+    border: 1px solid rgba($saec-accent, 0.25);
+    border-radius: $saec-radius-lg;
+    padding: 1.25rem 1.5rem;
+
+    &__heading {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1rem;
+        font-weight: 700;
+        color: $saec-accent;
+        margin: 0 0 1rem;
+    }
+
+    &__list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    &__item {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        background-color: $saec-surface;
+        border: 1px solid $saec-border;
+        border-radius: $saec-radius;
+        padding: 0.5rem 0.9rem;
+        text-decoration: none;
+        transition: box-shadow 0.15s ease-in-out, transform 0.15s ease-in-out;
+
+        &:hover,
+        &:focus {
+            box-shadow: $saec-shadow-md;
+            transform: translateY(-1px);
+            text-decoration: none;
+        }
+    }
+
+    &__avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+
+    &__name {
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: $saec-text-dark;
+        white-space: nowrap;
+    }
+
+    &__reason {
+        display: flex;
+        flex-direction: column;
+        gap: 0.1rem;
+    }
+
+    &__metric {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: $saec-accent;
+        white-space: nowrap;
+    }
+}
+
+// -- Roster progress bar (compact, table-row scoped — reuses Bootstrap's
+// own .progress/.progress-bar, already tokenized site-wide via
+// scss/pre.scss's $progress-bar-bg override). --
+.saec-progress-bar-mini {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    &__track {
+        flex: 1 1 auto;
+        min-width: 60px;
+        height: 6px;
+    }
+
+    &__label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: $saec-text-muted;
+        white-space: nowrap;
+    }
+}
+
+// -- Academic status badge (Acreditado / Regular / En Riesgo) --
+.saec-progress-status {
+    display: inline-block;
+    border-radius: 999px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+
+    &--acreditado {
+        background-color: rgba($saec-success, 0.15);
+        color: darken($saec-success, 15%);
+    }
+
+    &--regular {
+        background-color: $saec-info-light;
+        color: $saec-info;
+    }
+
+    &--enriesgo {
+        background-color: rgba($saec-accent, 0.1);
+        color: $saec-accent;
+    }
+}
+
+// -- Responsividad: Mobile (<768px) --
+@include media-breakpoint-down(md) {
+    .saec-teacher-progress-page {
+        &__header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        &__course-selector {
+            max-width: 100%;
+        }
+    }
+
+    .saec-progress-atrisk__item {
+        width: 100%;
+    }
+}

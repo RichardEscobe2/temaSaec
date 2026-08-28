@@ -1,0 +1,137 @@
+// theme_saec — scss/saec/_admin_reports.scss
+//
+// "Reportes y Auditoría" (/report/log/index.php, admin-facing platform-wide
+// audit dashboard). The native Site Logs report still renders (core, can't
+// be skipped) and is hidden here, exactly like every other *_page overlay
+// in this theme (body.page-analytics, body.page-grader-hub, etc.).
+// -----------------------------------------------------------------------
+
+body.page-admin-reports {
+    #page-header {
+        display: none;
+    }
+
+    .uptex-content-wrapper > :not(.saec-admin-reports-page) {
+        display: none;
+    }
+}
+
+.saec-admin-reports-page {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1.5rem 0 3rem;
+
+    &__header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    &__title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: $saec-text-dark;
+        margin: 0;
+    }
+
+    &__subtitle {
+        color: $saec-text-muted;
+        margin: 0.25rem 0 0;
+    }
+
+    &__exports {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    &__kpi-grid {
+        margin: 0;
+    }
+
+    &__section-card {
+        background-color: $saec-surface;
+        border: 1px solid $saec-border;
+        border-radius: $saec-radius-lg;
+        box-shadow: $saec-shadow-md;
+        padding: 1.5rem;
+    }
+
+    &__section-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: $saec-text-dark;
+        margin: 0 0 1.25rem;
+    }
+}
+
+// -- Activity trend — pure CSS bar chart, no charting library. Each bar's
+// height is set inline as a percentage of the busiest day in the window
+// (\theme_saec\dashboard\admin_reports_page::get_activity_trend()), the
+// same dynamic-inline-style convention this theme's own progress bars
+// already use (components/course_progress_card.mustache). --
+.saec-activity-trend {
+    display: flex;
+    align-items: flex-end;
+    gap: 1rem;
+    height: 180px;
+    padding-top: 0.5rem;
+
+    &__col {
+        flex: 1 1 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 100%;
+    }
+
+    &__bar-track {
+        flex: 1 1 auto;
+        width: 100%;
+        max-width: 40px;
+        display: flex;
+        align-items: flex-end;
+    }
+
+    &__bar {
+        width: 100%;
+        min-height: 2px;
+        background-color: $saec-primary;
+        border-radius: 4px 4px 0 0;
+        transition: background-color 0.15s ease-in-out;
+    }
+
+    &__col:hover &__bar {
+        background-color: $saec-primary-hover;
+    }
+
+    &__count {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: $saec-text-dark;
+        margin-top: 0.5rem;
+    }
+
+    &__label {
+        font-size: 0.7rem;
+        color: $saec-text-muted;
+        margin-top: 0.15rem;
+        text-align: center;
+    }
+}
+
+// -- Responsividad: Mobile (<768px) --
+@include media-breakpoint-down(md) {
+    .saec-admin-reports-page__header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .saec-activity-trend {
+        height: 140px;
+        gap: 0.5rem;
+    }
+}
